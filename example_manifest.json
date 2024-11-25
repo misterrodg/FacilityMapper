@@ -5,6 +5,9 @@
       "definition": {
         "airport_id": "KIAD",
         "procedure_id": "JCOBY#",
+        "line_type": "solid",
+        "draw_symbols": false,
+        "draw_names": false,
         "draw_enroute_transitions": true,
         "draw_runway_transitions": false,
         "file_name": "003_JCOBY"
