@@ -5,7 +5,6 @@ from os.path import isfile, getsize
 import json
 
 ERROR_HEADER = "MANIFEST: "
-FACILITY_DIR = "./facilities"
 
 
 class Manifest:
@@ -26,9 +25,7 @@ class Manifest:
                 print(
                     f"{ERROR_HEADER}Cannot find manifest json data at {manifestPath}."
                 )
-                print(
-                    f"{ERROR_HEADER}Follow the README to create a manifest in {FACILITY_DIR}"
-                )
+                print(f"{ERROR_HEADER}Follow the README to create a manifest.")
         except json.JSONDecodeError:
             print("Failed to decode JSON from the file.")
 
