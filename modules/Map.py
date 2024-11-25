@@ -1,4 +1,5 @@
 from modules.ErrorHelper import print_top_level
+from modules.SIDSTAR import SIDSTAR
 
 ERROR_HEADER = "MAP: "
 SUPPORTED_TYPES = ["SID", "STAR"]
@@ -10,6 +11,7 @@ class Map:
         self.definition = None
 
         self.validate(mapDict)
+        self.process()
 
     def validate(self, mapDict: dict) -> None:
         mapType = mapDict.get("map_type")
@@ -30,3 +32,7 @@ class Map:
         self.mapType = mapType
         self.definition = definition
         return
+
+    def process(self) -> None:
+        if self.mapType == "SID" or self.mapType == "STAR":
+            SIDSTAR(self.mapType, self.definition)
