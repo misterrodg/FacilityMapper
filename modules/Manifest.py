@@ -1,4 +1,5 @@
 from modules.ErrorHelper import print_top_level
+from modules.Map import Map
 
 from os.path import isfile, getsize
 
@@ -13,6 +14,7 @@ class Manifest:
 
         manifestDict = self.getManifest(manifestPath)
         self.validate(manifestDict)
+        self.process()
 
     def getManifest(self, manifestPath: str) -> dict:
         result = {}
@@ -50,3 +52,7 @@ class Manifest:
 
         self.maps = maps
         return
+
+    def process(self) -> None:
+        for map in self.maps:
+            Map(map)
