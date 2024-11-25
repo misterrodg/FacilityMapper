@@ -12,6 +12,8 @@ class SIDSTAR:
         self.lineStyle = None
         self.drawSymbols = False
         self.drawNames = False
+        self.drawEnrouteTransitions = True
+        self.drawRunwayTransitions = False
         self.fileName = None
 
         self.validate(definitionDict)
@@ -41,6 +43,10 @@ class SIDSTAR:
 
         drawNames = definitionDict.get("draw_names", False)
 
+        drawEnrouteTransitions = definitionDict.get("draw_enroute_transitions", True)
+
+        drawRunwayTransitions = definitionDict.get("draw_runway_transitions", False)
+
         fileName = definitionDict.get("file_name")
         if fileName is None:
             fileName = f"{airportId}_{self.mapType}_{procedureId}"
@@ -50,6 +56,8 @@ class SIDSTAR:
         self.lineStyle = lineStyle
         self.drawSymbols = drawSymbols
         self.drawNames = drawNames
+        self.drawEnrouteTransitions = drawEnrouteTransitions
+        self.drawRunwayTransitions = drawRunwayTransitions
         self.fileName = fileName
 
         return
