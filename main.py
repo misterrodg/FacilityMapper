@@ -1,5 +1,8 @@
+from modules.Manifest import Manifest
+
+
 def main():
-    pass
+    Manifest("manifest.json")
 
 
 if __name__ == "__main__":
