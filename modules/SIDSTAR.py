@@ -31,9 +31,9 @@ class SIDSTAR:
             )
             return
 
-        lineStyle = definitionDict.get("line_type", True)
+        lineStyle = definitionDict.get("line_type", "solid")
         if lineStyle not in LINE_STYLES:
-            print(f"{ERROR_HEADER}map_type '{lineStyle}' not recognized.")
+            print(f"{ERROR_HEADER}line_type '{lineStyle}' not recognized.")
             print(f"{ERROR_HEADER}Supported types are {", ".join(LINE_STYLES)}.")
             return
 
