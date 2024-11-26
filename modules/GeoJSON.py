@@ -1,3 +1,4 @@
+from modules.DirPaths import VIDMAP_DIR
 from modules.vNAS import (
     ASDEX_STYLES,
     BCG_MIN,
@@ -16,8 +17,6 @@ from modules.vNAS import (
 
 import json
 import re
-
-OUTPUT_DIR = "./vidmaps"
 
 
 class CoordinatePair:
@@ -223,5 +222,5 @@ class GeoJSON:
     def toFile(self) -> None:
         dataDictionary = self.featureCollection.toDict()
 
-        with open(f"{OUTPUT_DIR}/{self.filePath}.geojson", "w") as jsonFile:
+        with open(f"{VIDMAP_DIR}/{self.filePath}.geojson", "w") as jsonFile:
             json.dump(dataDictionary, jsonFile)

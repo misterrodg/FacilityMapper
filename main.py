@@ -1,3 +1,4 @@
+from modules.DirPaths import NAVDATA_DIR
 from modules.Manifest import Manifest
 
 from cifparse import CIFP
@@ -5,8 +6,8 @@ from cifparse import CIFP
 import os
 import sqlite3
 
-DB_FILE_PATH = "./navdata/FAACIFP18.db"
-CIFP_FILE_PATH = "./navdata/FAACIFP18"
+DB_FILE_PATH = f"{NAVDATA_DIR}/FAACIFP18.db"
+CIFP_FILE_PATH = f"{NAVDATA_DIR}/FAACIFP18"
 
 
 def refreshDatabase() -> None:
