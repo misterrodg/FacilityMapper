@@ -1,5 +1,13 @@
 from modules.ErrorHelper import print_top_level
-from modules.QueryHelper import translateWildcard
+from modules.GeoJSON import (
+    CoordinatePair,
+    Feature,
+    FeatureCollection,
+    GeoJSON,
+    LineString,
+    MultiLineString,
+)
+from modules.QueryHelper import translateWildcard, segmentQuery
 from modules.vNAS import LINE_STYLES
 
 from sqlite3 import Cursor
@@ -21,6 +29,7 @@ class SIDSTAR:
         self.dbCursor = dbCursor
 
         self.validate(definitionDict)
+        self._toFile()
 
     def validate(self, definitionDict: dict) -> None:
         airportId = definitionDict.get("airport_id")
@@ -116,3 +125,24 @@ class SIDSTAR:
         self.dbCursor.execute(query)
         result = self.dbCursor.fetchall()
         return result
+
+    def _toFile(self) -> None:
+        rows = self._queryDB()
+        segmentList = segmentQuery(rows, "transition_id")
+        multiLineString = MultiLineString()
+        for segmentItem in segmentList:
+            lineString = LineString()
+            for segment in segmentItem:
+                coordinatePair = CoordinatePair(segment.get("lat"), segment.get("lon"))
+                lineString.addCoordinatePair(coordinatePair)
+            multiLineString.addLineString(lineString)
+
+        feature = Feature()
+        feature.addMultiLineString(multiLineString)
+
+        featureCollection = FeatureCollection()
+        featureCollection.addFeature(feature)
+
+        geoJSON = GeoJSON(self.fileName)
+        geoJSON.addFeatureCollection(featureCollection)
+        geoJSON.toFile()
