@@ -1,13 +1,20 @@
-from modules.DirPaths import NAVDATA_DIR
+from modules.DirPaths import NAVDATA_DIR, VIDMAP_DIR
+from modules.FileHandler import checkPath, deleteAllInSubdir
 from modules.Manifest import Manifest
 
 from cifparse import CIFP
 
+import argparse
 import os
 import sqlite3
 
 DB_FILE_PATH = f"{NAVDATA_DIR}/FAACIFP18.db"
 CIFP_FILE_PATH = f"{NAVDATA_DIR}/FAACIFP18"
+
+
+def purgeVidmaps() -> None:
+    if checkPath(VIDMAP_DIR):
+        deleteAllInSubdir(".geojson", VIDMAP_DIR)
 
 
 def refreshDatabase() -> None:
@@ -26,8 +33,17 @@ def refreshDatabase() -> None:
 
 
 def main():
-    refreshArgument = False
-    if refreshArgument:
+    parser = argparse.ArgumentParser(description="FacilityMapper")
+    parser.add_argument(
+        "-p", "--purge", action="store_true", help="purge files from vidmaps dir"
+    )
+    parser.add_argument("-r", "--refresh", action="store_true", help="refresh database")
+    args = parser.parse_args()
+    shouldPurge = args.purge
+    shouldRefresh = args.refresh
+    if shouldPurge:
+        purgeVidmaps()
+    if shouldRefresh:
         refreshDatabase()
 
     connection = sqlite3.connect(DB_FILE_PATH)
