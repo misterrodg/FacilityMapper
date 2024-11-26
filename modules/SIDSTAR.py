@@ -1,11 +1,14 @@
 from modules.ErrorHelper import print_top_level
+from modules.QueryHelper import translateWildcard
 from modules.vNAS import LINE_STYLES
+
+from sqlite3 import Cursor
 
 ERROR_HEADER = "SID/STAR: "
 
 
 class SIDSTAR:
-    def __init__(self, mapType: str, definitionDict: dict):
+    def __init__(self, dbCursor: Cursor, mapType: str, definitionDict: dict):
         self.mapType = mapType
         self.airportId = None
         self.procedureId = None
@@ -15,6 +18,7 @@ class SIDSTAR:
         self.drawEnrouteTransitions = True
         self.drawRunwayTransitions = False
         self.fileName = None
+        self.dbCursor = dbCursor
 
         self.validate(definitionDict)
 
@@ -61,3 +65,54 @@ class SIDSTAR:
         self.fileName = fileName
 
         return
+
+    def _mapTypeToFacSubCode(self) -> str:
+        result = ""
+        if self.mapType == "SID":
+            result = "'D'"
+        if self.mapType == "STAR":
+            result = "'E'"
+        return result
+
+    def _optionsToRouteType(self) -> str:
+        result = ["'2','5'"]
+
+        if self.mapType == "SID":
+            if self.drawRunwayTransitions:
+                result = ["'1','4'"] + result
+            if self.drawEnrouteTransitions:
+                result = result + ["'3','6'"]
+
+        if self.mapType == "STAR":
+            if self.drawEnrouteTransitions:
+                result = ["'1','4'"] + result
+            if self.drawRunwayTransitions:
+                result = result + ["'3','6'"]
+
+        result = ",".join(result)
+        return result
+
+    def _toQuery(self) -> str:
+        fac_id = f"'{self.airportId}'"
+        fac_sub_code = self._mapTypeToFacSubCode()
+        procedure_id = f"'{translateWildcard(self.procedureId)}'"
+        route_type = self._optionsToRouteType()
+
+        return f"""
+        WITH unified_table AS (
+            SELECT waypoint_id AS id,lat,lon FROM waypoints
+            UNION
+            SELECT vhf_id AS id,lat,lon FROM vhf_dmes
+        )
+        SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.fix_id,lat,lon
+        FROM procedure_points AS p
+        JOIN unified_table AS u ON p.fix_id = u.id
+        WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type})
+        ORDER BY p.procedure_id,p.transition_id,p.route_type,p.sequence_number;
+        """
+
+    def _queryDB(self) -> list:
+        query = self._toQuery()
+        self.dbCursor.execute(query)
+        result = self.dbCursor.fetchall()
+        return result

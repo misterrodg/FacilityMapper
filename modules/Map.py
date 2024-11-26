@@ -1,14 +1,17 @@
 from modules.ErrorHelper import print_top_level
 from modules.SIDSTAR import SIDSTAR
 
+from sqlite3 import Cursor
+
 ERROR_HEADER = "MAP: "
 SUPPORTED_TYPES = ["SID", "STAR"]
 
 
 class Map:
-    def __init__(self, mapDict: dict) -> None:
+    def __init__(self, dbCursor: Cursor, mapDict: dict) -> None:
         self.mapType = None
         self.definition = None
+        self.dbCursor = dbCursor
 
         self.validate(mapDict)
         self.process()
@@ -35,4 +38,4 @@ class Map:
 
     def process(self) -> None:
         if self.mapType == "SID" or self.mapType == "STAR":
-            SIDSTAR(self.mapType, self.definition)
+            SIDSTAR(self.dbCursor, self.mapType, self.definition)

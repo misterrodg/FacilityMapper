@@ -2,6 +2,7 @@ from modules.ErrorHelper import print_top_level
 from modules.Map import Map
 
 from os.path import isfile, getsize
+from sqlite3 import Cursor
 
 import json
 
@@ -9,8 +10,9 @@ ERROR_HEADER = "MANIFEST: "
 
 
 class Manifest:
-    def __init__(self, manifestPath: str) -> None:
+    def __init__(self, dbCursor: Cursor, manifestPath: str) -> None:
         self.maps = None
+        self.dbCursor = dbCursor
 
         manifestDict = self.getManifest(manifestPath)
         self.validate(manifestDict)
@@ -55,4 +57,4 @@ class Manifest:
 
     def process(self) -> None:
         for map in self.maps:
-            Map(map)
+            Map(self.dbCursor, map)
