@@ -38,21 +38,24 @@ def main():
         "-p", "--purge", action="store_true", help="purge files from vidmaps dir"
     )
     parser.add_argument("-r", "--refresh", action="store_true", help="refresh database")
+    parser.add_argument("-n", "--nodraw", action="store_true", help="skip draw")
     args = parser.parse_args()
     shouldPurge = args.purge
     shouldRefresh = args.refresh
+    shouldSkipDraw = args.nodraw
     if shouldPurge:
         purgeVidmaps()
     if shouldRefresh:
         refreshDatabase()
 
-    connection = sqlite3.connect(DB_FILE_PATH)
-    connection.row_factory = sqlite3.Row
-    cursor = connection.cursor()
+    if not shouldSkipDraw:
+        connection = sqlite3.connect(DB_FILE_PATH)
+        connection.row_factory = sqlite3.Row
+        cursor = connection.cursor()
 
-    Manifest(cursor, "manifest.json")
+        Manifest(cursor, "manifest.json")
 
-    connection.close()
+        connection.close()
 
 
 if __name__ == "__main__":
