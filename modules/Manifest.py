@@ -13,10 +13,13 @@ class Manifest:
     def __init__(self, dbCursor: Cursor, manifestPath: str) -> None:
         self.maps = None
         self.dbCursor = dbCursor
+        self.isValid = False
 
         manifestDict = self.getManifest(manifestPath)
         self._validate(manifestDict)
-        self.process()
+
+        if self.isValid:
+            self.process()
 
     def getManifest(self, manifestPath: str) -> dict:
         result = {}
@@ -53,6 +56,7 @@ class Manifest:
             return
 
         self.maps = maps
+        self.isValid = True
         return
 
     def process(self) -> None:

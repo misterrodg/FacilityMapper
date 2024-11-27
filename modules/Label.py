@@ -10,9 +10,12 @@ class Label:
         self.mapType = "LABEL"
         self.lines: list[dict] = []
         self.fileName = None
+        self.isValid = False
 
         self._validate(definitionDict)
-        self._toFile()
+
+        if self.isValid:
+            self._toFile()
 
     def _validate(self, definitionDict: dict) -> None:
         lines = definitionDict.get("lines")
@@ -31,14 +34,17 @@ class Label:
 
         self.lines = lines
         self.fileName = fileName
+        self.isValid = True
 
     def _toFile(self) -> None:
         featureCollection = FeatureCollection()
 
         for line in self.lines:
             labelLine = LabelLine(line)
-            feature = labelLine.getFeature()
-            featureCollection.addFeature(feature)
+            if labelLine.isValid:
+                label = TextDraw(self.line, self.lat, self.lon, self.textScale)
+                feature = label.getFeature()
+                featureCollection.addFeature(feature)
 
         geoJSON = GeoJSON(self.fileName)
         geoJSON.addFeatureCollection(featureCollection)
@@ -51,6 +57,7 @@ class LabelLine:
         self.lat = None
         self.lon = None
         self.textScale = None
+        self.isValid = False
 
         self._validate(lineDict)
 
@@ -76,9 +83,6 @@ class LabelLine:
         self.lat = lat
         self.lon = lon
         self.textScale = textScale
+        self.isValid = True
 
         return
-
-    def getFeature(self) -> Feature:
-        label = TextDraw(self.line, self.lat, self.lon, self.textScale)
-        return label.getFeature()

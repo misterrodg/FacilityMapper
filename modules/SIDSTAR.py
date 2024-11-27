@@ -31,9 +31,12 @@ class SIDSTAR:
         self.drawRunwayTransitions = False
         self.fileName = None
         self.dbCursor = dbCursor
+        self.isValid = False
 
         self._validate(definitionDict)
-        self._toFile()
+
+        if self.isValid:
+            self._toFile()
 
     def _validate(self, definitionDict: dict) -> None:
         airportId = definitionDict.get("airport_id")
@@ -85,6 +88,7 @@ class SIDSTAR:
         self.drawEnrouteTransitions = drawEnrouteTransitions
         self.drawRunwayTransitions = drawRunwayTransitions
         self.fileName = fileName
+        self.isValid = True
 
         return
 

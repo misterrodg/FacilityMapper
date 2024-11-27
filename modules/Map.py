@@ -13,9 +13,12 @@ class Map:
         self.mapType = None
         self.definition = None
         self.dbCursor = dbCursor
+        self.isValid = False
 
         self._validate(mapDict)
-        self.process()
+
+        if self.isValid:
+            self.process()
 
     def _validate(self, mapDict: dict) -> None:
         mapType = mapDict.get("map_type")
@@ -35,6 +38,7 @@ class Map:
 
         self.mapType = mapType
         self.definition = definition
+        self.isValid = True
         return
 
     def process(self) -> None:
