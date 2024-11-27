@@ -1,10 +1,11 @@
 from modules.ErrorHelper import print_top_level
+from modules.Label import Label
 from modules.SIDSTAR import SIDSTAR
 
 from sqlite3 import Cursor
 
 ERROR_HEADER = "MAP: "
-SUPPORTED_TYPES = ["SID", "STAR"]
+SUPPORTED_TYPES = ["LABEL", "SID", "STAR"]
 
 
 class Map:
@@ -39,3 +40,5 @@ class Map:
     def process(self) -> None:
         if self.mapType == "SID" or self.mapType == "STAR":
             SIDSTAR(self.dbCursor, self.mapType, self.definition)
+        if self.mapType == "LABEL":
+            Label(self.definition)
