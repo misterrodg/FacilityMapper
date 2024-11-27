@@ -68,6 +68,32 @@ The SID object has the following properties, with the properties marked <span st
 
 The STAR object is defined using the same properties as [SID](#sid)
 
+#### Label
+
+The Label object has the following properties, with the properties marked <span style="color:#FF0000">\*</span> being required:
+
+- `lines`<span style="color:#FF0000">\*</span>: An array of `line` objects.
+- `file_name`<span style="color:#FF0000">\*</span>: A string representing the filename that the map will be saved to.
+
+##### Line
+
+The Line object has the following properties, with the properties marked <span style="color:#FF0000">\*</span> being required:
+
+- `line`<span style="color:#FF0000">\*</span>: A text line of supported characters.
+- `lat`<span style="color:#FF0000">\*</span>: A float value representing the latitude.
+- `lon`<span style="color:#FF0000">\*</span>: A float value representing the longitude.
+- `text_scale`: A float value representing the scale of the text. Defaults to `1.0` (approximately 1.0 NM tall).
+
+NOTE: The "origin" of the text is at the bottom left corner.
+
+#### Supported Characters
+
+The following characters are currently supported:
+
+- Numeric Characters: `0` through `9`.
+- Simple Alpha Characters: `A` through `Z`.
+- Simple Control Characters: ` ` and `.`.
+
 ## Drawing the Facility
 
 Run the following command:
