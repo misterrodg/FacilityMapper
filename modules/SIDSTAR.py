@@ -126,8 +126,7 @@ class SIDSTAR:
         result = self.dbCursor.fetchall()
         return result
 
-    def _toFile(self) -> None:
-        rows = self._queryDB()
+    def _getLineFeatures(self, rows: list) -> MultiLineString:
         segmentList = segmentQuery(rows, "transition_id")
         multiLineString = MultiLineString()
         for segmentItem in segmentList:
@@ -136,6 +135,12 @@ class SIDSTAR:
                 coordinatePair = CoordinatePair(segment.get("lat"), segment.get("lon"))
                 lineString.addCoordinatePair(coordinatePair)
             multiLineString.addLineString(lineString)
+
+        return multiLineString
+
+    def _toFile(self) -> None:
+        rows = self._queryDB()
+        multiLineString = self._getLineFeatures(rows)
 
         feature = Feature()
         feature.addMultiLineString(multiLineString)
