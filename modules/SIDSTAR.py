@@ -8,6 +8,7 @@ from modules.GeoJSON import (
     MultiLineString,
 )
 from modules.QueryHelper import translateWildcard, segmentQuery
+from modules.TextDraw import ARC_MIN, TextDraw
 from modules.vNAS import LINE_STYLES
 
 from sqlite3 import Cursor
@@ -23,6 +24,9 @@ class SIDSTAR:
         self.lineStyle = None
         self.drawSymbols = False
         self.drawNames = False
+        self.xOffset = None
+        self.yOffset = None
+        self.textScale = None
         self.drawEnrouteTransitions = True
         self.drawRunwayTransitions = False
         self.fileName = None
@@ -56,6 +60,12 @@ class SIDSTAR:
 
         drawNames = definitionDict.get("draw_names", False)
 
+        xOffset = definitionDict.get("x_offset", 0) * ARC_MIN
+
+        yOffset = definitionDict.get("y_offset", 0) * ARC_MIN
+
+        textScale = definitionDict.get("text_scale", 1.0) * ARC_MIN
+
         drawEnrouteTransitions = definitionDict.get("draw_enroute_transitions", True)
 
         drawRunwayTransitions = definitionDict.get("draw_runway_transitions", False)
@@ -69,6 +79,9 @@ class SIDSTAR:
         self.lineStyle = lineStyle
         self.drawSymbols = drawSymbols
         self.drawNames = drawNames
+        self.xOffset = xOffset
+        self.yOffset = yOffset
+        self.textScale = textScale
         self.drawEnrouteTransitions = drawEnrouteTransitions
         self.drawRunwayTransitions = drawRunwayTransitions
         self.fileName = fileName
@@ -138,6 +151,23 @@ class SIDSTAR:
 
         return multiLineString
 
+    def _getTextFeatures(self, rows: list) -> list[Feature]:
+        seenIds = set()
+        filteredRows = []
+        for row in rows:
+            if row["fix_id"] not in seenIds:
+                filteredRows.append(row)
+                seenIds.add(row["fix_id"])
+
+        result = []
+        for row in filteredRows:
+            offsetLat = self.yOffset + row["lat"]
+            offsetLon = self.xOffset + row["lon"]
+            textDraw = TextDraw(row["fix_id"], offsetLat, offsetLon, self.textScale)
+            result.append(textDraw.getFeature())
+
+        return result
+
     def _toFile(self) -> None:
         rows = self._queryDB()
         multiLineString = self._getLineStrings(rows)
@@ -147,6 +177,11 @@ class SIDSTAR:
 
         featureCollection = FeatureCollection()
         featureCollection.addFeature(feature)
+
+        if self.drawNames:
+            featureArray = self._getTextFeatures(rows)
+            for feature in featureArray:
+                featureCollection.addFeature(feature)
 
         geoJSON = GeoJSON(self.fileName)
         geoJSON.addFeatureCollection(featureCollection)

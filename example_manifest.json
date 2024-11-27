@@ -8,6 +8,9 @@
         "line_type": "solid",
         "draw_symbols": false,
         "draw_names": false,
+        "x_offset": 0,
+        "y_offset": 0,
+        "text_scale": 1.0,
         "draw_enroute_transitions": true,
         "draw_runway_transitions": false,
         "file_name": "003_JCOBY"
