@@ -54,9 +54,10 @@ class SIDSTAR:
             return
 
         lineStyle = definitionDict.get("line_type", "solid")
-        if lineStyle not in LINE_STYLES:
+        availableStyles = ["none"] + LINE_STYLES
+        if lineStyle not in availableStyles:
             print(f"{ERROR_HEADER}line_type '{lineStyle}' not recognized.")
-            print(f"{ERROR_HEADER}Supported types are {", ".join(LINE_STYLES)}.")
+            print(f"{ERROR_HEADER}Supported types are {", ".join(availableStyles)}.")
             return
 
         drawSymbols = definitionDict.get("draw_symbols", False)
@@ -174,13 +175,15 @@ class SIDSTAR:
 
     def _toFile(self) -> None:
         rows = self._queryDB()
-        multiLineString = self._getLineStrings(rows)
-
-        feature = Feature()
-        feature.addMultiLineString(multiLineString)
-
         featureCollection = FeatureCollection()
-        featureCollection.addFeature(feature)
+
+        if self.lineStyle != "none":
+            multiLineString = self._getLineStrings(rows)
+
+            feature = Feature()
+            feature.addMultiLineString(multiLineString)
+
+            featureCollection.addFeature(feature)
 
         if self.drawNames:
             featureArray = self._getTextFeatures(rows)
