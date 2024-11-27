@@ -126,7 +126,7 @@ class SIDSTAR:
         result = self.dbCursor.fetchall()
         return result
 
-    def _getLineFeatures(self, rows: list) -> MultiLineString:
+    def _getLineStrings(self, rows: list) -> MultiLineString:
         segmentList = segmentQuery(rows, "transition_id")
         multiLineString = MultiLineString()
         for segmentItem in segmentList:
@@ -140,7 +140,7 @@ class SIDSTAR:
 
     def _toFile(self) -> None:
         rows = self._queryDB()
-        multiLineString = self._getLineFeatures(rows)
+        multiLineString = self._getLineStrings(rows)
 
         feature = Feature()
         feature.addMultiLineString(multiLineString)
