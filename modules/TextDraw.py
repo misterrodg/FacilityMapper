@@ -1,10 +1,8 @@
 from modules.CharPlots import PLOT_HEIGHT, PLOT_WIDTH, getPlotFromChar
 from modules.GeoJSON import CoordinatePair, Feature, LineString, MultiLineString
 
-# Returns coordinate offsets to draw numbers in lat/lon coordinates
-
-ARC_MIN = 0.015
-FONT_SCALE = ARC_MIN  # 1 min of arc = 1/60, most facilities round this down to 0.015 resulting in 0.9nm tall letters
+ARC_MIN = 0.015  # 1 min of arc = 1/60, most facilities round this down to 0.015 resulting in 0.9nm tall letters
+FONT_SCALE = ARC_MIN
 
 
 class TextDraw:
