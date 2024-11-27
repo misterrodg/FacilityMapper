@@ -14,10 +14,10 @@ class Map:
         self.definition = None
         self.dbCursor = dbCursor
 
-        self.validate(mapDict)
+        self._validate(mapDict)
         self.process()
 
-    def validate(self, mapDict: dict) -> None:
+    def _validate(self, mapDict: dict) -> None:
         mapType = mapDict.get("map_type")
         if mapType is None:
             print(f"{ERROR_HEADER}Missing `map_type` in:\n{print_top_level(mapDict)}")

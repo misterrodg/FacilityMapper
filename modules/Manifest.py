@@ -15,7 +15,7 @@ class Manifest:
         self.dbCursor = dbCursor
 
         manifestDict = self.getManifest(manifestPath)
-        self.validate(manifestDict)
+        self._validate(manifestDict)
         self.process()
 
     def getManifest(self, manifestPath: str) -> dict:
@@ -35,7 +35,7 @@ class Manifest:
 
         return result
 
-    def validate(self, manifestDict: dict) -> None:
+    def _validate(self, manifestDict: dict) -> None:
         if not manifestDict:
             print(f"{ERROR_HEADER}Manifest contains no data.")
             return

@@ -11,10 +11,10 @@ class Label:
         self.lines: list[dict] = []
         self.fileName = None
 
-        self.validate(definitionDict)
+        self._validate(definitionDict)
         self._toFile()
 
-    def validate(self, definitionDict: dict) -> None:
+    def _validate(self, definitionDict: dict) -> None:
         lines = definitionDict.get("lines")
         if lines is None:
             print(
@@ -52,9 +52,9 @@ class LabelLine:
         self.lon = None
         self.textScale = None
 
-        self.validate(lineDict)
+        self._validate(lineDict)
 
-    def validate(self, lineDict: dict) -> None:
+    def _validate(self, lineDict: dict) -> None:
         line = lineDict.get("line")
         if line is None:
             print(f"{ERROR_HEADER}Missing `line` in:\n{print_top_level(lineDict)}.")

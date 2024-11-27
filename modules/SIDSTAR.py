@@ -32,10 +32,10 @@ class SIDSTAR:
         self.fileName = None
         self.dbCursor = dbCursor
 
-        self.validate(definitionDict)
+        self._validate(definitionDict)
         self._toFile()
 
-    def validate(self, definitionDict: dict) -> None:
+    def _validate(self, definitionDict: dict) -> None:
         airportId = definitionDict.get("airport_id")
         if airportId is None:
             print(
