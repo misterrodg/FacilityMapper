@@ -3,6 +3,13 @@
 PLOT_HEIGHT = 21
 PLOT_WIDTH = 21
 
+DOT = [
+    [0, 6],
+    [2, 6],
+    [2, 8],
+    [0, 8],
+    [0, 6],
+]
 
 ZERO = [
     [4, 1],
@@ -516,6 +523,8 @@ def getPlotWidth(charPlot: list[list]) -> int:
 
 def getPlotFromChar(textValue: str) -> list[list]:
     upperValue = textValue.capitalize()
+    if upperValue == ".":
+        return DOT
     if upperValue == "0":
         return ZERO
     if upperValue == "1":
