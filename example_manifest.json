@@ -15,6 +15,29 @@
         "draw_runway_transitions": false,
         "file_name": "003_JCOBY"
       }
+    },
+    {
+      "map_type": "LABEL",
+      "definition": {
+        "lines": [
+          {
+            "line": "JYO 127.5",
+            "lat": 39.0779722,
+            "lon": -77.5575
+          },
+          {
+            "line": "IAD 120.1",
+            "lat": 38.9474564,
+            "lon": -77.4599286
+          },
+          {
+            "line": "HEF 133.1",
+            "lat": 38.7210247,
+            "lon": -77.5151047
+          }
+        ],
+        "file_name": "TOWER_FREQS"
+      }
     }
   ]
 }
