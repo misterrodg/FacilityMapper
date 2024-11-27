@@ -153,6 +153,10 @@ class LineString:
     def toCoordinates(self) -> list:
         return self.coordinates
 
+    def isEmpty(self) -> bool:
+        result = len(self.coordinates) == 0
+        return result
+
     def toDict(self) -> dict:
         return {"type": self.type, "coordinates": self.coordinates}
 

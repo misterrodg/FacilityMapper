@@ -35,7 +35,8 @@ class TextDraw:
                 lonAdjust += self.lon
                 coordinatePair = CoordinatePair(latAdjust, lonAdjust)
                 lineString.addCoordinatePair(coordinatePair)
-            multiLineString.addLineString(lineString)
+            if not lineString.isEmpty():
+                multiLineString.addLineString(lineString)
             count += 1
         feature = Feature()
         feature.addMultiLineString(multiLineString)
