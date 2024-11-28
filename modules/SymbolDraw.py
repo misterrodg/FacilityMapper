@@ -1,5 +1,5 @@
 from modules.DrawHelper import correctOffsets
-from modules.GeoJSON import CoordinatePair, Feature, LineString, MultiLineString
+from modules.GeoJSON import Coordinate, Feature, LineString, MultiLineString
 from modules.SymbolPlots import PLOT_HEIGHT, PLOT_WIDTH, UNRECOGNIZED, getPlotFromString
 
 
@@ -37,8 +37,8 @@ class SymbolDraw:
             )
 
             for line in correctedPlot:
-                coordinatePair = CoordinatePair(line["lat"], line["lon"])
-                lineString.addCoordinatePair(coordinatePair)
+                coordinate = Coordinate(line["lat"], line["lon"])
+                lineString.addCoordinate(coordinate)
             if not lineString.isEmpty():
                 multiLineString.addLineString(lineString)
             self.feature.addMultiLineString(multiLineString)

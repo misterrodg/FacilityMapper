@@ -19,7 +19,7 @@ import json
 import re
 
 
-class CoordinatePair:
+class Coordinate:
     def __init__(self, lat: float, lon: float):
         self.lat = None
         self.lon = None
@@ -147,7 +147,7 @@ class LineString:
         self.type = "LineString"
         self.coordinates = []
 
-    def addCoordinatePair(self, coordinatePair: CoordinatePair) -> None:
+    def addCoordinate(self, coordinatePair: Coordinate) -> None:
         self.coordinates.append(coordinatePair.toGeoJSON())
 
     def toCoordinates(self) -> list:

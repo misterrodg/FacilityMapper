@@ -6,7 +6,7 @@ from modules.CharPlots import (
     getPlotFromChar,
 )
 from modules.DrawHelper import ARC_MIN, correctOffsets
-from modules.GeoJSON import CoordinatePair, Feature, LineString, MultiLineString
+from modules.GeoJSON import Coordinate, Feature, LineString, MultiLineString
 
 
 class TextDraw:
@@ -35,8 +35,8 @@ class TextDraw:
                 )
 
             for line in correctedPlot:
-                coordinatePair = CoordinatePair(line["lat"], line["lon"])
-                lineString.addCoordinatePair(coordinatePair)
+                coordinate = Coordinate(line["lat"], line["lon"])
+                lineString.addCoordinate(coordinate)
             if not lineString.isEmpty():
                 multiLineString.addLineString(lineString)
             self.feature.addMultiLineString(multiLineString)

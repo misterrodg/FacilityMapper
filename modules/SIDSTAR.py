@@ -1,7 +1,7 @@
 from modules.DrawHelper import ARC_MIN
 from modules.ErrorHelper import print_top_level
 from modules.GeoJSON import (
-    CoordinatePair,
+    Coordinate,
     Feature,
     FeatureCollection,
     GeoJSON,
@@ -158,8 +158,8 @@ class SIDSTAR:
         for segmentItem in segmentList:
             lineString = LineString()
             for segment in segmentItem:
-                coordinatePair = CoordinatePair(segment.get("lat"), segment.get("lon"))
-                lineString.addCoordinatePair(coordinatePair)
+                coordinate = Coordinate(segment.get("lat"), segment.get("lon"))
+                lineString.addCoordinate(coordinate)
             multiLineString.addLineString(lineString)
 
         return multiLineString
