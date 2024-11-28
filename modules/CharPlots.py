@@ -15,6 +15,19 @@ DOT = [
     {"lat_offset": 0, "lon_offset": 6},
 ]
 
+MINUS = [
+    {"lat_offset": 10, "lon_offset": 4},
+    {"lat_offset": 10, "lon_offset": 14},
+]
+
+PLUS = [
+    {"lat_offset": 10, "lon_offset": 4},
+    {"lat_offset": 10, "lon_offset": 14},
+    {"lat_offset": 10, "lon_offset": 9},
+    {"lat_offset": 15, "lon_offset": 9},
+    {"lat_offset": 5, "lon_offset": 9},
+]
+
 ZERO = [
     {"lat_offset": 4, "lon_offset": 1},
     {"lat_offset": 1, "lon_offset": 3},
@@ -531,6 +544,10 @@ def getPlotFromChar(textValue: str) -> list[list]:
         return SPACE
     if upperValue == ".":
         return DOT
+    if upperValue == "-":
+        return MINUS
+    if upperValue == "+":
+        return PLUS
     if upperValue == "0":
         return ZERO
     if upperValue == "1":
