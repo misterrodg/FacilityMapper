@@ -1,5 +1,3 @@
-import json
-
 from modules.DrawHelper import (
     ARC_MIN,
     haversineGreatCircleBearing,
