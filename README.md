@@ -93,7 +93,7 @@ The following characters are currently supported:
 
 - Numeric Characters: `0` through `9`.
 - Simple Alpha Characters: `A` through `Z`.
-- Simple Control Characters: ` ` and `.`.
+- Simple Control Characters: `+`, `-`, ` ` (space) and `.`.
 
 ## Drawing the Facility
 
