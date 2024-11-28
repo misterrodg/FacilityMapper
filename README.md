@@ -56,6 +56,7 @@ The SID object has the following properties, with the properties marked <span st
 - `procedure_id`<span style="color:#FF0000">\*</span>: A string representing the computer code of the procedure, in the format `"AAAAA#"` (`"JCOBY#"`), where the `#` is the literal `#` symbol.
 - `line_type` <span style="color:#FF9900">Not Yet Implemented</span>: A string representing the line type that should be drawn. Supported line types are: `"solid"` (default), `"longDashed"`, `"shortDashed"`, `"longDashShortDash"`, and `"none"`.
 - `draw_symbols`: A boolean value that tells the script to draw a symbol at the fix location. The symbol is driven by the data in the CIFP, and clips the line around the point.
+- `symbol_scale`: A float value representing the scale of the symbols. Defaults to `1.0` (approximately 1.0 NM tall).
 - `draw_names`: A boolean value that tells the script to draw the name of the fix near the fix location.
 - `x_offset`: A float value representing the lateral text offset in nautical miles (positive for East and negative for West). Defaults to `0`.
 - `y_offset`: A float value representing the vertical text offset in nautical miles (positive for North and negative for South). Defaults to `0`.
