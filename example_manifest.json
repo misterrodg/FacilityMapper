@@ -9,10 +9,12 @@
         "draw_symbols": false,
         "symbol_scale": 1.0,
         "draw_altitudes": false,
+        "draw_speeds": false,
         "draw_names": false,
         "x_offset": 0,
         "y_offset": 0,
         "text_scale": 1.0,
+        "line_buffer": 1.5,
         "draw_enroute_transitions": true,
         "draw_runway_transitions": false,
         "file_name": "003_JCOBY"

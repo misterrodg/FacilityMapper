@@ -21,8 +21,6 @@ from modules.vNAS import LINE_STYLES
 from sqlite3 import Cursor
 
 ERROR_HEADER = "SID/STAR: "
-LINE_2_BUFFER = 1.5
-LINE_3_BUFFER = 3.0
 
 
 class SIDSTAR:
@@ -34,10 +32,12 @@ class SIDSTAR:
         self.drawSymbols = False
         self.symbolScale = None
         self.drawAltitudes = False
+        self.drawSpeeds = False
         self.drawNames = False
         self.xOffset = None
         self.yOffset = None
         self.textScale = None
+        self.lineBuffer = None
         self.drawEnrouteTransitions = True
         self.drawRunwayTransitions = False
         self.fileName = None
@@ -77,6 +77,8 @@ class SIDSTAR:
 
         drawAltitudes = definitionDict.get("draw_altitudes", False)
 
+        drawSpeeds = definitionDict.get("draw_speeds", False)
+
         drawNames = definitionDict.get("draw_names", False)
 
         xOffset = definitionDict.get("x_offset", 0) * ARC_MIN
@@ -84,6 +86,8 @@ class SIDSTAR:
         yOffset = definitionDict.get("y_offset", 0) * ARC_MIN
 
         textScale = definitionDict.get("text_scale", 1.0)
+
+        lineBuffer = definitionDict.get("line_buffer", 1.5)
 
         drawEnrouteTransitions = definitionDict.get("draw_enroute_transitions", True)
 
@@ -99,10 +103,12 @@ class SIDSTAR:
         self.drawSymbols = drawSymbols
         self.symbolScale = symbolScale
         self.drawAltitudes = drawAltitudes
+        self.drawSpeeds = drawSpeeds
         self.drawNames = drawNames
         self.xOffset = xOffset
         self.yOffset = yOffset
         self.textScale = textScale
+        self.lineBuffer = lineBuffer
         self.drawEnrouteTransitions = drawEnrouteTransitions
         self.drawRunwayTransitions = drawRunwayTransitions
         self.fileName = fileName
@@ -154,7 +160,7 @@ class SIDSTAR:
             UNION
             SELECT ndb_id AS id,lat,lon,"NDB" AS type FROM ndbs
         )
-        SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.alt_desc,p.altitude,p.flight_level,p.altitude_2,p.flight_level_2,p.fix_id,lat,lon,type
+        SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.alt_desc,p.altitude,p.flight_level,p.altitude_2,p.flight_level_2,p.speed_limit,p.fix_id,lat,lon,type
         FROM procedure_points AS p
         JOIN unified_table AS u ON p.fix_id = u.id
         WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type})
@@ -226,9 +232,9 @@ class SIDSTAR:
             offsetLon = self.xOffset + row["lon"]
             textDraw = TextDraw(row["fix_id"], offsetLat, offsetLon, self.textScale)
             result.append(textDraw.getFeature())
+            linesUsed = 1
 
-        if self.drawAltitudes:
-            for row in filteredRows:
+            if self.drawAltitudes:
                 if (
                     row["altitude"]
                     or row["flight_level"]
@@ -238,7 +244,9 @@ class SIDSTAR:
                     altDesc = row["alt_desc"]
                     if row["altitude"] or row["flight_level"]:
                         offsetLat = (
-                            self.yOffset + row["lat"] - (ARC_MIN * LINE_2_BUFFER)
+                            self.yOffset
+                            + row["lat"]
+                            - (self.lineBuffer * linesUsed * ARC_MIN)
                         )
                         offsetLon = self.xOffset + row["lon"]
                         altitudeValue = (
@@ -255,9 +263,12 @@ class SIDSTAR:
                             str(altitudeValue), offsetLat, offsetLon, self.textScale
                         )
                         result.append(textDraw.getFeature())
+                        linesUsed += 1
                     if row["altitude_2"] or row["flight_level_2"]:
                         offsetLat = (
-                            self.yOffset + row["lat"] - (ARC_MIN * LINE_3_BUFFER)
+                            self.yOffset
+                            + row["lat"]
+                            - (self.lineBuffer * linesUsed * ARC_MIN)
                         )
                         offsetLon = self.xOffset + row["lon"]
                         altitudeValue = (
@@ -269,6 +280,23 @@ class SIDSTAR:
                             str(altitudeValue), offsetLat, offsetLon, self.textScale
                         )
                         result.append(textDraw.getFeature())
+                        linesUsed += 1
+
+            if self.drawSpeeds:
+                if row["speed_limit"]:
+                    offsetLat = (
+                        self.yOffset
+                        + row["lat"]
+                        - (self.lineBuffer * linesUsed * ARC_MIN)
+                    )
+                    offsetLon = self.xOffset + row["lon"]
+                    textDraw = TextDraw(
+                        str(row["speed_limit"]),
+                        offsetLat,
+                        offsetLon,
+                        self.textScale,
+                    )
+                    result.append(textDraw.getFeature())
 
         return result
 
