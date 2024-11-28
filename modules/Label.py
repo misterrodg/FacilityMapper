@@ -43,7 +43,9 @@ class Label:
         for line in self.lines:
             labelLine = LabelLine(line)
             if labelLine.isValid:
-                label = TextDraw(self.line, self.lat, self.lon, self.textScale)
+                label = TextDraw(
+                    labelLine.line, labelLine.lat, labelLine.lon, labelLine.textScale
+                )
                 feature = label.getFeature()
                 featureCollection.addFeature(feature)
 
