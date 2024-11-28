@@ -1,6 +1,7 @@
+from modules.DrawHelper import ARC_MIN
 from modules.ErrorHelper import print_top_level
 from modules.GeoJSON import FeatureCollection, GeoJSON
-from modules.TextDraw import ARC_MIN, TextDraw
+from modules.TextDraw import TextDraw
 
 ERROR_HEADER = "LABEL: "
 

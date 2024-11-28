@@ -1,3 +1,4 @@
+from modules.DrawHelper import ARC_MIN
 from modules.ErrorHelper import print_top_level
 from modules.GeoJSON import (
     CoordinatePair,
@@ -8,7 +9,7 @@ from modules.GeoJSON import (
     MultiLineString,
 )
 from modules.QueryHelper import translateWildcard, segmentQuery
-from modules.TextDraw import ARC_MIN, TextDraw
+from modules.TextDraw import TextDraw
 from modules.vNAS import LINE_STYLES
 
 from sqlite3 import Cursor
@@ -68,7 +69,7 @@ class SIDSTAR:
 
         yOffset = definitionDict.get("y_offset", 0) * ARC_MIN
 
-        textScale = definitionDict.get("text_scale", 1.0) * ARC_MIN
+        textScale = definitionDict.get("text_scale", 1.0)
 
         drawEnrouteTransitions = definitionDict.get("draw_enroute_transitions", True)
 
