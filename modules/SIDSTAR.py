@@ -9,6 +9,7 @@ from modules.GeoJSON import (
     MultiLineString,
 )
 from modules.QueryHelper import translateWildcard, segmentQuery
+from modules.SymbolDraw import SymbolDraw
 from modules.TextDraw import TextDraw
 from modules.vNAS import LINE_STYLES
 
@@ -128,11 +129,17 @@ class SIDSTAR:
 
         return f"""
         WITH unified_table AS (
-            SELECT waypoint_id AS id,lat,lon FROM waypoints
+            SELECT waypoint_id AS id,lat,lon,type FROM waypoints
             UNION
-            SELECT vhf_id AS id,lat,lon FROM vhf_dmes
+            SELECT vhf_id AS id,lat,lon,"VORDME" AS type FROM vhf_dmes WHERE lat IS NOT NULL AND dme_lat IS NOT NULL
+            UNION
+            SELECT vhf_id AS id,lat,lon,"VOR" AS type FROM vhf_dmes WHERE lat IS NOT NULL AND dme_lat IS NULL
+            UNION
+            SELECT vhf_id AS id,lat,lon,"DME" AS type FROM vhf_dmes WHERE dme_id IS NOT NULL
+            UNION
+            SELECT ndb_id AS id,lat,lon,"NDB" AS type FROM ndbs
         )
-        SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.fix_id,lat,lon
+        SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.fix_id,lat,lon,type
         FROM procedure_points AS p
         JOIN unified_table AS u ON p.fix_id = u.id
         WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type})
@@ -174,6 +181,39 @@ class SIDSTAR:
 
         return result
 
+    def _getSymbolFeatures(self, rows: list) -> list[Feature]:
+        seenIds = set()
+        filteredRows = []
+        for row in rows:
+            if row["fix_id"] not in seenIds:
+                filteredRows.append(row)
+                seenIds.add(row["fix_id"])
+
+        result = []
+        for row in filteredRows:
+            if row["type"] == "W":
+                symbolDraw = SymbolDraw("RNAV", row["lat"], row["lon"])
+                result.append(symbolDraw.getFeature())
+            if row["type"] in ["C", "R"]:
+                symbolDraw = SymbolDraw("TRIANGLE", row["lat"], row["lon"])
+                result.append(symbolDraw.getFeature())
+            if row["type"] == "VORDME":
+                symbolDraw = SymbolDraw("DME_BOX", row["lat"], row["lon"])
+                result.append(symbolDraw.getFeature())
+                symbolDraw = SymbolDraw("HEXAGON", row["lat"], row["lon"])
+                result.append(symbolDraw.getFeature())
+            if row["type"] == "VOR":
+                symbolDraw = SymbolDraw("HEXAGON", row["lat"], row["lon"])
+                result.append(symbolDraw.getFeature())
+            if row["type"] == "DME":
+                symbolDraw = SymbolDraw("DME_BOX", row["lat"], row["lon"])
+                result.append(symbolDraw.getFeature())
+            if row["type"] == "NDB":
+                symbolDraw = SymbolDraw("CIRCLE_L", row["lat"], row["lon"])
+                result.append(symbolDraw.getFeature())
+
+        return result
+
     def _toFile(self) -> None:
         rows = self._queryDB()
         featureCollection = FeatureCollection()
@@ -188,6 +228,11 @@ class SIDSTAR:
 
         if self.drawNames:
             featureArray = self._getTextFeatures(rows)
+            for feature in featureArray:
+                featureCollection.addFeature(feature)
+
+        if self.drawSymbols:
+            featureArray = self._getSymbolFeatures(rows)
             for feature in featureArray:
                 featureCollection.addFeature(feature)
 
