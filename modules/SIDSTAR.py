@@ -1,4 +1,11 @@
-from modules.DrawHelper import ARC_MIN
+import json
+
+from modules.DrawHelper import (
+    ARC_MIN,
+    haversineGreatCircleBearing,
+    inverseBearing,
+    latLonFromPBD,
+)
 from modules.ErrorHelper import print_top_level
 from modules.GeoJSON import (
     Coordinate,
@@ -25,6 +32,7 @@ class SIDSTAR:
         self.procedureId = None
         self.lineStyle = None
         self.drawSymbols = False
+        self.symbolScale = None
         self.drawNames = False
         self.xOffset = None
         self.yOffset = None
@@ -64,6 +72,8 @@ class SIDSTAR:
 
         drawSymbols = definitionDict.get("draw_symbols", False)
 
+        symbolScale = definitionDict.get("symbol_scale", 1.0)
+
         drawNames = definitionDict.get("draw_names", False)
 
         xOffset = definitionDict.get("x_offset", 0) * ARC_MIN
@@ -84,6 +94,7 @@ class SIDSTAR:
         self.procedureId = procedureId
         self.lineStyle = lineStyle
         self.drawSymbols = drawSymbols
+        self.symbolScale = symbolScale
         self.drawNames = drawNames
         self.xOffset = xOffset
         self.yOffset = yOffset
@@ -164,6 +175,39 @@ class SIDSTAR:
 
         return multiLineString
 
+    def _getTruncatedLineStrings(self, rows: list) -> MultiLineString:
+        segmentList = segmentQuery(rows, "transition_id")
+        multiLineString = MultiLineString()
+        for segmentItem in segmentList:
+            if len(segmentItem) > 1:
+                for fromPoint, toPoint in zip(segmentItem, segmentItem[1:]):
+                    lineString = LineString()
+                    bearing = haversineGreatCircleBearing(
+                        fromPoint.get("lat"),
+                        fromPoint.get("lon"),
+                        toPoint.get("lat"),
+                        toPoint.get("lon"),
+                    )
+                    newFrom = latLonFromPBD(
+                        fromPoint.get("lat"),
+                        fromPoint.get("lon"),
+                        bearing,
+                        self.symbolScale,
+                    )
+                    inverse = inverseBearing(bearing)
+                    newTo = latLonFromPBD(
+                        toPoint.get("lat"),
+                        toPoint.get("lon"),
+                        inverse,
+                        self.symbolScale,
+                    )
+                    coordinate = Coordinate(newFrom.get("lat"), newFrom.get("lon"))
+                    lineString.addCoordinate(coordinate)
+                    coordinate = Coordinate(newTo.get("lat"), newTo.get("lon"))
+                    lineString.addCoordinate(coordinate)
+                    multiLineString.addLineString(lineString)
+        return multiLineString
+
     def _getTextFeatures(self, rows: list) -> list[Feature]:
         seenIds = set()
         filteredRows = []
@@ -192,24 +236,38 @@ class SIDSTAR:
         result = []
         for row in filteredRows:
             if row["type"] == "W":
-                symbolDraw = SymbolDraw("RNAV", row["lat"], row["lon"])
+                symbolDraw = SymbolDraw(
+                    "RNAV", row["lat"], row["lon"], symbolScale=self.symbolScale
+                )
                 result.append(symbolDraw.getFeature())
             if row["type"] in ["C", "R"]:
-                symbolDraw = SymbolDraw("TRIANGLE", row["lat"], row["lon"])
+                symbolDraw = SymbolDraw(
+                    "TRIANGLE", row["lat"], row["lon"], symbolScale=self.symbolScale
+                )
                 result.append(symbolDraw.getFeature())
             if row["type"] == "VORDME":
-                symbolDraw = SymbolDraw("DME_BOX", row["lat"], row["lon"])
+                symbolDraw = SymbolDraw(
+                    "DME_BOX", row["lat"], row["lon"], symbolScale=self.symbolScale
+                )
                 result.append(symbolDraw.getFeature())
-                symbolDraw = SymbolDraw("HEXAGON", row["lat"], row["lon"])
+                symbolDraw = SymbolDraw(
+                    "HEXAGON", row["lat"], row["lon"], symbolScale=self.symbolScale
+                )
                 result.append(symbolDraw.getFeature())
             if row["type"] == "VOR":
-                symbolDraw = SymbolDraw("HEXAGON", row["lat"], row["lon"])
+                symbolDraw = SymbolDraw(
+                    "HEXAGON", row["lat"], row["lon"], symbolScale=self.symbolScale
+                )
                 result.append(symbolDraw.getFeature())
             if row["type"] == "DME":
-                symbolDraw = SymbolDraw("DME_BOX", row["lat"], row["lon"])
+                symbolDraw = SymbolDraw(
+                    "DME_BOX", row["lat"], row["lon"], symbolScale=self.symbolScale
+                )
                 result.append(symbolDraw.getFeature())
             if row["type"] == "NDB":
-                symbolDraw = SymbolDraw("CIRCLE_L", row["lat"], row["lon"])
+                symbolDraw = SymbolDraw(
+                    "CIRCLE_L", row["lat"], row["lon"], symbolScale=self.symbolScale
+                )
                 result.append(symbolDraw.getFeature())
 
         return result
@@ -219,7 +277,10 @@ class SIDSTAR:
         featureCollection = FeatureCollection()
 
         if self.lineStyle != "none":
-            multiLineString = self._getLineStrings(rows)
+            if self.drawSymbols:
+                multiLineString = self._getTruncatedLineStrings(rows)
+            else:
+                multiLineString = self._getLineStrings(rows)
 
             feature = Feature()
             feature.addMultiLineString(multiLineString)
