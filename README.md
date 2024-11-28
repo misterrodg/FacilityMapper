@@ -57,10 +57,13 @@ The SID object has the following properties, with the properties marked <span st
 - `line_type` <span style="color:#FF9900">Not Yet Implemented</span>: A string representing the line type that should be drawn. Supported line types are: `"solid"` (default), `"longDashed"`, `"shortDashed"`, `"longDashShortDash"`, and `"none"`.
 - `draw_symbols`: A boolean value that tells the script to draw a symbol at the fix location. The symbol is driven by the data in the CIFP, and clips the line around the point.
 - `symbol_scale`: A float value representing the scale of the symbols. Defaults to `1.0` (approximately 1.0 NM tall).
-- `draw_names`: A boolean value that tells the script to draw the name of the fix near the fix location.
+- `draw_altitudes`: A boolean value that tells the script to draw the speed restriction (if present) for the fix near the fix location. Defaults to `false`.
+- `draw_speeds`: A boolean value that tells the script to draw the altitude restriction(s) (if present) for the fix near the fix location. Defaults to `false`.
+- `draw_names`: A boolean value that tells the script to draw the name of the fix near the fix location. Defaults to `false`.
 - `x_offset`: A float value representing the lateral text offset in nautical miles (positive for East and negative for West). Defaults to `0`.
 - `y_offset`: A float value representing the vertical text offset in nautical miles (positive for North and negative for South). Defaults to `0`.
 - `text_scale`: A float value representing the scale of the text. Defaults to `1.0` (approximately 1.0 NM tall).
+- `line_buffer`: A float value representing the line height of the text, used in spacing the fix name, altitude, and speed. Defaults to `1.5`.
 - `draw_enroute_transitions`: A boolean value that tells the script to draw the enroute transitions. Defaults to `true`.
 - `draw_runway_transitions`: A boolean value that tells the script to draw the runway transitions. Defaults to `false`. NOTE: Many SID runway transitions have performance/altitude-based points. These are not currently supported, so the line draws might be odd in this segment for now.
 - `file_name`: A string representing the filename that the map will be saved to (`"003_JCOBY"`). Defaults to `{airportId}_{mapType}_{procedureId}`
