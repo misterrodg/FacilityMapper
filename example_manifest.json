@@ -8,6 +8,7 @@
         "line_type": "solid",
         "draw_symbols": false,
         "symbol_scale": 1.0,
+        "draw_altitudes": false,
         "draw_names": false,
         "x_offset": 0,
         "y_offset": 0,

@@ -21,6 +21,8 @@ from modules.vNAS import LINE_STYLES
 from sqlite3 import Cursor
 
 ERROR_HEADER = "SID/STAR: "
+LINE_2_BUFFER = 1.5
+LINE_3_BUFFER = 3.0
 
 
 class SIDSTAR:
@@ -31,6 +33,7 @@ class SIDSTAR:
         self.lineStyle = None
         self.drawSymbols = False
         self.symbolScale = None
+        self.drawAltitudes = False
         self.drawNames = False
         self.xOffset = None
         self.yOffset = None
@@ -72,6 +75,8 @@ class SIDSTAR:
 
         symbolScale = definitionDict.get("symbol_scale", 1.0)
 
+        drawAltitudes = definitionDict.get("draw_altitudes", False)
+
         drawNames = definitionDict.get("draw_names", False)
 
         xOffset = definitionDict.get("x_offset", 0) * ARC_MIN
@@ -93,6 +98,7 @@ class SIDSTAR:
         self.lineStyle = lineStyle
         self.drawSymbols = drawSymbols
         self.symbolScale = symbolScale
+        self.drawAltitudes = drawAltitudes
         self.drawNames = drawNames
         self.xOffset = xOffset
         self.yOffset = yOffset
@@ -148,7 +154,7 @@ class SIDSTAR:
             UNION
             SELECT ndb_id AS id,lat,lon,"NDB" AS type FROM ndbs
         )
-        SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.fix_id,lat,lon,type
+        SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.alt_desc,p.altitude,p.flight_level,p.altitude_2,p.flight_level_2,p.fix_id,lat,lon,type
         FROM procedure_points AS p
         JOIN unified_table AS u ON p.fix_id = u.id
         WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type})
@@ -220,6 +226,49 @@ class SIDSTAR:
             offsetLon = self.xOffset + row["lon"]
             textDraw = TextDraw(row["fix_id"], offsetLat, offsetLon, self.textScale)
             result.append(textDraw.getFeature())
+
+        if self.drawAltitudes:
+            for row in filteredRows:
+                if (
+                    row["altitude"]
+                    or row["flight_level"]
+                    or row["altitude_2"]
+                    or row["flight_level_2"]
+                ):
+                    altDesc = row["alt_desc"]
+                    if row["altitude"] or row["flight_level"]:
+                        offsetLat = (
+                            self.yOffset + row["lat"] - (ARC_MIN * LINE_2_BUFFER)
+                        )
+                        offsetLon = self.xOffset + row["lon"]
+                        altitudeValue = (
+                            row["altitude"]
+                            if row["altitude"]
+                            else f"FL{row["flight_level"]}"
+                        )
+                        altitudeValue = (
+                            f"{altDesc}{altitudeValue}"
+                            if altDesc in ["+", "-"]
+                            else altitudeValue
+                        )
+                        textDraw = TextDraw(
+                            str(altitudeValue), offsetLat, offsetLon, self.textScale
+                        )
+                        result.append(textDraw.getFeature())
+                    if row["altitude_2"] or row["flight_level_2"]:
+                        offsetLat = (
+                            self.yOffset + row["lat"] - (ARC_MIN * LINE_3_BUFFER)
+                        )
+                        offsetLon = self.xOffset + row["lon"]
+                        altitudeValue = (
+                            row["altitude_2"]
+                            if row["altitude_2"]
+                            else f"FL{row["flight_level_2"]}"
+                        )
+                        textDraw = TextDraw(
+                            str(altitudeValue), offsetLat, offsetLon, self.textScale
+                        )
+                        result.append(textDraw.getFeature())
 
         return result
 
