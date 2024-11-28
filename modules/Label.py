@@ -78,7 +78,7 @@ class LabelLine:
             print(f"{ERROR_HEADER}Missing `lon` in:\n{print_top_level(lineDict)}.")
             return
 
-        textScale = lineDict.get("text_scale", 1.0) * ARC_MIN
+        textScale = lineDict.get("text_scale", 1.0)
 
         self.line = line
         self.lat = lat
