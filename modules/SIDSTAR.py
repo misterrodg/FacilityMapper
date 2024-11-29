@@ -13,7 +13,7 @@ from modules.GeoJSON import (
     LineString,
     MultiLineString,
 )
-from modules.QueryHelper import translate_wildcard, segment_query
+from modules.QueryHelper import filter_query, translate_wildcard, segment_query
 from modules.SymbolDraw import SymbolDraw
 from modules.TextDraw import TextDraw
 from modules.vNAS import LINE_STYLES
@@ -273,13 +273,7 @@ class SIDSTAR:
         return result
 
     def _get_text_features(self, rows: list) -> list[Feature]:
-        seen_ids = set()
-        filtered_rows = []
-        for row in rows:
-            if row["fix_id"] not in seen_ids:
-                filtered_rows.append(row)
-                seen_ids.add(row["fix_id"])
-
+        filtered_rows = filter_query(rows, "fix_id")
         result = []
         for row in filtered_rows:
             offset_lat = self.y_offset + row["lat"]
@@ -354,13 +348,7 @@ class SIDSTAR:
         return result
 
     def _get_symbol_features(self, rows: list) -> list[Feature]:
-        seen_ids = set()
-        filtered_rows = []
-        for row in rows:
-            if row["fix_id"] not in seen_ids:
-                filtered_rows.append(row)
-                seen_ids.add(row["fix_id"])
-
+        filtered_rows = filter_query(rows, "fix_id")
         result = []
         for row in filtered_rows:
             if row["type"] == "W":
