@@ -1,5 +1,5 @@
 def translate_wildcard(wildcard_string: str) -> str:
-    return wildcard_string.replace("#", "%")
+    return wildcard_string.replace("#", "_")
 
 
 def segment_query(query_result: list, dict_id: str) -> list[dict]:
