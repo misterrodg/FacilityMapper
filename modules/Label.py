@@ -1,4 +1,3 @@
-from modules.DrawHelper import ARC_MIN
 from modules.ErrorHelper import print_top_level
 from modules.GeoJSON import FeatureCollection, GeoJSON
 from modules.TextDraw import TextDraw
