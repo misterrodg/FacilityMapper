@@ -33,7 +33,7 @@ Examples:
 - `example_manifest.json`: Basic example manifest file showing all of the fields and their defaults, available in the root folder.
 - `example_zdc_manifest.json`: Completed manifest showing the options used for a "production" build, available in the root folder.
 
-More detail, and images of the various settings is available in [EXAMPLES](./examples/EXAMPLES.md)
+More detail, and images of the various settings is available in [EXAMPLES](./examples/EXAMPLES.md).
 
 ### Manifest
 
