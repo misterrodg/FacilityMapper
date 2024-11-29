@@ -21,6 +21,7 @@ from modules.vNAS import LINE_STYLES
 from sqlite3 import Cursor
 
 ERROR_HEADER = "SID/STAR: "
+SIDSTAR_LINE_TYPES = ["none", "arrows"]
 
 
 class SIDSTAR:
@@ -65,7 +66,7 @@ class SIDSTAR:
             return
 
         lineStyle = definitionDict.get("line_type", "solid")
-        availableStyles = ["none"] + LINE_STYLES
+        availableStyles = SIDSTAR_LINE_TYPES + LINE_STYLES
         if lineStyle not in availableStyles:
             print(f"{ERROR_HEADER}line_type '{lineStyle}' not recognized.")
             print(f"{ERROR_HEADER}Supported types are {", ".join(availableStyles)}.")
