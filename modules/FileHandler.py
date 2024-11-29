@@ -1,21 +1,22 @@
 import os
 
 
-def checkPath(pathFromRoot: str):
+def check_path(path_from_root: str) -> bool:
     result = False
-    path = f"{os.getcwd()}/{pathFromRoot}"
+    path = f"{os.getcwd()}/{path_from_root}"
     if os.path.exists(path):
         result = True
     return result
 
 
-def deleteAllInSubdir(fileType: str, subdirPath: str = ""):
+def delete_all_in_subdir(file_type: str, subdir_path: str = "") -> None:
     # As it stands, this will only ever delete items in the named subfolder where this script runs.
     # Altering this function could cause it to delete the entire contents of other folders where you wouldn't want it to.
     # Alter this at your own risk.
-    if subdirPath != "":
-        deletePath = f"{os.getcwd()}/{subdirPath}"
-        if os.path.exists(deletePath):
-            for f in os.listdir(deletePath):
-                if f.endswith(fileType):
-                    os.remove(os.path.join(deletePath, f))
+    if subdir_path != "":
+        delete_path = f"{os.getcwd()}/{subdir_path}"
+        if os.path.exists(delete_path):
+            for f in os.listdir(delete_path):
+                if f.endswith(file_type):
+                    os.remove(os.path.join(delete_path, f))
+    return

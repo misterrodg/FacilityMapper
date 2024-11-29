@@ -538,7 +538,7 @@ def getPlotWidth(charPlot: list[list]) -> int:
     return result
 
 
-def getPlotFromChar(textValue: str) -> list[list]:
+def get_plot_from_char(textValue: str) -> list[list]:
     upperValue = textValue.capitalize()
     if upperValue == " ":
         return SPACE

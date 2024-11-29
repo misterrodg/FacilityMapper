@@ -1,47 +1,53 @@
-from modules.DrawHelper import correctOffsets
+from modules.DrawHelper import correct_offsets
 from modules.GeoJSON import Coordinate, Feature, LineString, MultiLineString
-from modules.SymbolPlots import PLOT_HEIGHT, PLOT_WIDTH, UNRECOGNIZED, getPlotFromString
+from modules.SymbolPlots import (
+    PLOT_HEIGHT,
+    PLOT_WIDTH,
+    UNRECOGNIZED,
+    get_plot_from_string,
+)
 
 
 class SymbolDraw:
     def __init__(
         self,
-        symbolType: str,
+        symbol_type: str,
         lat: float,
         lon: float,
-        rotationDeg: float = 0.0,
-        symbolScale: float = 1.0,
+        rotation_deg: float = 0.0,
+        symbol_scale: float = 1.0,
     ):
-        self.symbolType = symbolType
+        self.symbol_type = symbol_type
         self.lat = lat
         self.lon = lon
-        self.rotationDeg = rotationDeg
-        self.symbolScale = symbolScale
+        self.rotation_deg = rotation_deg
+        self.symbol_scale = symbol_scale
         self.feature = Feature()
 
-        self._toPointArray()
+        self._to_point_array()
 
-    def _toPointArray(self) -> None:
-        multiLineString = MultiLineString()
-        lineString = LineString()
-        symbolPlot = getPlotFromString(self.symbolType)
-        if symbolPlot != UNRECOGNIZED:
-            correctedPlot = correctOffsets(
+    def _to_point_array(self) -> None:
+        multi_line_string = MultiLineString()
+        line_string = LineString()
+        symbol_plot = get_plot_from_string(self.symbol_type)
+        if symbol_plot != UNRECOGNIZED:
+            corrected_plot = correct_offsets(
                 self.lat,
                 self.lon,
-                symbolPlot,
+                symbol_plot,
                 PLOT_HEIGHT,
                 PLOT_WIDTH,
-                self.rotationDeg,
-                self.symbolScale,
+                self.rotation_deg,
+                self.symbol_scale,
             )
 
-            for line in correctedPlot:
+            for line in corrected_plot:
                 coordinate = Coordinate(line["lat"], line["lon"])
-                lineString.addCoordinate(coordinate)
-            if not lineString.isEmpty():
-                multiLineString.addLineString(lineString)
-            self.feature.addMultiLineString(multiLineString)
+                line_string.add_coordinate(coordinate)
+            if not line_string.is_empty():
+                multi_line_string.add_line_string(line_string)
+            self.feature.add_multi_line_string(multi_line_string)
+        return
 
-    def getFeature(self) -> Feature:
+    def get_feature(self) -> Feature:
         return self.feature

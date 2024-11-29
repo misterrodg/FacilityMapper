@@ -5,70 +5,71 @@ DEG_TO_MIN = 60
 EARTH_RADIUS_NM = 3443.92
 
 
-def correctOffsets(
-    centerLat: float,
-    centerLon: float,
+def correct_offsets(
+    center_lat: float,
+    center_lon: float,
     offsets: list[dict],
-    plotHeight: int,
-    plotWidth: int,
-    rotationDeg: float = 0.0,
-    scaleFactor: float = 1.0,
+    plot_height: int,
+    plot_width: int,
+    rotation_deg: float = 0.0,
+    scale_factor: float = 1.0,
 ) -> list[dict]:
-    scale = scaleFactor * ARC_MIN
-    centerLatRad = math.radians(centerLat)
-    lonCorrectionFactor = math.cos(centerLatRad)
-    rotationRad = math.radians(rotationDeg)
+    scale = scale_factor * ARC_MIN
+    center_lat_rad = math.radians(center_lat)
+    lon_correction_factor = math.cos(center_lat_rad)
+    rotation_rad = math.radians(rotation_deg)
 
-    cosTheta = math.cos(rotationRad)
-    sinTheta = math.sin(rotationRad)
+    cos_theta = math.cos(rotation_rad)
+    sin_theta = math.sin(rotation_rad)
 
     result = []
     for offset in offsets:
-        rotatedLatOffset = (
-            offset["lat_offset"] * cosTheta - offset["lon_offset"] * sinTheta
+        rotated_lat_offset = (
+            offset["lat_offset"] * cos_theta - offset["lon_offset"] * sin_theta
         )
-        rotatedLonOffset = (
-            offset["lat_offset"] * sinTheta + offset["lon_offset"] * cosTheta
+        rotated_lon_offset = (
+            offset["lat_offset"] * sin_theta + offset["lon_offset"] * cos_theta
         )
-        adjustedLat = (rotatedLatOffset / plotHeight) * scale
-        adjustedLat += centerLat
-        adjustedLon = ((rotatedLonOffset / plotWidth) * scale) / lonCorrectionFactor
-        adjustedLon += centerLon
-        result.append({"lat": adjustedLat, "lon": adjustedLon})
-
+        adjusted_lat = (rotated_lat_offset / plot_height) * scale
+        adjusted_lat += center_lat
+        adjusted_lon = (
+            (rotated_lon_offset / plot_width) * scale
+        ) / lon_correction_factor
+        adjusted_lon += center_lon
+        result.append({"lat": adjusted_lat, "lon": adjusted_lon})
     return result
 
 
-def latLonFromPBD(lat: float, lon: float, bearing: float, distance: float) -> dict:
+def lat_lon_from_pbd(lat: float, lon: float, bearing: float, distance: float) -> dict:
     lat = math.radians(lat)
     lon = math.radians(lon)
     bearing = math.radians(bearing)
-    endLat = math.asin(
+    end_lat = math.asin(
         math.sin(lat) * math.cos(distance / EARTH_RADIUS_NM)
         + math.cos(lat) * math.sin(distance / EARTH_RADIUS_NM) * math.cos(bearing)
     )
-    endLon = lon + math.atan2(
+    end_lon = lon + math.atan2(
         math.sin(bearing) * math.sin(distance / EARTH_RADIUS_NM) * math.cos(lat),
-        math.cos(distance / EARTH_RADIUS_NM) - math.sin(lat) * math.sin(endLat),
+        math.cos(distance / EARTH_RADIUS_NM) - math.sin(lat) * math.sin(end_lat),
     )
 
-    endLat = math.degrees(endLat)
-    endLon = math.degrees(endLon)
+    end_lat = math.degrees(end_lat)
+    end_lon = math.degrees(end_lon)
 
-    result = {"lat": endLat, "lon": endLon}
+    result = {"lat": end_lat, "lon": end_lon}
     return result
 
 
-def haversineGreatCircleDistance(
-    startLat: float, startLon: float, endLat: float, endLon: float
+def haversine_great_circle_distance(
+    start_lat: float, start_lon: float, end_lat: float, end_lon: float
 ) -> float:
-    theta = startLon - endLon
+    theta = start_lon - end_lon
     arc = math.degrees(
         math.acos(
-            (math.sin(math.radians(startLat)) * math.sin(math.radians(endLat)))
+            (math.sin(math.radians(start_lat)) * math.sin(math.radians(end_lat)))
             + (
-                math.cos(math.radians(startLat))
-                * math.cos(math.radians(endLat))
+                math.cos(math.radians(start_lat))
+                * math.cos(math.radians(end_lat))
                 * math.cos(math.radians(theta))
             )
         )
@@ -77,18 +78,18 @@ def haversineGreatCircleDistance(
     return distance
 
 
-def inverseBearing(bearing: float) -> float:
+def inverse_bearing(bearing: float) -> float:
     result = math.fmod(bearing + 180, 360)
     return result
 
 
-def haversineGreatCircleBearing(
-    startLat: float, startLon: float, endLat: float, endLon: float
+def haversine_great_circle_bearing(
+    start_lat: float, start_lon: float, end_lat: float, end_lon: float
 ) -> float:
-    x = math.cos(math.radians(startLat)) * math.sin(math.radians(endLat)) - math.sin(
-        math.radians(startLat)
-    ) * math.cos(math.radians(endLat)) * math.cos(math.radians(endLon - startLon))
-    y = math.sin(math.radians(endLon - startLon)) * math.cos(math.radians(endLat))
+    x = math.cos(math.radians(start_lat)) * math.sin(math.radians(end_lat)) - math.sin(
+        math.radians(start_lat)
+    ) * math.cos(math.radians(end_lat)) * math.cos(math.radians(end_lon - start_lon))
+    y = math.sin(math.radians(end_lon - start_lon)) * math.cos(math.radians(end_lat))
     bearing = math.degrees(math.atan2(y, x))
     bearing = math.fmod(bearing + 360, 360)
     return bearing

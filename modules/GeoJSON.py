@@ -24,17 +24,17 @@ class Coordinate:
         self.lat = None
         self.lon = None
 
-        if self._validCoordinates(lat, lon):
+        if self._valid_coordinates(lat, lon):
             self.lat = lat
             self.lon = lon
 
-    def toGeoJSON(self) -> list:
+    def to_geo_json(self) -> list:
         return [self.lon, self.lat]
 
-    def _validCoordinates(self, lat, lon) -> bool:
-        validLat = lat <= 90 and lat >= -90
-        validLon = lon <= 180 and lon >= -180
-        return validLat and validLon
+    def _valid_coordinates(self, lat, lon) -> bool:
+        valid_lat = lat <= 90 and lat >= -90
+        valid_lon = lon <= 180 and lon >= -180
+        return valid_lat and valid_lon
 
 
 class Properties:
@@ -43,103 +43,120 @@ class Properties:
         self.bcg = None
         self.color = None
         self.filters = None
-        self.isLineDefaults = None
-        self.isSymbolDefaults = None
-        self.isTextDefaults = None
+        self.is_line_defaults = None
+        self.is_symbol_defaults = None
+        self.is_text_defaults = None
         self.opaque = None
         self.size = None
         self.style = None
         self.thickness = None
         self.underline = None
-        self.xOffset = None
-        self.yOffset = None
+        self.x_offset = None
+        self.y_offset = None
 
-    def setASDEX(self, asdexStyle: str) -> None:
-        if asdexStyle in ASDEX_STYLES:
-            self.asdex = asdexStyle
+    def set_asdex(self, asdex_style: str) -> None:
+        if asdex_style in ASDEX_STYLES:
+            self.asdex = asdex_style
+        return
 
-    def setBCG(self, bcg: int) -> None:
+    def set_bcg(self, bcg: int) -> None:
         if bcg >= BCG_MIN and bcg <= BCG_MAX:
             self.bcg = bcg
+        return
 
-    def setColor(self, hexString: str) -> None:
-        if self._isHexColor(hexString):
-            self.color = hexString
+    def set_color(self, hex_string: str) -> None:
+        if self._is_hex_color(hex_string):
+            self.color = hex_string
+        return
 
-    def setFilters(self, filterList: list) -> None:
+    def set_filters(self, filter_list: list) -> None:
         filters = []
-        for item in filterList:
+        for item in filter_list:
             if item >= FILTER_MIN and item <= FILTER_MAX:
                 filters.append(item)
         if len(filters) > 0:
             self.filters = filters
+        return
 
-    def setIsLineDefaults(self, lineDefaults: bool) -> None:
-        self.isLineDefaults = lineDefaults
+    def set_is_line_defaults(self, line_defaults: bool) -> None:
+        self.is_line_defaults = line_defaults
+        return
 
-    def setIsSymbolDefaults(self, symbolDefaults: bool) -> None:
-        self.isSymbolDefaults = symbolDefaults
+    def set_is_symbol_defaults(self, symbol_defaults: bool) -> None:
+        self.is_symbol_defaults = symbol_defaults
+        return
 
-    def setIsTextDefaults(self, textDefaults: bool) -> None:
-        self.isTextDefaults = textDefaults
+    def set_is_text_defaults(self, text_defaults: bool) -> None:
+        self.is_text_defaults = text_defaults
+        return
 
-    def setLineStyle(self, lineStyle: str) -> None:
-        if lineStyle in LINE_STYLES:
-            self.style = lineStyle
+    def set_line_style(self, line_style: str) -> None:
+        if line_style in LINE_STYLES:
+            self.style = line_style
+        return
 
-    def setLineThickness(self, lineThickness: int) -> None:
-        if lineThickness >= LINE_THICKNESS_MIN and lineThickness <= LINE_THICKNESS_MAX:
-            self.thickness = lineThickness
+    def set_line_thickness(self, line_thickness: int) -> None:
+        if (
+            line_thickness >= LINE_THICKNESS_MIN
+            and line_thickness <= LINE_THICKNESS_MAX
+        ):
+            self.thickness = line_thickness
+        return
 
-    def setSymbolStyle(self, symbolStyle: str) -> None:
-        if symbolStyle in SYMBOL_STYLES:
-            self.style = symbolStyle
+    def set_symbol_style(self, symbol_style: str) -> None:
+        if symbol_style in SYMBOL_STYLES:
+            self.style = symbol_style
+        return
 
-    def setSymbolSize(self, symbolSize: int) -> None:
-        if symbolSize >= SYMBOL_SIZE_MIN and symbolSize <= SYMBOL_SIZE_MAX:
-            self.size = symbolSize
+    def set_symbol_size(self, symbol_size: int) -> None:
+        if symbol_size >= SYMBOL_SIZE_MIN and symbol_size <= SYMBOL_SIZE_MAX:
+            self.size = symbol_size
+        return
 
-    def setTextSize(self, textSize: int) -> None:
-        if textSize >= TEXT_SIZE_MIN and textSize <= TEXT_SIZE_MAX:
-            self.size = textSize
+    def set_text_size(self, text_size: int) -> None:
+        if text_size >= TEXT_SIZE_MIN and text_size <= TEXT_SIZE_MAX:
+            self.size = text_size
+        return
 
-    def setTextOpaque(self, textOpaque: bool) -> None:
-        self.opaque = textOpaque
+    def set_text_opaque(self, text_opaque: bool) -> None:
+        self.opaque = text_opaque
+        return
 
-    def setTextUnderline(self, textUnderline: bool) -> None:
-        self.underline = textUnderline
+    def set_text_underline(self, text_underline: bool) -> None:
+        self.underline = text_underline
+        return
 
-    def setTextOffset(self, dimension: str, offset: int) -> None:
-        isPositive = offset > 0
-        if dimension == "x" and isPositive:
-            self.xOffset = offset
-        if dimension == "y" and isPositive:
-            self.yOffset = offset
+    def set_text_offset(self, dimension: str, offset: int) -> None:
+        is_positive = offset > 0
+        if dimension == "x" and is_positive:
+            self.x_offset = offset
+        if dimension == "y" and is_positive:
+            self.y_offset = offset
+        return
 
-    def toDict(self) -> dict:
+    def to_dict(self) -> dict:
         result = {
             "asdex": self.asdex,
             "bcg": self.bcg,
             "color": self.color,
             "filters": self.filters,
-            "isLineDefaults": self.isLineDefaults,
-            "isSymbolDefaults": self.isSymbolDefaults,
-            "isTextDefaults": self.isTextDefaults,
+            "isLineDefaults": self.is_line_defaults,
+            "isSymbolDefaults": self.is_symbol_defaults,
+            "isTextDefaults": self.is_text_defaults,
             "opaque": self.opaque,
             "size": self.size,
             "style": self.style,
             "thickness": self.thickness,
             "underline": self.underline,
-            "xOffset": self.xOffset,
-            "yOffset": self.yOffset,
+            "xOffset": self.x_offset,
+            "yOffset": self.y_offset,
         }
-
         result = {key: value for key, value in result.items() if value is not None}
         return result
 
-    def _isHexColor(hexString: str) -> bool:
+    def _is_hex_color(hex_string: str) -> bool:
         pattern = r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
-        return bool(re.match(pattern, hexString))
+        return bool(re.match(pattern, hex_string))
 
 
 class LineString:
@@ -147,17 +164,18 @@ class LineString:
         self.type = "LineString"
         self.coordinates = []
 
-    def addCoordinate(self, coordinatePair: Coordinate) -> None:
-        self.coordinates.append(coordinatePair.toGeoJSON())
+    def add_coordinate(self, coordinate_pair: Coordinate) -> None:
+        self.coordinates.append(coordinate_pair.to_geo_json())
+        return
 
-    def toCoordinates(self) -> list:
+    def to_coordinates(self) -> list:
         return self.coordinates
 
-    def isEmpty(self) -> bool:
+    def is_empty(self) -> bool:
         result = len(self.coordinates) == 0
         return result
 
-    def toDict(self) -> dict:
+    def to_dict(self) -> dict:
         return {"type": self.type, "coordinates": self.coordinates}
 
 
@@ -166,10 +184,11 @@ class MultiLineString:
         self.type = "MultiLineString"
         self.coordinates = []
 
-    def addLineString(self, lineString: LineString) -> None:
-        self.coordinates.append(lineString.toCoordinates())
+    def add_line_string(self, line_string: LineString) -> None:
+        self.coordinates.append(line_string.to_coordinates())
+        return
 
-    def toDict(self) -> dict:
+    def to_dict(self) -> dict:
         return {"type": self.type, "coordinates": self.coordinates}
 
 
@@ -179,19 +198,21 @@ class Feature:
         self.geometry = None
         self.properties = None
 
-    def addLineString(self, lineString: LineString) -> None:
-        self.geometry = lineString.toDict()
+    def add_line_string(self, line_string: LineString) -> None:
+        self.geometry = line_string.to_dict()
+        return
 
-    def addMultiLineString(self, multiLineString: MultiLineString) -> None:
-        self.geometry = multiLineString.toDict()
+    def add_multi_line_string(self, multi_line_string: MultiLineString) -> None:
+        self.geometry = multi_line_string.to_dict()
+        return
 
-    def addProperties(self, properties: Properties) -> None:
+    def add_properties(self, properties: Properties) -> None:
         self.properties = properties
+        return
 
-    def toDict(self) -> dict:
+    def to_dict(self) -> dict:
         if self.properties is None:
             self.properties = {}
-
         return {
             "type": self.type,
             "geometry": self.geometry,
@@ -204,27 +225,28 @@ class FeatureCollection:
         self.type = "FeatureCollection"
         self.features: list[Feature] = []
 
-    def addFeature(self, feature: Feature) -> None:
+    def add_feature(self, feature: Feature) -> None:
         self.features.append(feature)
+        return
 
-    def toDict(self) -> dict:
+    def to_dict(self) -> dict:
         features = []
         for feature in self.features:
-            features.append(feature.toDict())
-
+            features.append(feature.to_dict())
         return {"type": self.type, "features": features}
 
 
 class GeoJSON:
-    def __init__(self, fileName: str) -> None:
-        self.filePath = fileName
-        self.featureCollection = None
+    def __init__(self, file_name: str) -> None:
+        self.file_path = file_name
+        self.feature_collection = None
 
-    def addFeatureCollection(self, featureCollection: FeatureCollection) -> None:
-        self.featureCollection = featureCollection
+    def add_feature_collection(self, feature_collection: FeatureCollection) -> None:
+        self.feature_collection = feature_collection
+        return
 
-    def toFile(self) -> None:
-        dataDictionary = self.featureCollection.toDict()
-
-        with open(f"{VIDMAP_DIR}/{self.filePath}.geojson", "w") as jsonFile:
-            json.dump(dataDictionary, jsonFile)
+    def to_file(self) -> None:
+        data_dictionary = self.feature_collection.to_dict()
+        with open(f"{VIDMAP_DIR}/{self.file_path}.geojson", "w") as json_file:
+            json.dump(data_dictionary, json_file)
+        return

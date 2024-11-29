@@ -6,85 +6,89 @@ ERROR_HEADER = "LABEL: "
 
 
 class Label:
-    def __init__(self, definitionDict: dict):
-        self.mapType = "LABEL"
+    def __init__(self, definition_dict: dict):
+        self.map_type = "LABEL"
         self.lines: list[dict] = []
-        self.fileName = None
-        self.isValid = False
+        self.file_name = None
+        self.is_valid = False
 
-        self._validate(definitionDict)
+        self._validate(definition_dict)
 
-        if self.isValid:
-            self._toFile()
+        if self.is_valid:
+            self._to_file()
 
-    def _validate(self, definitionDict: dict) -> None:
-        lines = definitionDict.get("lines")
+    def _validate(self, definition_dict: dict) -> None:
+        lines = definition_dict.get("lines")
         if lines is None:
             print(
-                f"{ERROR_HEADER}Missing `lines` in:\n{print_top_level(definitionDict)}."
+                f"{ERROR_HEADER}Missing `lines` in:\n{print_top_level(definition_dict)}."
             )
             return
 
-        fileName = definitionDict.get("file_name")
-        if fileName is None:
+        file_name = definition_dict.get("file_name")
+        if file_name is None:
             print(
-                f"{ERROR_HEADER}Missing `file_name` in:\n{print_top_level(definitionDict)}."
+                f"{ERROR_HEADER}Missing `file_name` in:\n{print_top_level(definition_dict)}."
             )
             return
 
         self.lines = lines
-        self.fileName = fileName
-        self.isValid = True
+        self.file_name = file_name
+        self.is_valid = True
+        return
 
-    def _toFile(self) -> None:
-        featureCollection = FeatureCollection()
+    def _to_file(self) -> None:
+        feature_collection = FeatureCollection()
 
         for line in self.lines:
-            labelLine = LabelLine(line)
-            if labelLine.isValid:
+            label_line = LabelLine(line)
+            if label_line.is_valid:
                 label = TextDraw(
-                    labelLine.line, labelLine.lat, labelLine.lon, labelLine.textScale
+                    label_line.line,
+                    label_line.lat,
+                    label_line.lon,
+                    label_line.text_scale,
                 )
-                feature = label.getFeature()
-                featureCollection.addFeature(feature)
+                feature = label.get_feature()
+                feature_collection.add_feature(feature)
 
-        geoJSON = GeoJSON(self.fileName)
-        geoJSON.addFeatureCollection(featureCollection)
-        geoJSON.toFile()
+        geo_json = GeoJSON(self.file_name)
+        geo_json.add_feature_collection(feature_collection)
+        geo_json.to_file()
+        return
 
 
 class LabelLine:
-    def __init__(self, lineDict: dict):
+    def __init__(self, line_dict: dict):
         self.line = None
         self.lat = None
         self.lon = None
-        self.textScale = None
-        self.isValid = False
+        self.text_scale = None
+        self.is_valid = False
 
-        self._validate(lineDict)
+        self._validate(line_dict)
 
-    def _validate(self, lineDict: dict) -> None:
-        line = lineDict.get("line")
+    def _validate(self, line_dict: dict) -> None:
+        line = line_dict.get("line")
         if line is None:
-            print(f"{ERROR_HEADER}Missing `line` in:\n{print_top_level(lineDict)}.")
+            print(f"{ERROR_HEADER}Missing `line` in:\n{print_top_level(line_dict)}.")
             return
 
-        lat = lineDict.get("lat")
+        lat = line_dict.get("lat")
         if lat is None:
-            print(f"{ERROR_HEADER}Missing `lat` in:\n{print_top_level(lineDict)}.")
+            print(f"{ERROR_HEADER}Missing `lat` in:\n{print_top_level(line_dict)}.")
             return
 
-        lon = lineDict.get("lon")
+        lon = line_dict.get("lon")
         if lon is None:
-            print(f"{ERROR_HEADER}Missing `lon` in:\n{print_top_level(lineDict)}.")
+            print(f"{ERROR_HEADER}Missing `lon` in:\n{print_top_level(line_dict)}.")
             return
 
-        textScale = lineDict.get("text_scale", 1.0)
+        text_scale = line_dict.get("text_scale", 1.0)
 
         self.line = line
         self.lat = lat
         self.lon = lon
-        self.textScale = textScale
-        self.isValid = True
-
+        self.text_scale = text_scale
+        self.is_valid = True
         return

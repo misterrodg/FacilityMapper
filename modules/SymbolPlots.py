@@ -134,7 +134,7 @@ RNAV = [
 ]
 
 
-def getPlotFromString(textValue: str) -> list[dict]:
+def get_plot_from_string(textValue: str) -> list[dict]:
     upperValue = textValue.upper()
     if upperValue == "ARROW_HEAD":
         return ARROW_HEAD

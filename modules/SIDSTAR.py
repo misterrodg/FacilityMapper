@@ -1,8 +1,8 @@
 from modules.DrawHelper import (
     ARC_MIN,
-    haversineGreatCircleBearing,
-    inverseBearing,
-    latLonFromPBD,
+    haversine_great_circle_bearing,
+    inverse_bearing,
+    lat_lon_from_pbd,
 )
 from modules.ErrorHelper import print_top_level
 from modules.GeoJSON import (
@@ -13,7 +13,7 @@ from modules.GeoJSON import (
     LineString,
     MultiLineString,
 )
-from modules.QueryHelper import translateWildcard, segmentQuery
+from modules.QueryHelper import translate_wildcard, segment_query
 from modules.SymbolDraw import SymbolDraw
 from modules.TextDraw import TextDraw
 from modules.vNAS import LINE_STYLES
@@ -25,128 +25,126 @@ SIDSTAR_LINE_TYPES = ["none", "arrows"]
 
 
 class SIDSTAR:
-    def __init__(self, dbCursor: Cursor, mapType: str, definitionDict: dict):
-        self.mapType = mapType
-        self.airportId = None
-        self.procedureId = None
-        self.lineStyle = None
-        self.drawSymbols = False
-        self.symbolScale = None
-        self.drawAltitudes = False
-        self.drawSpeeds = False
-        self.drawNames = False
-        self.xOffset = None
-        self.yOffset = None
-        self.textScale = None
-        self.lineBuffer = None
-        self.drawEnrouteTransitions = True
-        self.drawRunwayTransitions = False
-        self.fileName = None
-        self.dbCursor = dbCursor
-        self.isValid = False
+    def __init__(self, db_cursor: Cursor, map_type: str, definition_dict: dict):
+        self.map_type = map_type
+        self.airport_id = None
+        self.procedure_id = None
+        self.line_style = None
+        self.draw_symbols = False
+        self.symbol_scale = None
+        self.draw_altitudes = False
+        self.draw_speeds = False
+        self.draw_names = False
+        self.x_offset = None
+        self.y_offset = None
+        self.text_scale = None
+        self.line_buffer = None
+        self.draw_enroute_transitions = True
+        self.draw_runway_transitions = False
+        self.file_name = None
+        self.db_cursor = db_cursor
+        self.is_valid = False
 
-        self._validate(definitionDict)
+        self._validate(definition_dict)
 
-        if self.isValid:
-            self._toFile()
+        if self.is_valid:
+            self._to_file()
 
-    def _validate(self, definitionDict: dict) -> None:
-        airportId = definitionDict.get("airport_id")
-        if airportId is None:
+    def _validate(self, definition_dict: dict) -> None:
+        airport_id = definition_dict.get("airport_id")
+        if airport_id is None:
             print(
-                f"{ERROR_HEADER}Missing `airport_id` in:\n{print_top_level(definitionDict)}."
+                f"{ERROR_HEADER}Missing `airport_id` in:\n{print_top_level(definition_dict)}."
             )
             return
 
-        procedureId = definitionDict.get("procedure_id")
-        if procedureId is None:
+        procedure_id = definition_dict.get("procedure_id")
+        if procedure_id is None:
             print(
-                f"{ERROR_HEADER}Missing `procedure_id` in:\n{print_top_level(definitionDict)}."
+                f"{ERROR_HEADER}Missing `procedure_id` in:\n{print_top_level(definition_dict)}."
             )
             return
 
-        lineStyle = definitionDict.get("line_type", "solid")
-        availableStyles = SIDSTAR_LINE_TYPES + LINE_STYLES
-        if lineStyle not in availableStyles:
-            print(f"{ERROR_HEADER}line_type '{lineStyle}' not recognized.")
-            print(f"{ERROR_HEADER}Supported types are {", ".join(availableStyles)}.")
+        line_style = definition_dict.get("line_type", "solid")
+        available_styles = SIDSTAR_LINE_TYPES + LINE_STYLES
+        if line_style not in available_styles:
+            print(f"{ERROR_HEADER}line_type '{line_style}' not recognized.")
+            print(f"{ERROR_HEADER}Supported types are {", ".join(available_styles)}.")
             return
 
-        drawSymbols = definitionDict.get("draw_symbols", False)
+        draw_symbols = definition_dict.get("draw_symbols", False)
 
-        symbolScale = definitionDict.get("symbol_scale", 1.0)
+        symbol_scale = definition_dict.get("symbol_scale", 1.0)
 
-        drawAltitudes = definitionDict.get("draw_altitudes", False)
+        draw_altitudes = definition_dict.get("draw_altitudes", False)
 
-        drawSpeeds = definitionDict.get("draw_speeds", False)
+        draw_speeds = definition_dict.get("draw_speeds", False)
 
-        drawNames = definitionDict.get("draw_names", False)
+        draw_names = definition_dict.get("draw_names", False)
 
-        xOffset = definitionDict.get("x_offset", 0) * ARC_MIN
+        x_offset = definition_dict.get("x_offset", 0) * ARC_MIN
 
-        yOffset = definitionDict.get("y_offset", 0) * ARC_MIN
+        y_offset = definition_dict.get("y_offset", 0) * ARC_MIN
 
-        textScale = definitionDict.get("text_scale", 1.0)
+        text_scale = definition_dict.get("text_scale", 1.0)
 
-        lineBuffer = definitionDict.get("line_buffer", 1.5)
+        line_buffer = definition_dict.get("line_buffer", 1.5)
 
-        drawEnrouteTransitions = definitionDict.get("draw_enroute_transitions", True)
+        draw_enroute_transitions = definition_dict.get("draw_enroute_transitions", True)
 
-        drawRunwayTransitions = definitionDict.get("draw_runway_transitions", False)
+        draw_runway_transitions = definition_dict.get("draw_runway_transitions", False)
 
-        fileName = definitionDict.get("file_name")
-        if fileName is None:
-            fileName = f"{airportId}_{self.mapType}_{procedureId}"
+        file_name = definition_dict.get("file_name")
+        if file_name is None:
+            file_name = f"{airport_id}_{self.map_type}_{procedure_id}"
 
-        self.airportId = airportId
-        self.procedureId = procedureId
-        self.lineStyle = lineStyle
-        self.drawSymbols = drawSymbols
-        self.symbolScale = symbolScale
-        self.drawAltitudes = drawAltitudes
-        self.drawSpeeds = drawSpeeds
-        self.drawNames = drawNames
-        self.xOffset = xOffset
-        self.yOffset = yOffset
-        self.textScale = textScale
-        self.lineBuffer = lineBuffer
-        self.drawEnrouteTransitions = drawEnrouteTransitions
-        self.drawRunwayTransitions = drawRunwayTransitions
-        self.fileName = fileName
-        self.isValid = True
-
+        self.airport_id = airport_id
+        self.procedure_id = procedure_id
+        self.line_style = line_style
+        self.draw_symbols = draw_symbols
+        self.symbol_scale = symbol_scale
+        self.draw_altitudes = draw_altitudes
+        self.draw_speeds = draw_speeds
+        self.draw_names = draw_names
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+        self.text_scale = text_scale
+        self.line_buffer = line_buffer
+        self.draw_enroute_transitions = draw_enroute_transitions
+        self.draw_runway_transitions = draw_runway_transitions
+        self.file_name = file_name
+        self.is_valid = True
         return
 
-    def _mapTypeToFacSubCode(self) -> str:
+    def _map_type_to_fac_sub_code(self) -> str:
         result = ""
-        if self.mapType == "SID":
+        if self.map_type == "SID":
             result = "'D'"
-        if self.mapType == "STAR":
+        if self.map_type == "STAR":
             result = "'E'"
         return result
 
-    def _optionsToRouteType(self) -> list:
+    def _options_to_route_type(self) -> list:
         result = ["2", "5"]
 
-        if self.mapType == "SID":
-            if self.drawRunwayTransitions:
+        if self.map_type == "SID":
+            if self.draw_runway_transitions:
                 result = ["1", "4"] + result
-            if self.drawEnrouteTransitions:
+            if self.draw_enroute_transitions:
                 result = result + ["3", "6"]
 
-        if self.mapType == "STAR":
-            if self.drawEnrouteTransitions:
+        if self.map_type == "STAR":
+            if self.draw_enroute_transitions:
                 result = ["1", "4"] + result
-            if self.drawRunwayTransitions:
+            if self.draw_runway_transitions:
                 result = result + ["3", "6"]
-
         return result
 
-    def _toQuery(self) -> str:
-        fac_id = f"'{self.airportId}'"
-        fac_sub_code = self._mapTypeToFacSubCode()
-        procedure_id = f"'{translateWildcard(self.procedureId)}'"
-        route_type_array = self._optionsToRouteType()
+    def _to_query(self) -> str:
+        fac_id = f"'{self.airport_id}'"
+        fac_sub_code = self._map_type_to_fac_sub_code()
+        procedure_id = f"'{translate_wildcard(self.procedure_id)}'"
+        route_type_array = self._options_to_route_type()
         route_type_string = ",".join(f"'{str(x)}'" for x in route_type_array)
 
         return f"""
@@ -168,273 +166,270 @@ class SIDSTAR:
         ORDER BY p.procedure_id,p.transition_id,p.route_type,p.sequence_number;
         """
 
-    def _queryDB(self) -> list:
-        query = self._toQuery()
-        self.dbCursor.execute(query)
-        result = self.dbCursor.fetchall()
+    def _query_db(self) -> list:
+        query = self._to_query()
+        self.db_cursor.execute(query)
+        result = self.db_cursor.fetchall()
         return result
 
-    def _getLineStrings(self, rows: list) -> MultiLineString:
-        segmentList = segmentQuery(rows, "transition_id")
-        multiLineString = MultiLineString()
-        for segmentItem in segmentList:
-            lineString = LineString()
-            for segment in segmentItem:
+    def _get_line_strings(self, rows: list) -> MultiLineString:
+        segment_list = segment_query(rows, "transition_id")
+        multi_line_string = MultiLineString()
+        for segment_item in segment_list:
+            line_string = LineString()
+            for segment in segment_item:
                 coordinate = Coordinate(segment.get("lat"), segment.get("lon"))
-                lineString.addCoordinate(coordinate)
-            multiLineString.addLineString(lineString)
+                line_string.add_coordinate(coordinate)
+            multi_line_string.add_line_string(line_string)
+        return multi_line_string
 
-        return multiLineString
-
-    def _getTruncatedLineStrings(self, rows: list) -> MultiLineString:
-        segmentList = segmentQuery(rows, "transition_id")
-        multiLineString = MultiLineString()
-        for segmentItem in segmentList:
-            if len(segmentItem) > 1:
-                for fromPoint, toPoint in zip(segmentItem, segmentItem[1:]):
-                    lineString = LineString()
-                    bearing = haversineGreatCircleBearing(
-                        fromPoint.get("lat"),
-                        fromPoint.get("lon"),
-                        toPoint.get("lat"),
-                        toPoint.get("lon"),
+    def _get_truncated_line_strings(self, rows: list) -> MultiLineString:
+        segment_list = segment_query(rows, "transition_id")
+        multi_line_string = MultiLineString()
+        for segment_item in segment_list:
+            if len(segment_item) > 1:
+                for from_point, to_point in zip(segment_item, segment_item[1:]):
+                    line_string = LineString()
+                    bearing = haversine_great_circle_bearing(
+                        from_point.get("lat"),
+                        from_point.get("lon"),
+                        to_point.get("lat"),
+                        to_point.get("lon"),
                     )
-                    newFrom = latLonFromPBD(
-                        fromPoint.get("lat"),
-                        fromPoint.get("lon"),
+                    new_from = lat_lon_from_pbd(
+                        from_point.get("lat"),
+                        from_point.get("lon"),
                         bearing,
-                        self.symbolScale,
+                        self.symbol_scale,
                     )
-                    inverse = inverseBearing(bearing)
-                    newTo = latLonFromPBD(
-                        toPoint.get("lat"),
-                        toPoint.get("lon"),
+                    inverse = inverse_bearing(bearing)
+                    new_to = lat_lon_from_pbd(
+                        to_point.get("lat"),
+                        to_point.get("lon"),
                         inverse,
-                        self.symbolScale,
+                        self.symbol_scale,
                     )
-                    coordinate = Coordinate(newFrom.get("lat"), newFrom.get("lon"))
-                    lineString.addCoordinate(coordinate)
-                    coordinate = Coordinate(newTo.get("lat"), newTo.get("lon"))
-                    lineString.addCoordinate(coordinate)
-                    multiLineString.addLineString(lineString)
-        return multiLineString
+                    coordinate = Coordinate(new_from.get("lat"), new_from.get("lon"))
+                    line_string.add_coordinate(coordinate)
+                    coordinate = Coordinate(new_to.get("lat"), new_to.get("lon"))
+                    line_string.add_coordinate(coordinate)
+                    multi_line_string.add_line_string(line_string)
+        return multi_line_string
 
-    def _getArrowLineFeatures(self, rows: list) -> list[Feature]:
-        selectedRouteTypes = self._optionsToRouteType()
-        startTypes = selectedRouteTypes[:2]
-        endTypes = selectedRouteTypes[-2:]
-        segmentList = segmentQuery(rows, "transition_id")
+    def _get_arrow_line_features(self, rows: list) -> list[Feature]:
+        selected_route_types = self._options_to_route_type()
+        start_types = selected_route_types[:2]
+        end_types = selected_route_types[-2:]
+        segment_list = segment_query(rows, "transition_id")
         result = []
-        for segmentItem in segmentList:
-            if len(segmentItem) > 1:
-                for index, (fromPoint, toPoint) in enumerate(
-                    zip(segmentItem, segmentItem[1:])
+        for segment_item in segment_list:
+            if len(segment_item) > 1:
+                for index, (from_point, to_point) in enumerate(
+                    zip(segment_item, segment_item[1:])
                 ):
-                    bearing = haversineGreatCircleBearing(
-                        fromPoint.get("lat"),
-                        fromPoint.get("lon"),
-                        toPoint.get("lat"),
-                        toPoint.get("lon"),
+                    bearing = haversine_great_circle_bearing(
+                        from_point.get("lat"),
+                        from_point.get("lon"),
+                        to_point.get("lat"),
+                        to_point.get("lon"),
                     )
-                    arrowHead = SymbolDraw(
+                    arrow_head = SymbolDraw(
                         "ARROW_HEAD",
-                        fromPoint.get("lat"),
-                        fromPoint.get("lon"),
+                        from_point.get("lat"),
+                        from_point.get("lon"),
                         bearing,
-                        self.symbolScale,
+                        self.symbol_scale,
                     )
-                    result.append(arrowHead.getFeature())
-                    arrowTail = SymbolDraw(
+                    result.append(arrow_head.get_feature())
+                    arrow_tail = SymbolDraw(
                         "ARROW_TAIL",
-                        toPoint.get("lat"),
-                        toPoint.get("lon"),
+                        to_point.get("lat"),
+                        to_point.get("lon"),
                         bearing,
-                        self.symbolScale,
+                        self.symbol_scale,
                     )
-                    result.append(arrowTail.getFeature())
-                    if index == 0 and fromPoint.get("route_type") in startTypes:
+                    result.append(arrow_tail.get_feature())
+                    if index == 0 and from_point.get("route_type") in start_types:
                         circle = SymbolDraw(
                             "CIRCLE_S",
-                            fromPoint.get("lat"),
-                            fromPoint.get("lon"),
+                            from_point.get("lat"),
+                            from_point.get("lon"),
                             0,
-                            self.symbolScale,
+                            self.symbol_scale,
                         )
-                        result.append(circle.getFeature())
+                        result.append(circle.get_feature())
                     if (
-                        index == len(segmentItem) - 2
-                        and toPoint.get("route_type") in endTypes
+                        index == len(segment_item) - 2
+                        and to_point.get("route_type") in end_types
                     ):
-                        arrowHead = SymbolDraw(
+                        arrow_head = SymbolDraw(
                             "ARROW_HEAD_HOLLOW",
-                            toPoint.get("lat"),
-                            toPoint.get("lon"),
+                            to_point.get("lat"),
+                            to_point.get("lon"),
                             bearing,
-                            self.symbolScale,
+                            self.symbol_scale,
                         )
-                        result.append(arrowHead.getFeature())
-
+                        result.append(arrow_head.get_feature())
         return result
 
-    def _getTextFeatures(self, rows: list) -> list[Feature]:
-        seenIds = set()
-        filteredRows = []
+    def _get_text_features(self, rows: list) -> list[Feature]:
+        seen_ids = set()
+        filtered_rows = []
         for row in rows:
-            if row["fix_id"] not in seenIds:
-                filteredRows.append(row)
-                seenIds.add(row["fix_id"])
+            if row["fix_id"] not in seen_ids:
+                filtered_rows.append(row)
+                seen_ids.add(row["fix_id"])
 
         result = []
-        for row in filteredRows:
-            offsetLat = self.yOffset + row["lat"]
-            offsetLon = self.xOffset + row["lon"]
-            textDraw = TextDraw(row["fix_id"], offsetLat, offsetLon, self.textScale)
-            result.append(textDraw.getFeature())
-            linesUsed = 1
+        for row in filtered_rows:
+            offset_lat = self.y_offset + row["lat"]
+            offset_lon = self.x_offset + row["lon"]
+            text_draw = TextDraw(row["fix_id"], offset_lat, offset_lon, self.text_scale)
+            result.append(text_draw.get_feature())
+            lines_used = 1
 
-            if self.drawAltitudes:
+            if self.draw_altitudes:
                 if (
                     row["altitude"]
                     or row["flight_level"]
                     or row["altitude_2"]
                     or row["flight_level_2"]
                 ):
-                    altDesc = row["alt_desc"]
+                    alt_desc = row["alt_desc"]
                     if row["altitude"] or row["flight_level"]:
-                        offsetLat = (
-                            self.yOffset
+                        offset_lat = (
+                            self.y_offset
                             + row["lat"]
-                            - (self.lineBuffer * linesUsed * ARC_MIN)
+                            - (self.line_buffer * lines_used * ARC_MIN)
                         )
-                        offsetLon = self.xOffset + row["lon"]
-                        altitudeValue = (
+                        offset_lon = self.x_offset + row["lon"]
+                        altitude_value = (
                             row["altitude"]
                             if row["altitude"]
                             else f"FL{row["flight_level"]}"
                         )
-                        altitudeValue = (
-                            f"{altDesc}{altitudeValue}"
-                            if altDesc in ["+", "-"]
-                            else altitudeValue
+                        altitude_value = (
+                            f"{alt_desc}{altitude_value}"
+                            if alt_desc in ["+", "-"]
+                            else altitude_value
                         )
-                        textDraw = TextDraw(
-                            str(altitudeValue), offsetLat, offsetLon, self.textScale
+                        text_draw = TextDraw(
+                            str(altitude_value), offset_lat, offset_lon, self.text_scale
                         )
-                        result.append(textDraw.getFeature())
-                        linesUsed += 1
+                        result.append(text_draw.get_feature())
+                        lines_used += 1
                     if row["altitude_2"] or row["flight_level_2"]:
-                        offsetLat = (
-                            self.yOffset
+                        offset_lat = (
+                            self.y_offset
                             + row["lat"]
-                            - (self.lineBuffer * linesUsed * ARC_MIN)
+                            - (self.line_buffer * lines_used * ARC_MIN)
                         )
-                        offsetLon = self.xOffset + row["lon"]
-                        altitudeValue = (
+                        offset_lon = self.x_offset + row["lon"]
+                        altitude_value = (
                             row["altitude_2"]
                             if row["altitude_2"]
                             else f"FL{row["flight_level_2"]}"
                         )
-                        textDraw = TextDraw(
-                            str(altitudeValue), offsetLat, offsetLon, self.textScale
+                        text_draw = TextDraw(
+                            str(altitude_value), offset_lat, offset_lon, self.text_scale
                         )
-                        result.append(textDraw.getFeature())
-                        linesUsed += 1
+                        result.append(text_draw.get_feature())
+                        lines_used += 1
 
-            if self.drawSpeeds:
+            if self.draw_speeds:
                 if row["speed_limit"]:
-                    offsetLat = (
-                        self.yOffset
+                    offset_lat = (
+                        self.y_offset
                         + row["lat"]
-                        - (self.lineBuffer * linesUsed * ARC_MIN)
+                        - (self.line_buffer * lines_used * ARC_MIN)
                     )
-                    offsetLon = self.xOffset + row["lon"]
-                    textDraw = TextDraw(
+                    offset_lon = self.x_offset + row["lon"]
+                    text_draw = TextDraw(
                         str(row["speed_limit"]),
-                        offsetLat,
-                        offsetLon,
-                        self.textScale,
+                        offset_lat,
+                        offset_lon,
+                        self.text_scale,
                     )
-                    result.append(textDraw.getFeature())
-
+                    result.append(text_draw.get_feature())
         return result
 
-    def _getSymbolFeatures(self, rows: list) -> list[Feature]:
-        seenIds = set()
-        filteredRows = []
+    def _get_symbol_features(self, rows: list) -> list[Feature]:
+        seen_ids = set()
+        filtered_rows = []
         for row in rows:
-            if row["fix_id"] not in seenIds:
-                filteredRows.append(row)
-                seenIds.add(row["fix_id"])
+            if row["fix_id"] not in seen_ids:
+                filtered_rows.append(row)
+                seen_ids.add(row["fix_id"])
 
         result = []
-        for row in filteredRows:
+        for row in filtered_rows:
             if row["type"] == "W":
-                symbolDraw = SymbolDraw(
-                    "RNAV", row["lat"], row["lon"], symbolScale=self.symbolScale
+                symbol_draw = SymbolDraw(
+                    "RNAV", row["lat"], row["lon"], symbol_scale=self.symbol_scale
                 )
-                result.append(symbolDraw.getFeature())
+                result.append(symbol_draw.get_feature())
             if row["type"] in ["C", "R"]:
-                symbolDraw = SymbolDraw(
-                    "TRIANGLE", row["lat"], row["lon"], symbolScale=self.symbolScale
+                symbol_draw = SymbolDraw(
+                    "TRIANGLE", row["lat"], row["lon"], symbol_scale=self.symbol_scale
                 )
-                result.append(symbolDraw.getFeature())
+                result.append(symbol_draw.get_feature())
             if row["type"] == "VORDME":
-                symbolDraw = SymbolDraw(
-                    "DME_BOX", row["lat"], row["lon"], symbolScale=self.symbolScale
+                symbol_draw = SymbolDraw(
+                    "DME_BOX", row["lat"], row["lon"], symbol_scale=self.symbol_scale
                 )
-                result.append(symbolDraw.getFeature())
-                symbolDraw = SymbolDraw(
-                    "HEXAGON", row["lat"], row["lon"], symbolScale=self.symbolScale
+                result.append(symbol_draw.get_feature())
+                symbol_draw = SymbolDraw(
+                    "HEXAGON", row["lat"], row["lon"], symbol_scale=self.symbol_scale
                 )
-                result.append(symbolDraw.getFeature())
+                result.append(symbol_draw.get_feature())
             if row["type"] == "VOR":
-                symbolDraw = SymbolDraw(
-                    "HEXAGON", row["lat"], row["lon"], symbolScale=self.symbolScale
+                symbol_draw = SymbolDraw(
+                    "HEXAGON", row["lat"], row["lon"], symbol_scale=self.symbol_scale
                 )
-                result.append(symbolDraw.getFeature())
+                result.append(symbol_draw.get_feature())
             if row["type"] == "DME":
-                symbolDraw = SymbolDraw(
-                    "DME_BOX", row["lat"], row["lon"], symbolScale=self.symbolScale
+                symbol_draw = SymbolDraw(
+                    "DME_BOX", row["lat"], row["lon"], symbol_scale=self.symbol_scale
                 )
-                result.append(symbolDraw.getFeature())
+                result.append(symbol_draw.get_feature())
             if row["type"] == "NDB":
-                symbolDraw = SymbolDraw(
-                    "CIRCLE_L", row["lat"], row["lon"], symbolScale=self.symbolScale
+                symbol_draw = SymbolDraw(
+                    "CIRCLE_L", row["lat"], row["lon"], symbol_scale=self.symbol_scale
                 )
-                result.append(symbolDraw.getFeature())
-
+                result.append(symbol_draw.get_feature())
         return result
 
-    def _toFile(self) -> None:
-        rows = self._queryDB()
-        featureCollection = FeatureCollection()
+    def _to_file(self) -> None:
+        rows = self._query_db()
+        feature_collection = FeatureCollection()
 
-        if self.lineStyle == "arrows":
-            featureArray = self._getArrowLineFeatures(rows)
-            for feature in featureArray:
-                featureCollection.addFeature(feature)
+        if self.line_style == "arrows":
+            feature_array = self._get_arrow_line_features(rows)
+            for feature in feature_array:
+                feature_collection.add_feature(feature)
 
-        if self.lineStyle not in ["none", "arrows"]:
-            if self.drawSymbols:
-                multiLineString = self._getTruncatedLineStrings(rows)
+        if self.line_style not in ["none", "arrows"]:
+            if self.draw_symbols:
+                multi_line_string = self._get_truncated_line_strings(rows)
             else:
-                multiLineString = self._getLineStrings(rows)
+                multi_line_string = self._get_line_strings(rows)
 
             feature = Feature()
-            feature.addMultiLineString(multiLineString)
+            feature.add_multi_line_string(multi_line_string)
 
-            featureCollection.addFeature(feature)
+            feature_collection.add_feature(feature)
 
-        if self.drawNames:
-            featureArray = self._getTextFeatures(rows)
-            for feature in featureArray:
-                featureCollection.addFeature(feature)
+        if self.draw_names:
+            feature_array = self._get_text_features(rows)
+            for feature in feature_array:
+                feature_collection.add_feature(feature)
 
-        if self.drawSymbols:
-            featureArray = self._getSymbolFeatures(rows)
-            for feature in featureArray:
-                featureCollection.addFeature(feature)
+        if self.draw_symbols:
+            feature_array = self._get_symbol_features(rows)
+            for feature in feature_array:
+                feature_collection.add_feature(feature)
 
-        geoJSON = GeoJSON(self.fileName)
-        geoJSON.addFeatureCollection(featureCollection)
-        geoJSON.toFile()
+        geo_json = GeoJSON(self.file_name)
+        geo_json.add_feature_collection(feature_collection)
+        geo_json.to_file()
+        return

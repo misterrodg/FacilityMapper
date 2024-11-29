@@ -1,5 +1,5 @@
 from modules.DirPaths import NAVDATA_DIR, VIDMAP_DIR
-from modules.FileHandler import checkPath, deleteAllInSubdir
+from modules.FileHandler import check_path, delete_all_in_subdir
 from modules.Manifest import Manifest
 
 from cifparse import CIFP
@@ -12,12 +12,12 @@ DB_FILE_PATH = f"{NAVDATA_DIR}/FAACIFP18.db"
 CIFP_FILE_PATH = f"{NAVDATA_DIR}/FAACIFP18"
 
 
-def purgeVidmaps() -> None:
-    if checkPath(VIDMAP_DIR):
-        deleteAllInSubdir(".geojson", VIDMAP_DIR)
+def purge_vidmaps() -> None:
+    if check_path(VIDMAP_DIR):
+        delete_all_in_subdir(".geojson", VIDMAP_DIR)
 
 
-def refreshDatabase() -> None:
+def refresh_database() -> None:
     if os.path.exists(DB_FILE_PATH):
         os.remove(DB_FILE_PATH)
     connection = sqlite3.connect(DB_FILE_PATH)
@@ -40,15 +40,15 @@ def main():
     parser.add_argument("-r", "--refresh", action="store_true", help="refresh database")
     parser.add_argument("-n", "--nodraw", action="store_true", help="skip draw")
     args = parser.parse_args()
-    shouldPurge = args.purge
-    shouldRefresh = args.refresh
-    shouldSkipDraw = args.nodraw
-    if shouldPurge:
-        purgeVidmaps()
-    if shouldRefresh:
-        refreshDatabase()
+    should_purge = args.purge
+    should_refresh = args.refresh
+    should_skip_draw = args.nodraw
+    if should_purge:
+        purge_vidmaps()
+    if should_refresh:
+        refresh_database()
 
-    if not shouldSkipDraw:
+    if not should_skip_draw:
         connection = sqlite3.connect(DB_FILE_PATH)
         connection.row_factory = sqlite3.Row
         cursor = connection.cursor()

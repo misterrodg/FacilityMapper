@@ -9,40 +9,42 @@ SUPPORTED_TYPES = ["LABEL", "SID", "STAR"]
 
 
 class Map:
-    def __init__(self, dbCursor: Cursor, mapDict: dict) -> None:
-        self.mapType = None
+    def __init__(self, db_cursor: Cursor, map_dict: dict) -> None:
+        self.map_type = None
         self.definition = None
-        self.dbCursor = dbCursor
-        self.isValid = False
+        self.db_cursor = db_cursor
+        self.is_valid = False
 
-        self._validate(mapDict)
+        self._validate(map_dict)
 
-        if self.isValid:
+        if self.is_valid:
             self.process()
 
-    def _validate(self, mapDict: dict) -> None:
-        mapType = mapDict.get("map_type")
-        if mapType is None:
-            print(f"{ERROR_HEADER}Missing `map_type` in:\n{print_top_level(mapDict)}")
+    def _validate(self, map_dict: dict) -> None:
+        map_type = map_dict.get("map_type")
+        if map_type is None:
+            print(f"{ERROR_HEADER}Missing `map_type` in:\n{print_top_level(map_dict)}")
             return
 
-        if mapType not in SUPPORTED_TYPES:
-            print(f"{ERROR_HEADER}map_type '{mapType}' not recognized.")
+        if map_type not in SUPPORTED_TYPES:
+            print(f"{ERROR_HEADER}map_type '{map_type}' not recognized.")
             print(f"{ERROR_HEADER}Supported types are {", ".join(SUPPORTED_TYPES)}.")
             return
 
-        definition = mapDict.get("definition")
+        definition = map_dict.get("definition")
         if definition is None:
-            print(f"{ERROR_HEADER}Missing `definition` in:\n{print_top_level(mapDict)}")
+            print(
+                f"{ERROR_HEADER}Missing `definition` in:\n{print_top_level(map_dict)}"
+            )
             return
 
-        self.mapType = mapType
+        self.map_type = map_type
         self.definition = definition
-        self.isValid = True
+        self.is_valid = True
         return
 
     def process(self) -> None:
-        if self.mapType == "SID" or self.mapType == "STAR":
-            SIDSTAR(self.dbCursor, self.mapType, self.definition)
-        if self.mapType == "LABEL":
+        if self.map_type == "SID" or self.map_type == "STAR":
+            SIDSTAR(self.db_cursor, self.map_type, self.definition)
+        if self.map_type == "LABEL":
             Label(self.definition)
