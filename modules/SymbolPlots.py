@@ -5,6 +5,41 @@ PLOT_WIDTH = 21
 
 UNRECOGNIZED = [{"lat_offset": 0, "lon_offset": 0}]
 
+ARROW_HEAD = [
+    {"lat_offset": 0, "lon_offset": 0},
+    {"lat_offset": 11, "lon_offset": 0},
+    {"lat_offset": 11, "lon_offset": -9},
+    {"lat_offset": 20, "lon_offset": 0},
+    {"lat_offset": 11, "lon_offset": 9},
+    {"lat_offset": 11, "lon_offset": -8},
+    {"lat_offset": 19, "lon_offset": 0},
+    {"lat_offset": 12, "lon_offset": 7},
+    {"lat_offset": 12, "lon_offset": -6},
+    {"lat_offset": 18, "lon_offset": 0},
+    {"lat_offset": 13, "lon_offset": 5},
+    {"lat_offset": 13, "lon_offset": -4},
+    {"lat_offset": 17, "lon_offset": 0},
+    {"lat_offset": 14, "lon_offset": 3},
+    {"lat_offset": 14, "lon_offset": -2},
+    {"lat_offset": 16, "lon_offset": 0},
+    {"lat_offset": 15, "lon_offset": 1},
+    {"lat_offset": 15, "lon_offset": 0},
+]
+
+ARROW_HEAD_HOLLOW = [
+    {"lat_offset": 0, "lon_offset": 0},
+    {"lat_offset": 11, "lon_offset": 0},
+    {"lat_offset": 11, "lon_offset": -9},
+    {"lat_offset": 20, "lon_offset": 0},
+    {"lat_offset": 11, "lon_offset": 9},
+    {"lat_offset": 11, "lon_offset": 0},
+]
+
+ARROW_TAIL = [
+    {"lat_offset": 0, "lon_offset": 0},
+    {"lat_offset": -20, "lon_offset": 0},
+]
+
 TRIANGLE = [
     {"lat_offset": 9, "lon_offset": 0},
     {"lat_offset": -8, "lon_offset": 10},
@@ -101,6 +136,12 @@ RNAV = [
 
 def getPlotFromString(textValue: str) -> list[dict]:
     upperValue = textValue.upper()
+    if upperValue == "ARROW_HEAD":
+        return ARROW_HEAD
+    if upperValue == "ARROW_HEAD_HOLLOW":
+        return ARROW_HEAD_HOLLOW
+    if upperValue == "ARROW_TAIL":
+        return ARROW_TAIL
     if upperValue == "TRIANGLE":
         return TRIANGLE
     if upperValue == "SQUARE":
