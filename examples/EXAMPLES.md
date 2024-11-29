@@ -84,3 +84,35 @@ This example calls for a map of three labels, showing its usefulness in creating
 ```
 
 ![](./images/FREQS.png)
+
+### Label Supported Characters
+
+This example calls for a map of three labels, showing the supported characters.
+
+```json
+{
+  "map_type": "LABEL",
+  "definition": {
+    "lines": [
+      {
+        "line": "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z",
+        "lat": 40,
+        "lon": -44
+      },
+      {
+        "line": "0 1 2 3 4 5 6 7 8 9",
+        "lat": 39.98,
+        "lon": -44
+      },
+      {
+        "line": "+ - .",
+        "lat": 39.96,
+        "lon": -44
+      }
+    ],
+    "file_name": "LABELS"
+  }
+}
+```
+
+![](./images/CHARS.png)
