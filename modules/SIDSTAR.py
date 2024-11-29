@@ -124,29 +124,29 @@ class SIDSTAR:
             result = "'E'"
         return result
 
-    def _optionsToRouteType(self) -> str:
-        result = ["'2','5'"]
+    def _optionsToRouteType(self) -> list:
+        result = ["2", "5"]
 
         if self.mapType == "SID":
             if self.drawRunwayTransitions:
-                result = ["'1','4'"] + result
+                result = ["1", "4"] + result
             if self.drawEnrouteTransitions:
-                result = result + ["'3','6'"]
+                result = result + ["3", "6"]
 
         if self.mapType == "STAR":
             if self.drawEnrouteTransitions:
-                result = ["'1','4'"] + result
+                result = ["1", "4"] + result
             if self.drawRunwayTransitions:
-                result = result + ["'3','6'"]
+                result = result + ["3", "6"]
 
-        result = ",".join(result)
         return result
 
     def _toQuery(self) -> str:
         fac_id = f"'{self.airportId}'"
         fac_sub_code = self._mapTypeToFacSubCode()
         procedure_id = f"'{translateWildcard(self.procedureId)}'"
-        route_type = self._optionsToRouteType()
+        route_type_array = self._optionsToRouteType()
+        route_type_string = ",".join(f"'{str(x)}'" for x in route_type_array)
 
         return f"""
         WITH unified_table AS (
