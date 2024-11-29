@@ -164,7 +164,7 @@ class SIDSTAR:
         SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.alt_desc,p.altitude,p.flight_level,p.altitude_2,p.flight_level_2,p.speed_limit,p.fix_id,lat,lon,type
         FROM procedure_points AS p
         JOIN unified_table AS u ON p.fix_id = u.id
-        WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type})
+        WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type_string}) AND p.path_term != 'FM'
         ORDER BY p.procedure_id,p.transition_id,p.route_type,p.sequence_number;
         """
 
@@ -218,6 +218,63 @@ class SIDSTAR:
                     lineString.addCoordinate(coordinate)
                     multiLineString.addLineString(lineString)
         return multiLineString
+
+    def _getArrowLineFeatures(self, rows: list) -> list[Feature]:
+        selectedRouteTypes = self._optionsToRouteType()
+        startTypes = selectedRouteTypes[:2]
+        endTypes = selectedRouteTypes[-2:]
+        segmentList = segmentQuery(rows, "transition_id")
+        result = []
+        for segmentItem in segmentList:
+            if len(segmentItem) > 1:
+                for index, (fromPoint, toPoint) in enumerate(
+                    zip(segmentItem, segmentItem[1:])
+                ):
+                    bearing = haversineGreatCircleBearing(
+                        fromPoint.get("lat"),
+                        fromPoint.get("lon"),
+                        toPoint.get("lat"),
+                        toPoint.get("lon"),
+                    )
+                    arrowHead = SymbolDraw(
+                        "ARROW_HEAD",
+                        fromPoint.get("lat"),
+                        fromPoint.get("lon"),
+                        bearing,
+                        self.symbolScale,
+                    )
+                    result.append(arrowHead.getFeature())
+                    arrowTail = SymbolDraw(
+                        "ARROW_TAIL",
+                        toPoint.get("lat"),
+                        toPoint.get("lon"),
+                        bearing,
+                        self.symbolScale,
+                    )
+                    result.append(arrowTail.getFeature())
+                    if index == 0 and fromPoint.get("route_type") in startTypes:
+                        circle = SymbolDraw(
+                            "CIRCLE_S",
+                            fromPoint.get("lat"),
+                            fromPoint.get("lon"),
+                            0,
+                            self.symbolScale,
+                        )
+                        result.append(circle.getFeature())
+                    if (
+                        index == len(segmentItem) - 2
+                        and toPoint.get("route_type") in endTypes
+                    ):
+                        arrowHead = SymbolDraw(
+                            "ARROW_HEAD_HOLLOW",
+                            toPoint.get("lat"),
+                            toPoint.get("lon"),
+                            bearing,
+                            self.symbolScale,
+                        )
+                        result.append(arrowHead.getFeature())
+
+        return result
 
     def _getTextFeatures(self, rows: list) -> list[Feature]:
         seenIds = set()
@@ -352,7 +409,12 @@ class SIDSTAR:
         rows = self._queryDB()
         featureCollection = FeatureCollection()
 
-        if self.lineStyle != "none":
+        if self.lineStyle == "arrows":
+            featureArray = self._getArrowLineFeatures(rows)
+            for feature in featureArray:
+                featureCollection.addFeature(feature)
+
+        if self.lineStyle not in ["none", "arrows"]:
             if self.drawSymbols:
                 multiLineString = self._getTruncatedLineStrings(rows)
             else:
