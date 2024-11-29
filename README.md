@@ -80,7 +80,7 @@ The SID object has the following properties:
 
 #### STAR
 
-The STAR object is defined using the same properties as [SID](#sid)
+The STAR object is defined using the same properties as [SID](#sid).
 
 #### Label
 
@@ -114,6 +114,8 @@ The following characters are currently supported:
 | Alpha   | `A`,`B`,`C`,`D`,`E`,`F`,`G`,`H`,`I`,`J`,`K`,`L`,`M`,`N`,`O`,`P`,`Q`,`R`,`S`,`T`,`U`,`V`,`W`,`X`,`Y`,`Z` |
 | Other   | `+`,`-`,`.`,`⎵` (space)                                                                                 |
 
+What the characters look like is shown in [EXAMPLES](./examples/EXAMPLES.md#label-supported-characters).
+
 ## Drawing the Facility
 
 Run the following command:
@@ -122,7 +124,7 @@ Run the following command:
 python3 main.py
 ```
 
-The resulting file(s) will be in `./vidmaps`
+The resulting file(s) will be in `./vidmaps`.
 
 ### Additional Command Line Arguments
 
