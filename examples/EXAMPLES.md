@@ -4,7 +4,7 @@ The information in the [README](../README.md) is pretty dense. To help explain, 
 
 ## SID / STAR
 
-### Example 1
+### STAR Symbols and Text
 
 This manifest calls for a map of the `GIBBZ` STAR to KIAD. It has no line draw, but symbols, altitudes, speeds, and names. The text has been moved to the right slightly via the `"x_offset": 1`, and down slightly via the `"y_offset": -1`.
 
@@ -30,7 +30,7 @@ This manifest calls for a map of the `GIBBZ` STAR to KIAD. It has no line draw, 
 
 ![](./images/GIBBZ.png)
 
-### Example 2
+### SID Symbols and Lines
 
 This manifest calls for a map of the `BUNZZ` SID from KIAD. It has a `"solid"` line draw, and symbols. The lines are automatically truncated around the symbols. While this SID has performance-based data between the airport and the first points (runway heading to 500' AGL, then a turn to direct), the script is not yet able to plot the data.
 
@@ -53,7 +53,7 @@ This manifest calls for a map of the `BUNZZ` SID from KIAD. It has a `"solid"` l
 
 ## Label
 
-### Example 1
+### Label Frequencies
 
 This example calls for a map of three labels, showing its usefulness in creating frequency/handoff maps.
 
