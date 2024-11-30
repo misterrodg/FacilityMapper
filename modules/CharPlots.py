@@ -529,15 +529,6 @@ ZZ = [
 ]
 
 
-def getPlotWidth(charPlot: list[list]) -> int:
-    result = 0
-    for line in charPlot:
-        width = line[1]
-        if width > result:
-            result = width
-    return result
-
-
 def get_plot_from_char(textValue: str) -> list[list]:
     upperValue = textValue.capitalize()
     if upperValue == " ":
