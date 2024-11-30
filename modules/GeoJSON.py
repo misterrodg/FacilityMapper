@@ -159,6 +159,16 @@ class Properties:
         return bool(re.match(pattern, hex_string))
 
 
+class Point:
+    def __init__(self):
+        self.type = "Point"
+        self.coordinates = []
+
+    def set_coordinate(self, coordinate: Coordinate) -> None:
+        self.coordinates.append(coordinate.to_geo_json())
+        return
+
+
 class LineString:
     def __init__(self):
         self.type = "LineString"
