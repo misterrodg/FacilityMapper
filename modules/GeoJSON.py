@@ -164,8 +164,8 @@ class LineString:
         self.type = "LineString"
         self.coordinates = []
 
-    def add_coordinate(self, coordinate_pair: Coordinate) -> None:
-        self.coordinates.append(coordinate_pair.to_geo_json())
+    def add_coordinate(self, coordinate: Coordinate) -> None:
+        self.coordinates.append(coordinate.to_geo_json())
         return
 
     def to_coordinates(self) -> list:
