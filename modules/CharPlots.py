@@ -529,86 +529,86 @@ ZZ = [
 ]
 
 
-def get_plot_from_char(textValue: str) -> list[list]:
-    upperValue = textValue.capitalize()
-    if upperValue == " ":
+def get_plot_from_char(text_value: str) -> list[list]:
+    upper_value = text_value.capitalize()
+    if upper_value == " ":
         return SPACE
-    if upperValue == ".":
+    if upper_value == ".":
         return DOT
-    if upperValue == "-":
+    if upper_value == "-":
         return MINUS
-    if upperValue == "+":
+    if upper_value == "+":
         return PLUS
-    if upperValue == "0":
+    if upper_value == "0":
         return ZERO
-    if upperValue == "1":
+    if upper_value == "1":
         return ONE
-    if upperValue == "2":
+    if upper_value == "2":
         return TWO
-    if upperValue == "3":
+    if upper_value == "3":
         return THREE
-    if upperValue == "4":
+    if upper_value == "4":
         return FOUR
-    if upperValue == "5":
+    if upper_value == "5":
         return FIVE
-    if upperValue == "6":
+    if upper_value == "6":
         return SIX
-    if upperValue == "7":
+    if upper_value == "7":
         return SEVEN
-    if upperValue == "8":
+    if upper_value == "8":
         return EIGHT
-    if upperValue == "9":
+    if upper_value == "9":
         return NINE
-    if upperValue == "A":
+    if upper_value == "A":
         return AA
-    if upperValue == "B":
+    if upper_value == "B":
         return BB
-    if upperValue == "C":
+    if upper_value == "C":
         return CC
-    if upperValue == "D":
+    if upper_value == "D":
         return DD
-    if upperValue == "E":
+    if upper_value == "E":
         return EE
-    if upperValue == "F":
+    if upper_value == "F":
         return FF
-    if upperValue == "G":
+    if upper_value == "G":
         return GG
-    if upperValue == "H":
+    if upper_value == "H":
         return HH
-    if upperValue == "I":
+    if upper_value == "I":
         return II
-    if upperValue == "J":
+    if upper_value == "J":
         return JJ
-    if upperValue == "K":
+    if upper_value == "K":
         return KK
-    if upperValue == "L":
+    if upper_value == "L":
         return LL
-    if upperValue == "M":
+    if upper_value == "M":
         return MM
-    if upperValue == "N":
+    if upper_value == "N":
         return NN
-    if upperValue == "O":
+    if upper_value == "O":
         return OO
-    if upperValue == "P":
+    if upper_value == "P":
         return PP
-    if upperValue == "Q":
+    if upper_value == "Q":
         return QQ
-    if upperValue == "R":
+    if upper_value == "R":
         return RR
-    if upperValue == "S":
+    if upper_value == "S":
         return SS
-    if upperValue == "T":
+    if upper_value == "T":
         return TT
-    if upperValue == "U":
+    if upper_value == "U":
         return UU
-    if upperValue == "V":
+    if upper_value == "V":
         return VV
-    if upperValue == "W":
+    if upper_value == "W":
         return WW
-    if upperValue == "X":
+    if upper_value == "X":
         return XX
-    if upperValue == "Y":
+    if upper_value == "Y":
         return YY
-    if upperValue == "Z":
+    if upper_value == "Z":
         return ZZ
     return UNRECOGNIZED
