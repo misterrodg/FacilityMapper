@@ -125,27 +125,50 @@ def _draw_dashed_line(
             SHORT_DASH_LENGTH,
             SHORT_DASH_LENGTH,
         ]
+    pattern_length = sum(pattern)
+    full_patterns = int(total_distance // pattern_length)
     current_distance = 0
-    pattern_index = 0
 
-    while current_distance < total_distance:
-        segment_length = pattern[pattern_index]
+    for _ in range(full_patterns):
+        for i, segment_length in enumerate(pattern):
+            next_distance = current_distance + segment_length
+            if i % 2 == 0:
+                result.append(
+                    _handle_dash_segment(
+                        from_lat, from_lon, bearing, current_distance, next_distance
+                    )
+                )
+            current_distance = next_distance
+
+    for i, segment_length in enumerate(pattern):
+        if current_distance >= total_distance:
+            break
         next_distance = current_distance + segment_length
-
-        if pattern_index % 2 == 0:
-            line_string = LineString()
-            start_point = lat_lon_from_pbd(
-                from_lat, from_lon, bearing, current_distance
+        if next_distance > total_distance:
+            next_distance = total_distance
+        if i % 2 == 0:
+            result.append(
+                _handle_dash_segment(
+                    from_lat, from_lon, bearing, current_distance, next_distance
+                )
             )
-            coordinate = Coordinate(start_point.get("lat"), start_point.get("lon"))
-            line_string.add_coordinate(coordinate)
-
-            end_distance = min(next_distance, total_distance)
-            end_point = lat_lon_from_pbd(from_lat, from_lon, bearing, end_distance)
-            coordinate = Coordinate(end_point.get("lat"), end_point.get("lon"))
-            line_string.add_coordinate(coordinate)
-            result.append(line_string)
-
         current_distance = next_distance
-        pattern_index = (pattern_index + 1) % len(pattern)
+    return result
+
+
+def _handle_dash_segment(
+    from_lat: float,
+    from_lon: float,
+    bearing: float,
+    current_distance: float,
+    next_distance: float,
+) -> LineString:
+    result = LineString()
+    start_point = lat_lon_from_pbd(from_lat, from_lon, bearing, current_distance)
+    coordinate = Coordinate(start_point.get("lat"), start_point.get("lon"))
+    result.add_coordinate(coordinate)
+
+    end_point = lat_lon_from_pbd(from_lat, from_lon, bearing, next_distance)
+    coordinate = Coordinate(end_point.get("lat"), end_point.get("lon"))
+    result.add_coordinate(coordinate)
     return result
