@@ -16,6 +16,8 @@ from modules.vNAS import (
     TEXT_SIZE_MAX,
 )
 
+from os.path import isfile, getsize
+
 import json
 import re
 
@@ -337,10 +339,16 @@ class FeatureCollection:
         self.features.append(feature)
         return
 
-    def to_dict(self) -> dict:
+    def get_features(self) -> list[Feature]:
+        return self.features
+
+    def to_dict(self, limit_to_features: bool = False) -> dict:
         features = []
-        for feature in self.features:
-            features.append(feature.to_dict())
+        if limit_to_features:
+            features.extend(self.features)
+        else:
+            for feature in self.features:
+                features.append(feature.to_dict())
         return {"type": self.type, "features": features}
 
     def from_dict(
@@ -372,8 +380,11 @@ class GeoJSON:
         self.feature_collection = feature_collection
         return
 
-    def to_file(self) -> None:
-        data_dictionary = self.feature_collection.to_dict()
+    def pluck_features(self) -> list[Feature]:
+        return self.feature_collection.get_features()
+
+    def to_file(self, limit_to_features: bool = False) -> None:
+        data_dictionary = self.feature_collection.to_dict(limit_to_features)
         with open(f"{VIDMAP_DIR}/{self.file_path}.geojson", "w") as json_file:
             json.dump(data_dictionary, json_file)
         return
@@ -390,4 +401,21 @@ class GeoJSON:
         feature_collection = FeatureCollection()
         feature_collection.from_dict(feature_collection_dict, limit_to_features)
         self.feature_collection = feature_collection
+        return
+
+    def from_file(self, file_name: str, limit_to_features: bool = False) -> None:
+        file_path = f"{VIDMAP_DIR}/{file_name}.geojson"
+        try:
+            if isfile(file_path) and getsize(file_path) > 0:
+                with open(file_path, "r") as json_file:
+                    json_dict = json.load(json_file)
+                    self.from_dict(json_dict, limit_to_features)
+            else:
+                print(f"{ERROR_HEADER}Cannot find map json data at {file_path}.")
+                print(
+                    f"{ERROR_HEADER}This is often caused by placing the `COMPOSITE` object above the source map object."
+                )
+        except json.JSONDecodeError:
+            print("Failed to decode JSON from the file.")
+        self.file_path = file_path
         return
