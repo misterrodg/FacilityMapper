@@ -1,20 +1,9 @@
-from modules.DrawHelper import (
-    ARC_MIN,
-    haversine_great_circle_bearing,
-    inverse_bearing,
-    lat_lon_from_pbd,
-)
+from modules.DrawHelper import ARC_MIN
 from modules.ErrorHelper import print_top_level
-from modules.GeoJSON import (
-    Coordinate,
-    Feature,
-    FeatureCollection,
-    GeoJSON,
-    LineString,
-    MultiLineString,
-)
+from modules.GeoJSON import FeatureCollection, GeoJSON
+from modules.LineHandler import get_line_strings
 from modules.QueryHandler import query_db
-from modules.QueryHelper import translate_wildcard, segment_query
+from modules.QueryHelper import translate_wildcard
 from modules.SIDSTARQueries import select_procedure_points
 from modules.SymbolHandler import get_arrow_line_symbol_features, get_symbol_features
 from modules.TextHandler import get_text_features
@@ -180,50 +169,6 @@ class SIDSTAR:
         )
         return result
 
-    def _get_line_strings(self, rows: list) -> MultiLineString:
-        segment_list = segment_query(rows, "transition_id")
-        multi_line_string = MultiLineString()
-        for segment_item in segment_list:
-            line_string = LineString()
-            for segment in segment_item:
-                coordinate = Coordinate(segment.get("lat"), segment.get("lon"))
-                line_string.add_coordinate(coordinate)
-            multi_line_string.add_line_string(line_string)
-        return multi_line_string
-
-    def _get_truncated_line_strings(self, rows: list) -> MultiLineString:
-        segment_list = segment_query(rows, "transition_id")
-        multi_line_string = MultiLineString()
-        for segment_item in segment_list:
-            if len(segment_item) > 1:
-                for from_point, to_point in zip(segment_item, segment_item[1:]):
-                    line_string = LineString()
-                    bearing = haversine_great_circle_bearing(
-                        from_point.get("lat"),
-                        from_point.get("lon"),
-                        to_point.get("lat"),
-                        to_point.get("lon"),
-                    )
-                    new_from = lat_lon_from_pbd(
-                        from_point.get("lat"),
-                        from_point.get("lon"),
-                        bearing,
-                        self.symbol_scale,
-                    )
-                    inverse = inverse_bearing(bearing)
-                    new_to = lat_lon_from_pbd(
-                        to_point.get("lat"),
-                        to_point.get("lon"),
-                        inverse,
-                        self.symbol_scale,
-                    )
-                    coordinate = Coordinate(new_from.get("lat"), new_from.get("lon"))
-                    line_string.add_coordinate(coordinate)
-                    coordinate = Coordinate(new_to.get("lat"), new_to.get("lon"))
-                    line_string.add_coordinate(coordinate)
-                    multi_line_string.add_line_string(line_string)
-        return multi_line_string
-
     def _to_file(self) -> None:
         feature_collection = FeatureCollection()
 
@@ -239,17 +184,15 @@ class SIDSTAR:
 
         if self.line_style not in ["none", "arrows"]:
             if self.draw_symbols:
-                multi_line_string = self._get_truncated_line_strings(
-                    self.runway_transitions + self.core + self.enroute_transitions
+                feature = get_line_strings(
+                    self.runway_transitions + self.core + self.enroute_transitions,
+                    True,
+                    self.symbol_scale,
                 )
             else:
-                multi_line_string = self._get_line_strings(
+                feature = get_line_strings(
                     self.runway_transitions + self.core + self.enroute_transitions
                 )
-
-            feature = Feature()
-            feature.add_multi_line_string(multi_line_string)
-
             feature_collection.add_feature(feature)
 
         if self.draw_names:
