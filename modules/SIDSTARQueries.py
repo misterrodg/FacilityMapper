@@ -13,9 +13,9 @@ def select_procedure_points(
         UNION
         SELECT ndb_id AS id,lat,lon,"NDB" AS type FROM ndbs
     )
-    SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.alt_desc,p.altitude,p.flight_level,p.altitude_2,p.flight_level_2,p.speed_limit,p.fix_id,lat,lon,type
+    SELECT p.*,lat,lon,type
     FROM procedure_points AS p
-    JOIN unified_table AS u ON p.fix_id = u.id
+    LEFT JOIN unified_table AS u ON p.fix_id = u.id
     WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type_string}) AND p.path_term != 'FM'
     ORDER BY p.procedure_id,p.transition_id,p.route_type,p.sequence_number;
     """

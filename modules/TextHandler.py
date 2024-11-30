@@ -18,6 +18,8 @@ def get_text_features(
     for row in filtered_rows:
         row_lat = row.get("lat")
         row_lon = row.get("lon")
+        if not row_lat or not row_lon:
+            continue
         offset_lat = y_offset + row_lat
         offset_lon = x_offset + row_lon
         text_draw = TextDraw(row["fix_id"], offset_lat, offset_lon, text_scale)

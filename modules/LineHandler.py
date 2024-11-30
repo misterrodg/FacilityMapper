@@ -27,6 +27,8 @@ def _draw_simple_line(segment_list: list[list[dict]]) -> MultiLineString:
         for segment in segment_item:
             lat = segment.get("lat")
             lon = segment.get("lon")
+            if not lat or not lon:
+                continue
             coordinate = Coordinate(lat, lon)
             line_string.add_coordinate(coordinate)
         multi_line_string.add_line_string(line_string)
@@ -44,6 +46,8 @@ def _draw_truncated_line(
                 from_lon = from_point.get("lon")
                 to_lat = to_point.get("lat")
                 to_lon = to_point.get("lon")
+                if not from_lat or not from_lon or not to_lat or not to_lon:
+                    continue
                 line_string = LineString()
                 bearing = haversine_great_circle_bearing(
                     from_lat, from_lon, to_lat, to_lon
