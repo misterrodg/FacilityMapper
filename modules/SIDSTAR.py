@@ -14,6 +14,7 @@ from modules.GeoJSON import (
     MultiLineString,
 )
 from modules.QueryHelper import filter_query, translate_wildcard, segment_query
+from modules.SIDSTARQueries import select_procedure_points
 from modules.SymbolDraw import SymbolDraw
 from modules.TextDraw import TextDraw
 from modules.vNAS import LINE_STYLES
@@ -146,25 +147,10 @@ class SIDSTAR:
         procedure_id = f"'{translate_wildcard(self.procedure_id)}'"
         route_type_array = self._options_to_route_type()
         route_type_string = ",".join(f"'{str(x)}'" for x in route_type_array)
-
-        return f"""
-        WITH unified_table AS (
-            SELECT waypoint_id AS id,lat,lon,type FROM waypoints
-            UNION
-            SELECT vhf_id AS id,lat,lon,"VORDME" AS type FROM vhf_dmes WHERE lat IS NOT NULL AND dme_lat IS NOT NULL
-            UNION
-            SELECT vhf_id AS id,lat,lon,"VOR" AS type FROM vhf_dmes WHERE lat IS NOT NULL AND dme_lat IS NULL
-            UNION
-            SELECT vhf_id AS id,lat,lon,"DME" AS type FROM vhf_dmes WHERE dme_id IS NOT NULL
-            UNION
-            SELECT ndb_id AS id,lat,lon,"NDB" AS type FROM ndbs
+        result = select_procedure_points(
+            fac_id, fac_sub_code, procedure_id, route_type_string
         )
-        SELECT p.fac_id,p.fac_sub_code,p.procedure_id,p.transition_id,p.route_type,p.sequence_number,p.alt_desc,p.altitude,p.flight_level,p.altitude_2,p.flight_level_2,p.speed_limit,p.fix_id,lat,lon,type
-        FROM procedure_points AS p
-        JOIN unified_table AS u ON p.fix_id = u.id
-        WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type_string}) AND p.path_term != 'FM'
-        ORDER BY p.procedure_id,p.transition_id,p.route_type,p.sequence_number;
-        """
+        return result
 
     def _query_db(self) -> list:
         query = self._to_query()
