@@ -16,8 +16,7 @@ from modules.GeoJSON import (
 from modules.QueryHandler import query_db
 from modules.QueryHelper import filter_query, translate_wildcard, segment_query
 from modules.SIDSTARQueries import select_procedure_points
-from modules.SymbolHandler import get_symbol_features
-from modules.SymbolDraw import SymbolDraw
+from modules.SymbolHandler import get_arrow_line_symbol_features, get_symbol_features
 from modules.TextDraw import TextDraw
 from modules.vNAS import LINE_STYLES
 
@@ -225,62 +224,6 @@ class SIDSTAR:
                     multi_line_string.add_line_string(line_string)
         return multi_line_string
 
-    def _get_arrow_line_features(self, rows: list) -> list[Feature]:
-        selected_route_types = self._get_selected_route_types()
-        start_types = selected_route_types[:2]
-        end_types = selected_route_types[-2:]
-        segment_list = segment_query(rows, "transition_id")
-        result = []
-        for segment_item in segment_list:
-            if len(segment_item) > 1:
-                for index, (from_point, to_point) in enumerate(
-                    zip(segment_item, segment_item[1:])
-                ):
-                    bearing = haversine_great_circle_bearing(
-                        from_point.get("lat"),
-                        from_point.get("lon"),
-                        to_point.get("lat"),
-                        to_point.get("lon"),
-                    )
-                    arrow_head = SymbolDraw(
-                        "ARROW_HEAD",
-                        from_point.get("lat"),
-                        from_point.get("lon"),
-                        bearing,
-                        self.symbol_scale,
-                    )
-                    result.append(arrow_head.get_feature())
-                    arrow_tail = SymbolDraw(
-                        "ARROW_TAIL",
-                        to_point.get("lat"),
-                        to_point.get("lon"),
-                        bearing,
-                        self.symbol_scale,
-                    )
-                    result.append(arrow_tail.get_feature())
-                    if index == 0 and from_point.get("route_type") in start_types:
-                        circle = SymbolDraw(
-                            "CIRCLE_S",
-                            from_point.get("lat"),
-                            from_point.get("lon"),
-                            0,
-                            self.symbol_scale,
-                        )
-                        result.append(circle.get_feature())
-                    if (
-                        index == len(segment_item) - 2
-                        and to_point.get("route_type") in end_types
-                    ):
-                        arrow_head = SymbolDraw(
-                            "ARROW_HEAD_HOLLOW",
-                            to_point.get("lat"),
-                            to_point.get("lon"),
-                            bearing,
-                            self.symbol_scale,
-                        )
-                        result.append(arrow_head.get_feature())
-        return result
-
     def _get_text_features(self, rows: list) -> list[Feature]:
         filtered_rows = filter_query(rows, "fix_id")
         result = []
@@ -360,8 +303,11 @@ class SIDSTAR:
         feature_collection = FeatureCollection()
 
         if self.line_style == "arrows":
-            feature_array = self._get_arrow_line_features(
-                self.runway_transitions + self.core + self.enroute_transitions
+            selected_route_types = self._get_selected_route_types()
+            feature_array = get_arrow_line_symbol_features(
+                self.runway_transitions + self.core + self.enroute_transitions,
+                selected_route_types,
+                self.symbol_scale,
             )
             for feature in feature_array:
                 feature_collection.add_feature(feature)
