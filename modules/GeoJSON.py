@@ -349,6 +349,7 @@ class FeatureCollection:
         else:
             for feature in self.features:
                 features.append(feature.to_dict())
+        features = self._deduplicate(features)
         return {"type": self.type, "features": features}
 
     def from_dict(
@@ -369,6 +370,13 @@ class FeatureCollection:
                 feature.from_dict(item)
                 self.features.append(feature)
         return
+
+    def _deduplicate(self, features_list: list[dict]) -> list[dict]:
+        unique_features = {
+            json.dumps(feature, sort_keys=True) for feature in features_list
+        }
+        result = [json.loads(feature) for feature in unique_features]
+        return result
 
 
 class GeoJSON:
