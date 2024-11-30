@@ -18,6 +18,12 @@ from modules.vNAS import (
 import json
 import re
 
+POINT_TYPE = "Point"
+LINE_STRING_TYPE = "LineString"
+MULTI_LINE_STRING_TYPE = "MultiLineString"
+FEATURE_TYPE = "Feature"
+FEATURE_COLLECTION_TYPE = "FeatureCollection"
+
 
 class Coordinate:
     def __init__(self, lat: float, lon: float):
@@ -161,7 +167,7 @@ class Properties:
 
 class Point:
     def __init__(self):
-        self.type = "Point"
+        self.type = POINT_TYPE
         self.coordinates = []
 
     def set_coordinate(self, coordinate: Coordinate) -> None:
@@ -174,7 +180,7 @@ class Point:
 
 class LineString:
     def __init__(self):
-        self.type = "LineString"
+        self.type = LINE_STRING_TYPE
         self.coordinates = []
 
     def add_coordinate(self, coordinate: Coordinate) -> None:
@@ -194,7 +200,7 @@ class LineString:
 
 class MultiLineString:
     def __init__(self):
-        self.type = "MultiLineString"
+        self.type = MULTI_LINE_STRING_TYPE
         self.coordinates = []
 
     def add_line_string(self, line_string: LineString) -> None:
@@ -207,7 +213,7 @@ class MultiLineString:
 
 class Feature:
     def __init__(self):
-        self.type = "Feature"
+        self.type = FEATURE_TYPE
         self.geometry = None
         self.properties = None
 
@@ -235,7 +241,7 @@ class Feature:
 
 class FeatureCollection:
     def __init__(self):
-        self.type = "FeatureCollection"
+        self.type = FEATURE_COLLECTION_TYPE
         self.features: list[Feature] = []
 
     def add_feature(self, feature: Feature) -> None:
