@@ -14,10 +14,10 @@ from modules.GeoJSON import (
     MultiLineString,
 )
 from modules.QueryHandler import query_db
-from modules.QueryHelper import filter_query, translate_wildcard, segment_query
+from modules.QueryHelper import translate_wildcard, segment_query
 from modules.SIDSTARQueries import select_procedure_points
 from modules.SymbolHandler import get_arrow_line_symbol_features, get_symbol_features
-from modules.TextDraw import TextDraw
+from modules.TextHandler import get_text_features
 from modules.vNAS import LINE_STYLES
 
 from sqlite3 import Cursor
@@ -224,81 +224,6 @@ class SIDSTAR:
                     multi_line_string.add_line_string(line_string)
         return multi_line_string
 
-    def _get_text_features(self, rows: list) -> list[Feature]:
-        filtered_rows = filter_query(rows, "fix_id")
-        result = []
-        for row in filtered_rows:
-            offset_lat = self.y_offset + row["lat"]
-            offset_lon = self.x_offset + row["lon"]
-            text_draw = TextDraw(row["fix_id"], offset_lat, offset_lon, self.text_scale)
-            result.append(text_draw.get_feature())
-            lines_used = 1
-
-            if self.draw_altitudes:
-                if (
-                    row["altitude"]
-                    or row["flight_level"]
-                    or row["altitude_2"]
-                    or row["flight_level_2"]
-                ):
-                    alt_desc = row["alt_desc"]
-                    if row["altitude"] or row["flight_level"]:
-                        offset_lat = (
-                            self.y_offset
-                            + row["lat"]
-                            - (self.line_buffer * lines_used * ARC_MIN)
-                        )
-                        offset_lon = self.x_offset + row["lon"]
-                        altitude_value = (
-                            row["altitude"]
-                            if row["altitude"]
-                            else f"FL{row["flight_level"]}"
-                        )
-                        altitude_value = (
-                            f"{alt_desc}{altitude_value}"
-                            if alt_desc in ["+", "-"]
-                            else altitude_value
-                        )
-                        text_draw = TextDraw(
-                            str(altitude_value), offset_lat, offset_lon, self.text_scale
-                        )
-                        result.append(text_draw.get_feature())
-                        lines_used += 1
-                    if row["altitude_2"] or row["flight_level_2"]:
-                        offset_lat = (
-                            self.y_offset
-                            + row["lat"]
-                            - (self.line_buffer * lines_used * ARC_MIN)
-                        )
-                        offset_lon = self.x_offset + row["lon"]
-                        altitude_value = (
-                            row["altitude_2"]
-                            if row["altitude_2"]
-                            else f"FL{row["flight_level_2"]}"
-                        )
-                        text_draw = TextDraw(
-                            str(altitude_value), offset_lat, offset_lon, self.text_scale
-                        )
-                        result.append(text_draw.get_feature())
-                        lines_used += 1
-
-            if self.draw_speeds:
-                if row["speed_limit"]:
-                    offset_lat = (
-                        self.y_offset
-                        + row["lat"]
-                        - (self.line_buffer * lines_used * ARC_MIN)
-                    )
-                    offset_lon = self.x_offset + row["lon"]
-                    text_draw = TextDraw(
-                        str(row["speed_limit"]),
-                        offset_lat,
-                        offset_lon,
-                        self.text_scale,
-                    )
-                    result.append(text_draw.get_feature())
-        return result
-
     def _to_file(self) -> None:
         feature_collection = FeatureCollection()
 
@@ -328,8 +253,14 @@ class SIDSTAR:
             feature_collection.add_feature(feature)
 
         if self.draw_names:
-            feature_array = self._get_text_features(
-                self.runway_transitions + self.core + self.enroute_transitions
+            feature_array = get_text_features(
+                self.runway_transitions + self.core + self.enroute_transitions,
+                self.x_offset,
+                self.y_offset,
+                self.text_scale,
+                self.line_buffer,
+                self.draw_altitudes,
+                self.draw_speeds,
             )
             for feature in feature_array:
                 feature_collection.add_feature(feature)
