@@ -40,9 +40,9 @@ class SIDSTAR:
         self.is_valid = False
 
         self._validate(definition_dict)
-        self._process()
 
         if self.is_valid:
+            self._process()
             self._to_file()
 
     def _validate(self, definition_dict: dict) -> None:
@@ -175,12 +175,14 @@ class SIDSTAR:
             if self.draw_symbols:
                 feature = get_line_strings(
                     self.runway_transitions + self.core + self.enroute_transitions,
+                    self.line_style,
                     True,
                     self.symbol_scale,
                 )
             else:
                 feature = get_line_strings(
-                    self.runway_transitions + self.core + self.enroute_transitions
+                    self.runway_transitions + self.core + self.enroute_transitions,
+                    self.line_style,
                 )
             feature_collection.add_feature(feature)
 
