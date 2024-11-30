@@ -168,6 +168,9 @@ class Point:
         self.coordinates.append(coordinate.to_geo_json())
         return
 
+    def to_dict(self) -> dict:
+        return {"type": self.type, "coordinates": self.coordinates}
+
 
 class LineString:
     def __init__(self):
