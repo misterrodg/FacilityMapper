@@ -1,4 +1,4 @@
-from modules.CharPlots import (
+from modules.TextPlots import (
     PLOT_HEIGHT,
     PLOT_WIDTH,
     SPACE,
