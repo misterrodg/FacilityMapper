@@ -68,27 +68,16 @@ class SIDSTAR:
             return
 
         draw_symbols = definition_dict.get("draw_symbols", False)
-
         symbol_scale = definition_dict.get("symbol_scale", 1.0)
-
         draw_altitudes = definition_dict.get("draw_altitudes", False)
-
         draw_speeds = definition_dict.get("draw_speeds", False)
-
         draw_names = definition_dict.get("draw_names", False)
-
         x_offset = definition_dict.get("x_offset", 0) * ARC_MIN
-
         y_offset = definition_dict.get("y_offset", 0) * ARC_MIN
-
         text_scale = definition_dict.get("text_scale", 1.0)
-
         line_buffer = definition_dict.get("line_buffer", 1.5)
-
         draw_enroute_transitions = definition_dict.get("draw_enroute_transitions", True)
-
         draw_runway_transitions = definition_dict.get("draw_runway_transitions", False)
-
         file_name = definition_dict.get("file_name")
         if file_name is None:
             file_name = f"{airport_id}_{self.map_type}_{procedure_id}"
