@@ -13,6 +13,7 @@ from modules.GeoJSON import (
     LineString,
     MultiLineString,
 )
+from modules.QueryHandler import query_db
 from modules.QueryHelper import filter_query, translate_wildcard, segment_query
 from modules.SIDSTARQueries import select_procedure_points
 from modules.SymbolDraw import SymbolDraw
@@ -44,9 +45,11 @@ class SIDSTAR:
         self.draw_runway_transitions = False
         self.file_name = None
         self.db_cursor = db_cursor
+        self.db_rows: list[dict] = []
         self.is_valid = False
 
         self._validate(definition_dict)
+        self._process()
 
         if self.is_valid:
             self._to_file()
@@ -117,6 +120,10 @@ class SIDSTAR:
         self.is_valid = True
         return
 
+    def _process(self) -> None:
+        query = self._to_query()
+        self.db_rows = query_db(self.db_cursor, query)
+
     def _map_type_to_fac_sub_code(self) -> str:
         result = ""
         if self.map_type == "SID":
@@ -150,12 +157,6 @@ class SIDSTAR:
         result = select_procedure_points(
             fac_id, fac_sub_code, procedure_id, route_type_string
         )
-        return result
-
-    def _query_db(self) -> list:
-        query = self._to_query()
-        self.db_cursor.execute(query)
-        result = self.db_cursor.fetchall()
         return result
 
     def _get_line_strings(self, rows: list) -> MultiLineString:
@@ -374,19 +375,18 @@ class SIDSTAR:
         return result
 
     def _to_file(self) -> None:
-        rows = self._query_db()
         feature_collection = FeatureCollection()
 
         if self.line_style == "arrows":
-            feature_array = self._get_arrow_line_features(rows)
+            feature_array = self._get_arrow_line_features(self.db_rows)
             for feature in feature_array:
                 feature_collection.add_feature(feature)
 
         if self.line_style not in ["none", "arrows"]:
             if self.draw_symbols:
-                multi_line_string = self._get_truncated_line_strings(rows)
+                multi_line_string = self._get_truncated_line_strings(self.db_rows)
             else:
-                multi_line_string = self._get_line_strings(rows)
+                multi_line_string = self._get_line_strings(self.db_rows)
 
             feature = Feature()
             feature.add_multi_line_string(multi_line_string)
@@ -394,12 +394,12 @@ class SIDSTAR:
             feature_collection.add_feature(feature)
 
         if self.draw_names:
-            feature_array = self._get_text_features(rows)
+            feature_array = self._get_text_features(self.db_rows)
             for feature in feature_array:
                 feature_collection.add_feature(feature)
 
         if self.draw_symbols:
-            feature_array = self._get_symbol_features(rows)
+            feature_array = self._get_symbol_features(self.db_rows)
             for feature in feature_array:
                 feature_collection.add_feature(feature)
 
