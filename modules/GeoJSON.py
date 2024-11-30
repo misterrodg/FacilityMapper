@@ -19,6 +19,7 @@ from modules.vNAS import (
 from os.path import isfile, getsize
 
 import json
+import os
 import re
 
 ERROR_HEADER = "GEOJSON: "
@@ -381,7 +382,8 @@ class FeatureCollection:
 
 class GeoJSON:
     def __init__(self, file_name: str) -> None:
-        self.file_path = file_name
+        self.file_name = file_name
+        self.file_path = f"{VIDMAP_DIR}/{file_name}.geojson"
         self.feature_collection = None
 
     def add_feature_collection(self, feature_collection: FeatureCollection) -> None:
@@ -393,7 +395,7 @@ class GeoJSON:
 
     def to_file(self, limit_to_features: bool = False) -> None:
         data_dictionary = self.feature_collection.to_dict(limit_to_features)
-        with open(f"{VIDMAP_DIR}/{self.file_path}.geojson", "w") as json_file:
+        with open(self.file_path, "w") as json_file:
             json.dump(data_dictionary, json_file)
         return
 
@@ -411,19 +413,24 @@ class GeoJSON:
         self.feature_collection = feature_collection
         return
 
-    def from_file(self, file_name: str, limit_to_features: bool = False) -> None:
-        file_path = f"{VIDMAP_DIR}/{file_name}.geojson"
+    def from_file(self, limit_to_features: bool = False) -> None:
         try:
-            if isfile(file_path) and getsize(file_path) > 0:
-                with open(file_path, "r") as json_file:
+            if isfile(self.file_path) and getsize(self.file_path) > 0:
+                with open(self.file_path, "r") as json_file:
                     json_dict = json.load(json_file)
                     self.from_dict(json_dict, limit_to_features)
             else:
-                print(f"{ERROR_HEADER}Cannot find map json data at {file_path}.")
+                print(f"{ERROR_HEADER}Cannot find map json data at {self.file_path}.")
                 print(
                     f"{ERROR_HEADER}This is often caused by placing the `COMPOSITE` object above the source map object."
                 )
         except json.JSONDecodeError:
             print("Failed to decode JSON from the file.")
-        self.file_path = file_path
+        return
+
+    def delete_file(self) -> None:
+        print("Called")
+        if isfile(self.file_path):
+            print(f"Deleting {self.file_path}")
+            os.remove(self.file_path)
         return

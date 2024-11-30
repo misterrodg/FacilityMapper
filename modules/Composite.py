@@ -9,6 +9,7 @@ class Composite:
         self.map_type = "COMPOSITE"
         self.file_names: list[dict] = []
         self.file_name = None
+        self.delete_originals = False
         self.is_valid = False
 
         self._validate(definition_dict)
@@ -31,8 +32,11 @@ class Composite:
             )
             return
 
+        delete_originals = definition_dict.get("delete_originals", False)
+
         self.file_names = file_names
         self.file_name = file_name
+        self.delete_originals = delete_originals
         self.is_valid = True
         return
 
@@ -41,11 +45,13 @@ class Composite:
         composite_file = GeoJSON(self.file_name)
 
         for file_name in self.file_names:
-            geo_json = GeoJSON(self.file_name)
-            geo_json.from_file(file_name, True)
+            geo_json = GeoJSON(file_name)
+            geo_json.from_file(True)
             features = geo_json.pluck_features()
             for feature in features:
                 composite_feature_collection.add_feature(feature)
+            if self.delete_originals:
+                geo_json.delete_file()
 
         composite_file.add_feature_collection(composite_feature_collection)
         composite_file.to_file(True)

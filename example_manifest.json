@@ -57,7 +57,8 @@
       "map_type": "COMPOSITE",
       "definition": {
         "file_names": ["003_BUNZZ", "003_RNLDI"],
-        "file_name": "003_IAD_SIDS"
+        "file_name": "003_IAD_SIDS",
+        "delete_originals": true
       }
     }
   ]

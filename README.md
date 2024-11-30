@@ -116,6 +116,18 @@ The following characters are currently supported:
 
 What the characters look like is shown in [EXAMPLES](./examples/EXAMPLES.md#label-supported-characters).
 
+#### Composite
+
+A Composite Map is a map made up of other maps. This is useful in cases where you would like to show several SIDs on a single map. As best practice, all Composites should be listed at the end of the manifest to ensure that the relevant maps are generated before trying to combine them.
+
+The Composite object has the following properties:
+
+| Property           | Required | Type     | Default | Description                                                                             |
+| ------------------ | -------- | -------- | ------- | --------------------------------------------------------------------------------------- |
+| `file_names`       | \*       | `string` |         | A string representing the filenames to combine into a single map.                       |
+| `file_name`        | \*       | `string` |         | A string representing the filename that the map will be saved to.                       |
+| `delete_originals` |          | `bool`   | `false` | A boolean value that tells the script to delete the original maps after combining them. |
+
 ## Drawing the Facility
 
 Run the following command:
