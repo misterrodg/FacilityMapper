@@ -132,15 +132,13 @@ class SIDSTAR:
             result = "'E'"
         return result
 
-    def _options_to_route_type(self) -> list:
+    def _get_selected_route_types(self) -> list:
         result = ["2", "5"]
-
         if self.map_type == "SID":
             if self.draw_runway_transitions:
                 result = ["1", "4"] + result
             if self.draw_enroute_transitions:
                 result = result + ["3", "6"]
-
         if self.map_type == "STAR":
             if self.draw_enroute_transitions:
                 result = ["1", "4"] + result
@@ -152,7 +150,7 @@ class SIDSTAR:
         fac_id = f"'{self.airport_id}'"
         fac_sub_code = self._map_type_to_fac_sub_code()
         procedure_id = f"'{translate_wildcard(self.procedure_id)}'"
-        route_type_array = self._options_to_route_type()
+        route_type_array = self._get_selected_route_types()
         route_type_string = ",".join(f"'{str(x)}'" for x in route_type_array)
         result = select_procedure_points(
             fac_id, fac_sub_code, procedure_id, route_type_string
@@ -204,7 +202,7 @@ class SIDSTAR:
         return multi_line_string
 
     def _get_arrow_line_features(self, rows: list) -> list[Feature]:
-        selected_route_types = self._options_to_route_type()
+        selected_route_types = self._get_selected_route_types()
         start_types = selected_route_types[:2]
         end_types = selected_route_types[-2:]
         segment_list = segment_query(rows, "transition_id")
