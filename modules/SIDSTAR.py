@@ -41,11 +41,13 @@ class SIDSTAR:
         self.y_offset = None
         self.text_scale = None
         self.line_buffer = None
+        self.core: list[dict] = []
         self.draw_enroute_transitions = True
+        self.enroute_transitions: list[dict] = []
         self.draw_runway_transitions = False
+        self.runway_transitions: list[dict] = []
         self.file_name = None
         self.db_cursor = db_cursor
-        self.db_rows: list[dict] = []
         self.is_valid = False
 
         self._validate(definition_dict)
@@ -121,8 +123,16 @@ class SIDSTAR:
         return
 
     def _process(self) -> None:
-        query = self._to_query()
-        self.db_rows = query_db(self.db_cursor, query)
+        core_query = self._to_query()
+        self.core = query_db(self.db_cursor, core_query)
+        if self.draw_enroute_transitions:
+            enroute_transition_query = self._to_query("enroute")
+            self.enroute_transitions = query_db(
+                self.db_cursor, enroute_transition_query
+            )
+        if self.draw_runway_transitions:
+            runway_transitions_query = self._to_query("runway")
+            self.runway_transitions = query_db(self.db_cursor, runway_transitions_query)
 
     def _map_type_to_fac_sub_code(self) -> str:
         result = ""
@@ -131,6 +141,19 @@ class SIDSTAR:
         if self.map_type == "STAR":
             result = "'E'"
         return result
+
+    def _get_route_type_list(self, transition_name: str = "") -> list:
+        if self.map_type == "SID":
+            if transition_name == "runway":
+                return ["1", "4"]
+            if transition_name == "enroute":
+                return ["3", "6"]
+        if self.map_type == "STAR":
+            if transition_name == "enroute":
+                return ["1", "4"]
+            if transition_name == "runway":
+                return ["3", "6"]
+        return ["2", "5"]
 
     def _get_selected_route_types(self) -> list:
         result = ["2", "5"]
@@ -146,12 +169,12 @@ class SIDSTAR:
                 result = result + ["3", "6"]
         return result
 
-    def _to_query(self) -> str:
+    def _to_query(self, segment: str = "") -> str:
         fac_id = f"'{self.airport_id}'"
         fac_sub_code = self._map_type_to_fac_sub_code()
         procedure_id = f"'{translate_wildcard(self.procedure_id)}'"
-        route_type_array = self._get_selected_route_types()
-        route_type_string = ",".join(f"'{str(x)}'" for x in route_type_array)
+        route_type_list = self._get_route_type_list(segment)
+        route_type_string = ",".join(f"'{str(x)}'" for x in route_type_list)
         result = select_procedure_points(
             fac_id, fac_sub_code, procedure_id, route_type_string
         )
@@ -376,15 +399,21 @@ class SIDSTAR:
         feature_collection = FeatureCollection()
 
         if self.line_style == "arrows":
-            feature_array = self._get_arrow_line_features(self.db_rows)
+            feature_array = self._get_arrow_line_features(
+                self.runway_transitions + self.core + self.enroute_transitions
+            )
             for feature in feature_array:
                 feature_collection.add_feature(feature)
 
         if self.line_style not in ["none", "arrows"]:
             if self.draw_symbols:
-                multi_line_string = self._get_truncated_line_strings(self.db_rows)
+                multi_line_string = self._get_truncated_line_strings(
+                    self.runway_transitions + self.core + self.enroute_transitions
+                )
             else:
-                multi_line_string = self._get_line_strings(self.db_rows)
+                multi_line_string = self._get_line_strings(
+                    self.runway_transitions + self.core + self.enroute_transitions
+                )
 
             feature = Feature()
             feature.add_multi_line_string(multi_line_string)
@@ -392,12 +421,16 @@ class SIDSTAR:
             feature_collection.add_feature(feature)
 
         if self.draw_names:
-            feature_array = self._get_text_features(self.db_rows)
+            feature_array = self._get_text_features(
+                self.runway_transitions + self.core + self.enroute_transitions
+            )
             for feature in feature_array:
                 feature_collection.add_feature(feature)
 
         if self.draw_symbols:
-            feature_array = self._get_symbol_features(self.db_rows)
+            feature_array = self._get_symbol_features(
+                self.runway_transitions + self.core + self.enroute_transitions
+            )
             for feature in feature_array:
                 feature_collection.add_feature(feature)
 
