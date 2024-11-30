@@ -112,16 +112,16 @@ class SIDSTAR:
         return
 
     def _process(self) -> None:
-        core_query = self._to_query()
+        core_query = self._build_query_string()
         self.core = query_db(self.db_cursor, core_query)
         if self.draw_enroute_transitions:
-            enroute_transition_query = self._to_query("enroute")
+            enroute_transition_query = self._build_query_string("enroute")
             self.enroute_transitions = query_db(
                 self.db_cursor, enroute_transition_query
             )
         if self.draw_runway_transitions:
-            runway_transitions_query = self._to_query("runway")
-            self.runway_transitions = query_db(self.db_cursor, runway_transitions_query)
+            runway_transition_query = self._build_query_string("runway")
+            self.runway_transitions = query_db(self.db_cursor, runway_transition_query)
 
     def _map_type_to_fac_sub_code(self) -> str:
         result = ""
@@ -158,7 +158,7 @@ class SIDSTAR:
                 result = result + ["3", "6"]
         return result
 
-    def _to_query(self, segment: str = "") -> str:
+    def _build_query_string(self, segment: str = "") -> str:
         fac_id = f"'{self.airport_id}'"
         fac_sub_code = self._map_type_to_fac_sub_code()
         procedure_id = f"'{translate_wildcard(self.procedure_id)}'"
