@@ -4,20 +4,30 @@
       "map_type": "SID",
       "definition": {
         "airport_id": "KIAD",
-        "procedure_id": "JCOBY#",
-        "line_type": "solid",
-        "draw_symbols": false,
-        "symbol_scale": 1.0,
-        "draw_altitudes": false,
-        "draw_speeds": false,
-        "draw_names": false,
-        "x_offset": 0,
-        "y_offset": 0,
-        "text_scale": 1.0,
-        "line_buffer": 1.5,
+        "procedure_id": "BUNZZ#",
+        "line_type": "longDashed",
+        "draw_symbols": true,
+        "draw_names": true,
+        "x_offset": 1,
+        "y_offset": -1,
         "draw_enroute_transitions": true,
-        "draw_runway_transitions": false,
-        "file_name": "003_JCOBY"
+        "draw_runway_transitions": true,
+        "file_name": "003_BUNZZ"
+      }
+    },
+    {
+      "map_type": "SID",
+      "definition": {
+        "airport_id": "KIAD",
+        "procedure_id": "RNLDI#",
+        "line_type": "longDashed",
+        "draw_symbols": true,
+        "draw_names": true,
+        "x_offset": 1,
+        "y_offset": -1,
+        "draw_enroute_transitions": true,
+        "draw_runway_transitions": true,
+        "file_name": "003_RNLDI"
       }
     },
     {
@@ -41,6 +51,13 @@
           }
         ],
         "file_name": "TOWER_FREQS"
+      }
+    },
+    {
+      "map_type": "COMPOSITE",
+      "definition": {
+        "file_names": ["003_BUNZZ", "003_RNLDI"],
+        "file_name": "003_IAD_SIDS"
       }
     }
   ]
