@@ -1,4 +1,5 @@
 from modules.DirPaths import VIDMAP_DIR
+from modules.ErrorHelper import print_top_level
 from modules.vNAS import (
     ASDEX_STYLES,
     BCG_MIN,
@@ -18,6 +19,7 @@ from modules.vNAS import (
 import json
 import re
 
+ERROR_HEADER = "GEOJSON: "
 POINT_TYPE = "Point"
 LINE_STRING_TYPE = "LineString"
 MULTI_LINE_STRING_TYPE = "MultiLineString"
@@ -160,6 +162,23 @@ class Properties:
         result = {key: value for key, value in result.items() if value is not None}
         return result
 
+    def from_dict(self, properties_dict: dict) -> None:
+        self.asdex = properties_dict.get("asdex")
+        self.bcg = properties_dict.get("bcg")
+        self.color = properties_dict.get("color")
+        self.filters = properties_dict.get("filters")
+        self.is_line_defaults = properties_dict.get("isLineDefaults")
+        self.is_symbol_defaults = properties_dict.get("isSymbolDefaults")
+        self.is_text_defaults = properties_dict.get("isTextDefaults")
+        self.opaque = properties_dict.get("opaque")
+        self.size = properties_dict.get("size")
+        self.style = properties_dict.get("style")
+        self.thickness = properties_dict.get("thickness")
+        self.underline = properties_dict.get("underline")
+        self.x_offset = properties_dict.get("xOffset")
+        self.y_offset = properties_dict.get("yOffset")
+        return
+
     def _is_hex_color(hex_string: str) -> bool:
         pattern = r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
         return bool(re.match(pattern, hex_string))
@@ -176,6 +195,17 @@ class Point:
 
     def to_dict(self) -> dict:
         return {"type": self.type, "coordinates": self.coordinates}
+
+    def from_dict(self, point_dict: dict) -> None:
+        coordinates = point_dict.get("coordinates")
+        if coordinates is None:
+            print(
+                f"{ERROR_HEADER}Missing `coordinates` in:\n{print_top_level(point_dict)}."
+            )
+            return
+
+        self.coordinates = coordinates
+        return
 
 
 class LineString:
@@ -197,6 +227,17 @@ class LineString:
     def to_dict(self) -> dict:
         return {"type": self.type, "coordinates": self.coordinates}
 
+    def from_dict(self, line_string_dict: dict) -> None:
+        coordinates = line_string_dict.get("coordinates")
+        if coordinates is None:
+            print(
+                f"{ERROR_HEADER}Missing `coordinates` in:\n{print_top_level(line_string_dict)}."
+            )
+            return
+
+        self.coordinates = coordinates
+        return
+
 
 class MultiLineString:
     def __init__(self):
@@ -209,6 +250,17 @@ class MultiLineString:
 
     def to_dict(self) -> dict:
         return {"type": self.type, "coordinates": self.coordinates}
+
+    def from_dict(self, multi_line_string_dict: dict) -> None:
+        coordinates = multi_line_string_dict.get("coordinates")
+        if coordinates is None:
+            print(
+                f"{ERROR_HEADER}Missing `coordinates` in:\n{print_top_level(multi_line_string_dict)}."
+            )
+            return
+
+        self.coordinates = coordinates
+        return
 
 
 class Feature:
@@ -238,6 +290,43 @@ class Feature:
             "properties": self.properties,
         }
 
+    def from_dict(self, feature_dict: dict) -> None:
+        geometry_dict = feature_dict.get("geometry")
+        if geometry_dict is None:
+            print(
+                f"{ERROR_HEADER}Missing `geometry` in:\n{print_top_level(feature_dict)}."
+            )
+            return
+
+        properties = feature_dict.get("properties")
+        if properties is None:
+            print(
+                f"{ERROR_HEADER}Missing `properties` in:\n{print_top_level(feature_dict)}."
+            )
+            return
+
+        geometry_type = geometry_dict.get("type")
+        if geometry_type is None:
+            print(
+                f"{ERROR_HEADER}Unable to read `type` in:\n{print_top_level(geometry)}."
+            )
+            return
+
+        geometry = {}
+        if geometry_type == POINT_TYPE:
+            geometry = Point()
+            geometry.from_dict(geometry_dict)
+        if geometry_type == LINE_STRING_TYPE:
+            geometry = LineString()
+            geometry.from_dict(geometry_dict)
+        if geometry_type == MULTI_LINE_STRING_TYPE:
+            geometry = MultiLineString()
+            geometry.from_dict(geometry_dict)
+
+        self.geometry = geometry
+        self.properties = properties
+        return
+
 
 class FeatureCollection:
     def __init__(self):
@@ -254,6 +343,25 @@ class FeatureCollection:
             features.append(feature.to_dict())
         return {"type": self.type, "features": features}
 
+    def from_dict(
+        self, feature_collection_dict: dict, limit_to_features: bool = False
+    ) -> None:
+        feature_list = feature_collection_dict.get("features")
+        if feature_list is None:
+            print(
+                f"{ERROR_HEADER}Missing `features` in:\n{print_top_level(feature_collection_dict)}."
+            )
+            return
+
+        if limit_to_features:
+            self.features = feature_list
+        else:
+            for item in feature_list:
+                feature = Feature()
+                feature.from_dict(item)
+                self.features.append(feature)
+        return
+
 
 class GeoJSON:
     def __init__(self, file_name: str) -> None:
@@ -268,4 +376,18 @@ class GeoJSON:
         data_dictionary = self.feature_collection.to_dict()
         with open(f"{VIDMAP_DIR}/{self.file_path}.geojson", "w") as json_file:
             json.dump(data_dictionary, json_file)
+        return
+
+    def from_dict(self, json_dict: dict, limit_to_features: bool = False) -> None:
+        json_dict_type = json_dict.get("type")
+        if json_dict_type != FEATURE_COLLECTION_TYPE:
+            print(
+                f"{ERROR_HEADER}Missing `feature_collection` in:\n{print_top_level(json_dict)}."
+            )
+            return
+
+        feature_collection_dict = json_dict
+        feature_collection = FeatureCollection()
+        feature_collection.from_dict(feature_collection_dict, limit_to_features)
+        self.feature_collection = feature_collection
         return
