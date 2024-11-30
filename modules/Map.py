@@ -5,7 +5,10 @@ from modules.SIDSTAR import SIDSTAR
 from sqlite3 import Cursor
 
 ERROR_HEADER = "MAP: "
-SUPPORTED_TYPES = ["LABEL", "SID", "STAR"]
+LABEL_TYPE = "LABEL"
+SID_TYPE = "SID"
+STAR_TYPE = "STAR"
+SUPPORTED_TYPES = [LABEL_TYPE, SID_TYPE, STAR_TYPE]
 
 
 class Map:
@@ -44,7 +47,7 @@ class Map:
         return
 
     def process(self) -> None:
-        if self.map_type == "SID" or self.map_type == "STAR":
+        if self.map_type == SID_TYPE or self.map_type == STAR_TYPE:
             SIDSTAR(self.db_cursor, self.map_type, self.definition)
-        if self.map_type == "LABEL":
+        if self.map_type == LABEL_TYPE:
             Label(self.definition)
