@@ -16,6 +16,7 @@ from modules.GeoJSON import (
 from modules.QueryHandler import query_db
 from modules.QueryHelper import filter_query, translate_wildcard, segment_query
 from modules.SIDSTARQueries import select_procedure_points
+from modules.SymbolHandler import get_symbol_features
 from modules.SymbolDraw import SymbolDraw
 from modules.TextDraw import TextDraw
 from modules.vNAS import LINE_STYLES
@@ -355,46 +356,6 @@ class SIDSTAR:
                     result.append(text_draw.get_feature())
         return result
 
-    def _get_symbol_features(self, rows: list) -> list[Feature]:
-        filtered_rows = filter_query(rows, "fix_id")
-        result = []
-        for row in filtered_rows:
-            if row["type"] == "W":
-                symbol_draw = SymbolDraw(
-                    "RNAV", row["lat"], row["lon"], symbol_scale=self.symbol_scale
-                )
-                result.append(symbol_draw.get_feature())
-            if row["type"] in ["C", "R"]:
-                symbol_draw = SymbolDraw(
-                    "TRIANGLE", row["lat"], row["lon"], symbol_scale=self.symbol_scale
-                )
-                result.append(symbol_draw.get_feature())
-            if row["type"] == "VORDME":
-                symbol_draw = SymbolDraw(
-                    "DME_BOX", row["lat"], row["lon"], symbol_scale=self.symbol_scale
-                )
-                result.append(symbol_draw.get_feature())
-                symbol_draw = SymbolDraw(
-                    "HEXAGON", row["lat"], row["lon"], symbol_scale=self.symbol_scale
-                )
-                result.append(symbol_draw.get_feature())
-            if row["type"] == "VOR":
-                symbol_draw = SymbolDraw(
-                    "HEXAGON", row["lat"], row["lon"], symbol_scale=self.symbol_scale
-                )
-                result.append(symbol_draw.get_feature())
-            if row["type"] == "DME":
-                symbol_draw = SymbolDraw(
-                    "DME_BOX", row["lat"], row["lon"], symbol_scale=self.symbol_scale
-                )
-                result.append(symbol_draw.get_feature())
-            if row["type"] == "NDB":
-                symbol_draw = SymbolDraw(
-                    "CIRCLE_L", row["lat"], row["lon"], symbol_scale=self.symbol_scale
-                )
-                result.append(symbol_draw.get_feature())
-        return result
-
     def _to_file(self) -> None:
         feature_collection = FeatureCollection()
 
@@ -428,8 +389,9 @@ class SIDSTAR:
                 feature_collection.add_feature(feature)
 
         if self.draw_symbols:
-            feature_array = self._get_symbol_features(
-                self.runway_transitions + self.core + self.enroute_transitions
+            feature_array = get_symbol_features(
+                self.runway_transitions + self.core + self.enroute_transitions,
+                self.symbol_scale,
             )
             for feature in feature_array:
                 feature_collection.add_feature(feature)
