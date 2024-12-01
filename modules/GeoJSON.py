@@ -340,6 +340,10 @@ class FeatureCollection:
         self.features.append(feature)
         return
 
+    def add_features(self, feature_list: list) -> None:
+        self.features.extend(feature_list)
+        return
+
     def get_features(self) -> list[Feature]:
         return self.features
 
