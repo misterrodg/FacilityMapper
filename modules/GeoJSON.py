@@ -429,8 +429,6 @@ class GeoJSON:
         return
 
     def delete_file(self) -> None:
-        print("Called")
         if isfile(self.file_path):
-            print(f"Deleting {self.file_path}")
             os.remove(self.file_path)
         return
