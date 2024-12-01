@@ -52,7 +52,6 @@
         "draw_altitudes": true,
         "y_offset": -0.5,
         "text_scale": 0.25,
-        "line_buffer": 0.5,
         "transition_ids": ["REMMY"],
         "file_name": "001_KBWI_I10"
       }
