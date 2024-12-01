@@ -2,7 +2,9 @@
 
 A VidMap draw tool for use with [vNAS](https://virtualnas.net). It is a spiritual successor to [VidMapper](https://github.com/misterrodg/VidMapper), but slightly more complex and aimed at managing maps and map sets.
 
-While VidMapper is aimed at drawing ad hoc maps for smaller TRACONs, FacilityMapper is designed to build maps on the AIRAC cycle for entire ARTCCs.
+While VidMapper is aimed at drawing ad hoc maps for smaller TRACONs, FacilityMapper is designed to build maps on the AIRAC cycle for entire ARTCCs. It is based on a `manifest.json` file, which is effectively a list of "recipes" for your facility maps, making it easy to issue updates on the cycle no matter what changes.
+
+All maps are run through optimization prior to being written to file. Depending on the procedure, map type, and options, the way the source data defines the paths can cause several duplicate segments. Removing any segments that have already been drawn can save anywhere between a few and several thousand lines. For [Composite](#composite) maps, this optimization is run again after the two maps are combined.
 
 ## Testing Note
 
@@ -25,6 +27,7 @@ pip install cifparse
 
 - Download the [FAA CIFP](https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/cifp/download/) zip file. Copy the `FAACIFP18` file from the zip into the `./navdata` directory.
 - Create a manifest file.
+- Run the script (see [Drawing the Facility](#drawing-the-facility) for more detail).
 
 ## Manifest File Format
 
