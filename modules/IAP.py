@@ -73,7 +73,7 @@ class IAP:
         x_offset = definition_dict.get("x_offset", 0) * ARC_MIN
         y_offset = definition_dict.get("y_offset", 0) * ARC_MIN
         text_scale = definition_dict.get("text_scale", 1.0)
-        line_buffer = definition_dict.get("line_buffer", 1.5)
+        line_buffer = definition_dict.get("line_buffer", 1.5 * text_scale)
         transition_ids = definition_dict.get("transition_ids", [])
         draw_missed = definition_dict.get("draw_missed", False)
 
