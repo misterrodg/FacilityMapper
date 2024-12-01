@@ -11,7 +11,7 @@ def get_text_features(
     x_offset: float,
     y_offset: float,
     text_scale: float,
-    line_buffer: float,
+    line_height: float,
     draw_altitudes: bool = False,
     draw_speeds: bool = False,
 ) -> list[Feature]:
@@ -24,7 +24,7 @@ def get_text_features(
             continue
         offset_lat = y_offset + row_lat
         offset_lon = x_offset + row_lon
-        scaled_buffer = line_buffer * ARC_MIN
+        scaled_line_height = line_height * ARC_MIN
         text_draw = TextDraw(row["fix_id"], offset_lat, offset_lon, text_scale)
         result.append(text_draw.get_feature())
         lines_used = 1
@@ -44,7 +44,7 @@ def get_text_features(
                     flight_level_2,
                     offset_lat,
                     offset_lon,
-                    scaled_buffer,
+                    scaled_line_height,
                     text_scale,
                     lines_used,
                 )
@@ -61,7 +61,7 @@ def get_text_features(
                     speed_limit,
                     offset_lat,
                     offset_lon,
-                    scaled_buffer,
+                    scaled_line_height,
                     text_scale,
                     lines_used,
                 )

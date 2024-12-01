@@ -29,7 +29,7 @@ class SIDSTAR:
         self.x_offset = None
         self.y_offset = None
         self.text_scale = None
-        self.line_buffer = None
+        self.line_height = None
         self.core: list[dict] = []
         self.draw_enroute_transitions = True
         self.enroute_transitions: list[dict] = []
@@ -75,7 +75,7 @@ class SIDSTAR:
         x_offset = definition_dict.get("x_offset", 0) * ARC_MIN
         y_offset = definition_dict.get("y_offset", 0) * ARC_MIN
         text_scale = definition_dict.get("text_scale", 1.0)
-        line_buffer = definition_dict.get("line_buffer", 1.5 * text_scale)
+        line_height = definition_dict.get("line_height", 1.5 * text_scale)
         draw_enroute_transitions = definition_dict.get("draw_enroute_transitions", True)
         draw_runway_transitions = definition_dict.get("draw_runway_transitions", False)
         file_name = definition_dict.get("file_name")
@@ -93,7 +93,7 @@ class SIDSTAR:
         self.x_offset = x_offset
         self.y_offset = y_offset
         self.text_scale = text_scale
-        self.line_buffer = line_buffer
+        self.line_height = line_height
         self.draw_enroute_transitions = draw_enroute_transitions
         self.draw_runway_transitions = draw_runway_transitions
         self.file_name = file_name
@@ -191,7 +191,7 @@ class SIDSTAR:
                 self.x_offset,
                 self.y_offset,
                 self.text_scale,
-                self.line_buffer,
+                self.line_height,
                 self.draw_altitudes,
                 self.draw_speeds,
             )
