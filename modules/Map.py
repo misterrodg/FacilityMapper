@@ -1,5 +1,6 @@
 from modules.Composite import Composite
 from modules.ErrorHelper import print_top_level
+from modules.IAP import IAP
 from modules.Label import Label
 from modules.SIDSTAR import SIDSTAR
 
@@ -7,10 +8,11 @@ from sqlite3 import Cursor
 
 ERROR_HEADER = "MAP: "
 COMPOSITE_TYPE = "COMPOSITE"
+IAP_TYPE = "IAP"
 LABEL_TYPE = "LABEL"
 SID_TYPE = "SID"
 STAR_TYPE = "STAR"
-SUPPORTED_TYPES = [COMPOSITE_TYPE, LABEL_TYPE, SID_TYPE, STAR_TYPE]
+SUPPORTED_TYPES = [COMPOSITE_TYPE, IAP_TYPE, LABEL_TYPE, SID_TYPE, STAR_TYPE]
 
 
 class Map:
@@ -49,6 +51,8 @@ class Map:
         return
 
     def process(self) -> None:
+        if self.map_type == IAP_TYPE:
+            IAP(self.db_cursor, self.definition)
         if self.map_type == SID_TYPE or self.map_type == STAR_TYPE:
             SIDSTAR(self.db_cursor, self.map_type, self.definition)
         if self.map_type == LABEL_TYPE:

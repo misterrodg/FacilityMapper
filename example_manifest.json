@@ -31,6 +31,23 @@
       }
     },
     {
+      "map_type": "IAP",
+      "definition": {
+        "airport_id": "KBWI",
+        "procedure_id": "I10",
+        "line_type": "solid",
+        "draw_symbols": true,
+        "symbol_scale": 0.25,
+        "draw_names": true,
+        "draw_altitudes": true,
+        "y_offset": -0.5,
+        "text_scale": 0.25,
+        "line_buffer": 0.5,
+        "transition_ids": ["REMMY"],
+        "file_name": "001_KBWI_I10"
+      }
+    },
+    {
       "map_type": "LABEL",
       "definition": {
         "lines": [
