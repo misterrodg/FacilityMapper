@@ -16,7 +16,7 @@ def select_procedure_points(
     SELECT p.*,lat,lon,type
     FROM procedure_points AS p
     LEFT JOIN unified_table AS u ON p.fix_id = u.id
-    WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type_string}) AND p.path_term != 'FM'
+    WHERE fac_id = {fac_id} AND fac_sub_code={fac_sub_code} AND procedure_id LIKE {procedure_id} AND route_type IN ({route_type_string}) AND p.path_term NOT IN ('FM','HA','HF','HM','PI','VM')
     ORDER BY p.procedure_id,p.transition_id,p.route_type,p.sequence_number;
     """
     return result
