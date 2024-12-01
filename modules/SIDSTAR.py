@@ -163,13 +163,12 @@ class SIDSTAR:
 
         if self.line_style == "arrows":
             selected_route_types = self._get_selected_route_types()
-            feature_array = get_arrow_line_symbol_features(
+            feature_list = get_arrow_line_symbol_features(
                 self.runway_transitions + self.core + self.enroute_transitions,
                 selected_route_types,
                 self.symbol_scale,
             )
-            for feature in feature_array:
-                feature_collection.add_feature(feature)
+            feature_collection.add_features(feature_list)
 
         if self.line_style not in ["none", "arrows"]:
             if self.draw_symbols:
@@ -187,7 +186,7 @@ class SIDSTAR:
             feature_collection.add_feature(feature)
 
         if self.draw_names:
-            feature_array = get_text_features(
+            feature_list = get_text_features(
                 self.runway_transitions + self.core + self.enroute_transitions,
                 self.x_offset,
                 self.y_offset,
@@ -196,16 +195,14 @@ class SIDSTAR:
                 self.draw_altitudes,
                 self.draw_speeds,
             )
-            for feature in feature_array:
-                feature_collection.add_feature(feature)
+            feature_collection.add_features(feature_list)
 
         if self.draw_symbols:
-            feature_array = get_symbol_features(
+            feature_list = get_symbol_features(
                 self.runway_transitions + self.core + self.enroute_transitions,
                 self.symbol_scale,
             )
-            for feature in feature_array:
-                feature_collection.add_feature(feature)
+            feature_collection.add_features(feature_list)
 
         geo_json = GeoJSON(self.file_name)
         geo_json.add_feature_collection(feature_collection)

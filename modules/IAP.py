@@ -162,7 +162,7 @@ class IAP:
         if self.draw_names:
             core = self.core
             core = self._remove_runway(core)
-            feature_array = get_text_features(
+            feature_list = get_text_features(
                 core + self.transitions,
                 self.x_offset,
                 self.y_offset,
@@ -171,16 +171,14 @@ class IAP:
                 self.draw_altitudes,
                 self.draw_speeds,
             )
-            for feature in feature_array:
-                feature_collection.add_feature(feature)
+            feature_collection.add_features(feature_list)
 
         if self.draw_symbols:
-            feature_array = get_symbol_features(
+            feature_list = get_symbol_features(
                 self.core + self.transitions,
                 self.symbol_scale,
             )
-            for feature in feature_array:
-                feature_collection.add_feature(feature)
+            feature_collection.add_features(feature_list)
 
         geo_json = GeoJSON(self.file_name)
         geo_json.add_feature_collection(feature_collection)
