@@ -1,3 +1,4 @@
+from modules.AltitudeData import AltitudeData
 from modules.DrawHelper import ARC_MIN
 from modules.GeoJSON import Feature
 from modules.QueryHelper import filter_query
@@ -22,6 +23,7 @@ def get_text_features(
             continue
         offset_lat = y_offset + row_lat
         offset_lon = x_offset + row_lon
+        scaled_buffer = line_buffer * ARC_MIN
         text_draw = TextDraw(row["fix_id"], offset_lat, offset_lon, text_scale)
         result.append(text_draw.get_feature())
         lines_used = 1
@@ -33,36 +35,21 @@ def get_text_features(
             flight_level = row.get("flight_level")
             flight_level_2 = row.get("flight_level_2")
             if altitude or flight_level or altitude_2 or flight_level_2:
-                if altitude or flight_level:
-                    offset_lat = (
-                        y_offset + row_lat - (line_buffer * lines_used * ARC_MIN)
-                    )
-                    offset_lon = x_offset + row_lon
-                    altitude_value = altitude if altitude else f"FL{flight_level}"
-                    altitude_value = (
-                        f"{alt_desc}{altitude_value}"
-                        if alt_desc in ["+", "-"]
-                        else altitude_value
-                    )
-                    text_draw = TextDraw(
-                        str(altitude_value), offset_lat, offset_lon, text_scale
-                    )
-                    result.append(text_draw.get_feature())
-                    lines_used += 1
-                if altitude_2 or flight_level_2:
-                    offset_lat = (
-                        y_offset + row_lat - (line_buffer * lines_used * ARC_MIN)
-                    )
-                    offset_lon = x_offset + row_lon
-                    altitude_value_2 = (
-                        altitude_2 if altitude_2 else f"FL{flight_level_2}"
-                    )
-                    text_draw = TextDraw(
-                        str(altitude_value_2), offset_lat, offset_lon, text_scale
-                    )
-                    if altitude_value != altitude_value_2:
-                        result.append(text_draw.get_feature())
-                        lines_used += 1
+                altitude_data = AltitudeData(
+                    alt_desc,
+                    altitude,
+                    flight_level,
+                    altitude_2,
+                    flight_level_2,
+                    offset_lat,
+                    offset_lon,
+                    scaled_buffer,
+                    text_scale,
+                    lines_used,
+                )
+                altitude_features = altitude_data.to_text_features()
+                result.extend(altitude_features)
+                lines_used += len(altitude_features)
 
         if draw_speeds:
             speed_limit = row.get("speed_limit")
