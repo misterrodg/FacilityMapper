@@ -425,7 +425,7 @@ class GeoJSON:
             else:
                 print(f"{ERROR_HEADER}Cannot find map json data at {self.file_path}.")
                 print(
-                    f"{ERROR_HEADER}This is often caused by placing the `COMPOSITE` object above the source map object."
+                    f"{ERROR_HEADER}This might be caused by placing the `COMPOSITE` object above the source map object."
                 )
         except json.JSONDecodeError:
             print("Failed to decode JSON from the file.")
