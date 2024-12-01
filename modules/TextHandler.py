@@ -2,6 +2,7 @@ from modules.AltitudeData import AltitudeData
 from modules.DrawHelper import ARC_MIN
 from modules.GeoJSON import Feature
 from modules.QueryHelper import filter_query
+from modules.SpeedData import SpeedData
 from modules.TextDraw import TextDraw
 
 
@@ -52,15 +53,18 @@ def get_text_features(
                 lines_used += len(altitude_features)
 
         if draw_speeds:
+            speed_desc = row.get("speed_limit_2")
             speed_limit = row.get("speed_limit")
             if speed_limit:
-                offset_lat = y_offset + row_lat - (line_buffer * lines_used * ARC_MIN)
-                offset_lon = x_offset + row_lon
-                text_draw = TextDraw(
-                    str(speed_limit),
+                speed_data = SpeedData(
+                    speed_desc,
+                    speed_limit,
                     offset_lat,
                     offset_lon,
+                    scaled_buffer,
                     text_scale,
+                    lines_used,
                 )
-                result.append(text_draw.get_feature())
+                speed_feature = speed_data.to_text_feature()
+                result.append(speed_feature)
     return result
