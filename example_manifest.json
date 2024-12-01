@@ -31,6 +31,16 @@
       }
     },
     {
+      "map_type": "VECTORSID",
+      "definition": {
+        "airport_id": "KIAD",
+        "procedure_id": "CPTAL#",
+        "x_offset": 1,
+        "y_offset": -1,
+        "file_name": "003_CPTAL"
+      }
+    },
+    {
       "map_type": "IAP",
       "definition": {
         "airport_id": "KBWI",

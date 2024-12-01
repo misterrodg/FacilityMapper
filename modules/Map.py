@@ -3,6 +3,7 @@ from modules.ErrorHelper import print_top_level
 from modules.IAP import IAP
 from modules.Label import Label
 from modules.SIDSTAR import SIDSTAR
+from modules.VectorSID import VectorSID
 
 from sqlite3 import Cursor
 
@@ -12,7 +13,15 @@ IAP_TYPE = "IAP"
 LABEL_TYPE = "LABEL"
 SID_TYPE = "SID"
 STAR_TYPE = "STAR"
-SUPPORTED_TYPES = [COMPOSITE_TYPE, IAP_TYPE, LABEL_TYPE, SID_TYPE, STAR_TYPE]
+VECTOR_SID_TYPE = "VECTOR" + SID_TYPE
+SUPPORTED_TYPES = [
+    COMPOSITE_TYPE,
+    IAP_TYPE,
+    LABEL_TYPE,
+    SID_TYPE,
+    STAR_TYPE,
+    VECTOR_SID_TYPE,
+]
 
 
 class Map:
@@ -55,6 +64,8 @@ class Map:
             IAP(self.db_cursor, self.definition)
         if self.map_type == SID_TYPE or self.map_type == STAR_TYPE:
             SIDSTAR(self.db_cursor, self.map_type, self.definition)
+        if self.map_type == VECTOR_SID_TYPE:
+            VectorSID(self.db_cursor, self.definition)
         if self.map_type == LABEL_TYPE:
             Label(self.definition)
         if self.map_type == COMPOSITE_TYPE:
