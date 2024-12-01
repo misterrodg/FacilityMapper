@@ -27,23 +27,18 @@ def get_text_features(
         lines_used = 1
 
         if draw_altitudes:
-            if (
-                row["altitude"]
-                or row["flight_level"]
-                or row["altitude_2"]
-                or row["flight_level_2"]
-            ):
-                alt_desc = row["alt_desc"]
-                if row["altitude"] or row["flight_level"]:
+            alt_desc = row.get("alt_desc")
+            altitude = row.get("altitude")
+            altitude_2 = row.get("altitude_2")
+            flight_level = row.get("flight_level")
+            flight_level_2 = row.get("flight_level_2")
+            if altitude or flight_level or altitude_2 or flight_level_2:
+                if altitude or flight_level:
                     offset_lat = (
                         y_offset + row_lat - (line_buffer * lines_used * ARC_MIN)
                     )
                     offset_lon = x_offset + row_lon
-                    altitude_value = (
-                        row["altitude"]
-                        if row["altitude"]
-                        else f"FL{row["flight_level"]}"
-                    )
+                    altitude_value = altitude if altitude else f"FL{flight_level}"
                     altitude_value = (
                         f"{alt_desc}{altitude_value}"
                         if alt_desc in ["+", "-"]
@@ -54,28 +49,28 @@ def get_text_features(
                     )
                     result.append(text_draw.get_feature())
                     lines_used += 1
-                if row["altitude_2"] or row["flight_level_2"]:
+                if altitude_2 or flight_level_2:
                     offset_lat = (
                         y_offset + row_lat - (line_buffer * lines_used * ARC_MIN)
                     )
                     offset_lon = x_offset + row_lon
-                    altitude_value = (
-                        row["altitude_2"]
-                        if row["altitude_2"]
-                        else f"FL{row["flight_level_2"]}"
+                    altitude_value_2 = (
+                        altitude_2 if altitude_2 else f"FL{flight_level_2}"
                     )
                     text_draw = TextDraw(
-                        str(altitude_value), offset_lat, offset_lon, text_scale
+                        str(altitude_value_2), offset_lat, offset_lon, text_scale
                     )
-                    result.append(text_draw.get_feature())
-                    lines_used += 1
+                    if altitude_value != altitude_value_2:
+                        result.append(text_draw.get_feature())
+                        lines_used += 1
 
         if draw_speeds:
-            if row["speed_limit"]:
+            speed_limit = row.get("speed_limit")
+            if speed_limit:
                 offset_lat = y_offset + row_lat - (line_buffer * lines_used * ARC_MIN)
                 offset_lon = x_offset + row_lon
                 text_draw = TextDraw(
-                    str(row["speed_limit"]),
+                    str(speed_limit),
                     offset_lat,
                     offset_lon,
                     text_scale,
