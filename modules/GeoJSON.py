@@ -391,7 +391,10 @@ class GeoJSON:
         return
 
     def pluck_features(self) -> list[Feature]:
-        return self.feature_collection.get_features()
+        result = []
+        if self.feature_collection:
+            result = self.feature_collection.get_features()
+        return result
 
     def to_file(self, limit_to_features: bool = False) -> None:
         data_dictionary = self.feature_collection.to_dict(limit_to_features)
