@@ -12,8 +12,8 @@ def get_text_features(
     y_offset: float,
     text_scale: float,
     line_buffer: float,
-    draw_altitudes: bool,
-    draw_speeds: bool,
+    draw_altitudes: bool = False,
+    draw_speeds: bool = False,
 ) -> list[Feature]:
     filtered_rows = filter_query(db_rows, "fix_id")
     result = []
