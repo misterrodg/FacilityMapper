@@ -104,9 +104,6 @@ class IAP:
         core_rows = query_db(self.db_cursor, core_query)
         if not self.draw_missed:
             core_rows = self._remove_missed(core_rows)
-            print(f"PROCEDURE ID {self.procedure_id}")
-            for row in core_rows:
-                print(row["fix_id"])
         self.core = core_rows
         for transition in self.transition_ids:
             transition_query = self._build_query_string(transition)
