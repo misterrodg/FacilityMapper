@@ -50,10 +50,10 @@ The `manifest.json` file has the following properties:
 
 The map object has the following properties:
 
-| Property     | Required | Type     | Default | Description                                                                                |
-| ------------ | -------- | -------- | ------- | ------------------------------------------------------------------------------------------ |
-| `map_type`   | \*       | `string` |         | A string representing the map type. Supported map types are: `"SID"`, `"STAR"`, `"LABEL"`. |
-| `definition` | \*       | `object` |         | A [Definition Object](#definition-objects).                                                |
+| Property     | Required | Type     | Default | Description                                                                                                          |
+| ------------ | -------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| `map_type`   | \*       | `string` |         | A string representing the map type. Supported map types are: `"IAP"`,`"SID"`, `"STAR"`, `"LABEL"` and `"COMPOSITE"`. |
+| `definition` | \*       | `object` |         | A [Definition Object](#definition-objects).                                                                          |
 
 ### Definition Objects
 
