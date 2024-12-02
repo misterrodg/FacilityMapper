@@ -50,10 +50,10 @@ The `manifest.json` file has the following properties:
 
 The map object has the following properties:
 
-| Property     | Required | Type     | Default | Description                                                                                                                         |
-| ------------ | -------- | -------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `map_type`   | \*       | `string` |         | A string representing the map type. Supported map types are: `"IAP"`,`"SID"`, `"VECTORSID"`, `"STAR"`, `"LABEL"` and `"COMPOSITE"`. |
-| `definition` | \*       | `object` |         | A [Definition Object](#definition-objects).                                                                                         |
+| Property     | Required | Type     | Default | Description                                                                                                                                      |
+| ------------ | -------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `map_type`   | \*       | `string` |         | A string representing the map type. Supported map types are: `"IAP"`,`"SID"`, `"VECTORSID"`, `"STAR"`, `"RUNWAYS"`, `"LABEL"` and `"COMPOSITE"`. |
+| `definition` | \*       | `object` |         | A [Definition Object](#definition-objects).                                                                                                      |
 
 ### Definition Objects
 
@@ -165,6 +165,15 @@ The IAP object has the following properties:
 | RNV    | RNAV    | `RNV-A` |
 | VDM    | VOR/DME | `VDM-A` |
 | VOR    | VOR     | `VOR-A` |
+
+#### Runways
+
+The Runways object has the following properties:
+
+| Property      | Required | Type     | Default | Description                                                            |
+| ------------- | -------- | -------- | ------- | ---------------------------------------------------------------------- |
+| `airport_ids` | \*       | `array`  |         | An array of string representing the ICAO identifiers for the airports. |
+| `file_name`   | \*       | `string` |         | A string representing the filename that the map will be saved to.      |
 
 #### Label
 

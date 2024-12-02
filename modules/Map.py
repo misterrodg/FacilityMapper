@@ -2,6 +2,7 @@ from modules.Composite import Composite
 from modules.ErrorHelper import print_top_level
 from modules.IAP import IAP
 from modules.Label import Label
+from modules.Runways import Runways
 from modules.SIDSTAR import SIDSTAR
 from modules.VectorSID import VectorSID
 
@@ -11,6 +12,7 @@ ERROR_HEADER = "MAP: "
 COMPOSITE_TYPE = "COMPOSITE"
 IAP_TYPE = "IAP"
 LABEL_TYPE = "LABEL"
+RUNWAYS_TYPE = "RUNWAYS"
 SID_TYPE = "SID"
 STAR_TYPE = "STAR"
 VECTOR_SID_TYPE = "VECTOR" + SID_TYPE
@@ -18,6 +20,7 @@ SUPPORTED_TYPES = [
     COMPOSITE_TYPE,
     IAP_TYPE,
     LABEL_TYPE,
+    RUNWAYS_TYPE,
     SID_TYPE,
     STAR_TYPE,
     VECTOR_SID_TYPE,
@@ -66,6 +69,8 @@ class Map:
             SIDSTAR(self.db_cursor, self.map_type, self.definition)
         if self.map_type == VECTOR_SID_TYPE:
             VectorSID(self.db_cursor, self.definition)
+        if self.map_type == RUNWAYS_TYPE:
+            Runways(self.db_cursor, self.definition)
         if self.map_type == LABEL_TYPE:
             Label(self.definition)
         if self.map_type == COMPOSITE_TYPE:

@@ -57,6 +57,30 @@
       }
     },
     {
+      "map_type": "RUNWAYS",
+      "definition": {
+        "airport_ids": [
+          "KIAD",
+          "KCJR",
+          "KEZF",
+          "KFRR",
+          "KHEF",
+          "KHGR",
+          "KHWY",
+          "KJYO",
+          "KMRB",
+          "KNYG",
+          "KOKV",
+          "KRMN",
+          "W05",
+          "W35",
+          "2VA9",
+          "2VG2"
+        ],
+        "file_name": "003_SHD_RUNWAYS"
+      }
+    },
+    {
       "map_type": "LABEL",
       "definition": {
         "lines": [
