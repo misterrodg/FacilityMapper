@@ -3,6 +3,7 @@ import math
 ARC_MIN = 0.015  # 1 min of arc = 1/60, most facilities round this down to 0.015 resulting in 0.9nm tall letters
 DEG_TO_MIN = 60
 EARTH_RADIUS_NM = 3443.92
+FEET_IN_NM = 6076.12
 
 
 def correction_factor(latitude: float) -> float:
