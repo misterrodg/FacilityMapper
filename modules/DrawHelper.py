@@ -5,6 +5,12 @@ DEG_TO_MIN = 60
 EARTH_RADIUS_NM = 3443.92
 
 
+def correction_factor(latitude: float) -> float:
+    latitude_radians = math.radians(latitude)
+    result = math.cos(latitude_radians)
+    return result
+
+
 def correct_offsets(
     center_lat: float,
     center_lon: float,
@@ -15,8 +21,7 @@ def correct_offsets(
     scale_factor: float = 1.0,
 ) -> list[dict]:
     scale = scale_factor * ARC_MIN
-    center_lat_rad = math.radians(center_lat)
-    lon_correction_factor = math.cos(center_lat_rad)
+    lon_correction_factor = correction_factor(center_lat)
     rotation_rad = math.radians(rotation_deg)
 
     cos_theta = math.cos(rotation_rad)
