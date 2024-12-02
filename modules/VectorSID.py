@@ -3,7 +3,7 @@ from modules.ErrorHelper import print_top_level
 from modules.GeoJSON import FeatureCollection, GeoJSON
 from modules.QueryHandler import query_db
 from modules.QueryHelper import translate_wildcard
-from modules.SIDSTARQueries import select_procedure_points_vector
+from modules.VectorSIDQueries import select_procedure_points
 from modules.SymbolHandler import get_symbol_features
 from modules.TextHandler import get_text_features
 
@@ -81,7 +81,7 @@ class VectorSID:
     def _build_query_string(self) -> str:
         fac_id = f"'{self.airport_id}'"
         procedure_id = f"'{translate_wildcard(self.procedure_id)}'"
-        result = select_procedure_points_vector(fac_id, procedure_id)
+        result = select_procedure_points(fac_id, procedure_id)
         return result
 
     def _to_file(self) -> None:
