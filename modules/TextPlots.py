@@ -50,9 +50,9 @@ ZERO = [
 ]
 
 ONE = [
-    {"lat_offset": 21, "lon_offset": 0},
-    {"lat_offset": 21, "lon_offset": 3},
-    {"lat_offset": 0, "lon_offset": 3},
+    {"lat_offset": 21, "lon_offset": 4},
+    {"lat_offset": 21, "lon_offset": 7},
+    {"lat_offset": 0, "lon_offset": 7},
 ]
 
 TWO = [
