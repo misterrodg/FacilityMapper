@@ -5,7 +5,7 @@ from modules.TextPlots import (
     UNRECOGNIZED,
     get_plot_from_char,
 )
-from modules.DrawHelper import ARC_MIN, correct_offsets
+from modules.DrawHelper import ARC_MIN, correct_offsets, correction_factor
 from modules.GeoJSON import Coordinate, Feature, LineString, MultiLineString
 
 
@@ -29,7 +29,10 @@ class TextDraw:
             line_string = LineString()
             char_plot = get_plot_from_char(char)
             if char_plot not in [UNRECOGNIZED, SPACE]:
-                lon = self.lon + (char_count * self.text_scale * ARC_MIN)
+                correction = correction_factor(self.lat)
+                lon = self.lon + (
+                    char_count * ((self.text_scale * ARC_MIN) / correction)
+                )
                 corrected_plot = correct_offsets(
                     self.lat,
                     lon,
