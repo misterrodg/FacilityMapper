@@ -1,4 +1,6 @@
 def _handle_bearing_component(bearing_component: int) -> int:
+    if bearing_component == 18:
+        return 36
     return (bearing_component + 18) % 36
 
 
