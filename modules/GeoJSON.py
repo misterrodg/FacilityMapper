@@ -9,6 +9,11 @@ from modules.vNAS import (
     LINE_STYLES,
     LINE_THICKNESS_MIN,
     LINE_THICKNESS_MAX,
+    PROPERTY_TYPE_LINE,
+    PROPERTY_TYPE_POINT,
+    PROPERTY_TYPE_POLYGON,
+    PROPERTY_TYPE_SYMBOL,
+    PROPERTY_TYPES,
     SYMBOL_STYLES,
     SYMBOL_SIZE_MIN,
     SYMBOL_SIZE_MAX,
@@ -89,57 +94,96 @@ class Properties:
         result = {key: value for key, value in result.items() if value is not None}
         return result
 
-    def from_dict(self, properties_dict: dict) -> None:
-        self.asdex = properties_dict.get("asdex")
-        self.bcg = properties_dict.get("bcg")
-        self.color = properties_dict.get("color")
-        self.filters = properties_dict.get("filters")
-        self.is_line_defaults = properties_dict.get("isLineDefaults")
-        self.is_symbol_defaults = properties_dict.get("isSymbolDefaults")
-        self.is_text_defaults = properties_dict.get("isTextDefaults")
-        self.opaque = properties_dict.get("opaque")
-        self.size = properties_dict.get("size")
-        self.style = properties_dict.get("style")
-        self.thickness = properties_dict.get("thickness")
-        self.underline = properties_dict.get("underline")
-        self.x_offset = properties_dict.get("xOffset")
-        self.y_offset = properties_dict.get("yOffset")
+    def from_dict(self, feature_type: str, properties_dict: dict) -> None:
+        if feature_type in PROPERTY_TYPES:
+            color = properties_dict.get("color")
+            self._set_color(color)
+            bcg = properties_dict.get("bcg")
+            self._set_bcg(bcg)
+            filters = properties_dict.get("filters")
+            self._set_filters(filters)
+            z_index = properties_dict.get("zIndex")
+            self._set_filters(z_index)
+
+            if feature_type == PROPERTY_TYPE_LINE:
+                is_line_defaults = properties_dict.get("isLineDefaults")
+                self._set_is_line_defaults(is_line_defaults)
+                style = properties_dict.get("style")
+                self._set_line_style(style)
+                thickness = properties_dict.get("thickness")
+                self._set_line_thickness(thickness)
+
+            if feature_type == PROPERTY_TYPE_POLYGON:
+                asdex = properties_dict.get("asdex")
+                self._set_asdex(asdex)
+
+            if feature_type == PROPERTY_TYPE_POINT:
+                is_text_defaults = properties_dict.get("isTextDefaults")
+                self._set_is_text_defaults(is_text_defaults)
+                text = properties_dict.get("text")
+                self._set_text(text)
+                size = properties_dict.get("size")
+                self._set_text_size(size)
+                underline = properties_dict.get("underline")
+                self._set_text_underline(underline)
+                x_offset = properties_dict.get("xOffset")
+                self._set_text_offset("x", x_offset)
+                y_offset = properties_dict.get("yOffset")
+                self._set_text_offset("y", y_offset)
+                opaque = properties_dict.get("opaque")
+                self._set_text_opaque(opaque)
+
+            if feature_type == PROPERTY_TYPE_SYMBOL:
+                is_symbol_defaults = properties_dict.get("isSymbolDefaults")
+                self._set_is_symbol_defaults(is_symbol_defaults)
+                size = properties_dict.get("size")
+                self._set_symbol_size(size)
+                style = properties_dict.get("style")
+                self._set_symbol_style(style)
         return
 
     def _set_asdex(self, asdex_style: str) -> None:
-        if asdex_style in ASDEX_STYLES:
+        if asdex_style and asdex_style in ASDEX_STYLES:
             self.asdex = asdex_style
         return
 
     def _set_bcg(self, bcg: int) -> None:
-        if bcg >= BCG_MIN and bcg <= BCG_MAX:
+        if bcg and bcg >= BCG_MIN and bcg <= BCG_MAX:
             self.bcg = bcg
         return
 
     def _set_color(self, hex_string: str) -> None:
-        if self._is_hex_color(hex_string):
+        if hex_string and self._is_hex_color(hex_string):
             self.color = hex_string
         return
 
-    def _set_filters(self, filter_list: list) -> None:
-        filters = []
-        for item in filter_list:
-            if item >= FILTER_MIN and item <= FILTER_MAX:
-                filters.append(item)
-        if len(filters) > 0:
-            self.filters = filters
+    def _set_filters(self, filter_list: list[int]) -> None:
+        if (
+            filter_list
+            and isinstance(filter_list, list)
+            or all(isinstance(item, int) for item in filter_list)
+        ):
+            filters = []
+            for item in filter_list:
+                if item >= FILTER_MIN and item <= FILTER_MAX:
+                    filters.append(item)
+            if len(filters) > 0:
+                self.filters = filters
         return
 
     def _set_is_line_defaults(self, line_defaults: bool) -> None:
-        self.is_line_defaults = line_defaults
+        if line_defaults != None:
+            self.is_line_defaults = line_defaults
         return
 
     def _set_is_symbol_defaults(self, symbol_defaults: bool) -> None:
-        self.is_symbol_defaults = symbol_defaults
+        if symbol_defaults != None:
+            self.is_symbol_defaults = symbol_defaults
         return
 
     def _set_is_text_defaults(self, text_defaults: bool) -> None:
-        self.is_text_defaults = text_defaults
+        if text_defaults != None:
+            self.is_text_defaults = text_defaults
         return
 
     def _set_line_style(self, line_style: str) -> None:
@@ -148,7 +192,7 @@ class Properties:
         return
 
     def _set_line_thickness(self, line_thickness: int) -> None:
-        if (
+        if line_thickness and (
             line_thickness >= LINE_THICKNESS_MIN
             and line_thickness <= LINE_THICKNESS_MAX
         ):
@@ -161,44 +205,53 @@ class Properties:
         return
 
     def _set_symbol_size(self, symbol_size: int) -> None:
-        if symbol_size >= SYMBOL_SIZE_MIN and symbol_size <= SYMBOL_SIZE_MAX:
+        if (
+            symbol_size
+            and symbol_size >= SYMBOL_SIZE_MIN
+            and symbol_size <= SYMBOL_SIZE_MAX
+        ):
             self.size = symbol_size
         return
 
     def _set_text(self, text_list: list[str]) -> None:
-        if isinstance(text_list, list) or all(
-            isinstance(item, str) for item in text_list
+        if (
+            text_list
+            and isinstance(text_list, list)
+            or all(isinstance(item, str) for item in text_list)
         ):
             self.text = text_list
         return
 
     def _set_text_size(self, text_size: int) -> None:
-        if text_size >= TEXT_SIZE_MIN and text_size <= TEXT_SIZE_MAX:
+        if text_size and text_size >= TEXT_SIZE_MIN and text_size <= TEXT_SIZE_MAX:
             self.size = text_size
         return
 
     def _set_text_opaque(self, text_opaque: bool) -> None:
-        self.opaque = text_opaque
+        if text_opaque != None:
+            self.opaque = text_opaque
         return
 
     def _set_text_underline(self, text_underline: bool) -> None:
-        self.underline = text_underline
+        if text_underline != None:
+            self.underline = text_underline
         return
 
     def _set_text_offset(self, dimension: str, offset: int) -> None:
-        is_positive = offset > 0
-        if dimension == "x" and is_positive:
-            self.x_offset = offset
-        if dimension == "y" and is_positive:
-            self.y_offset = offset
+        if offset:
+            is_positive = offset > 0
+            if dimension == "x" and is_positive:
+                self.x_offset = offset
+            if dimension == "y" and is_positive:
+                self.y_offset = offset
         return
 
     def _set_z_index(self, z_index: int) -> None:
-        if z_index > 0:
+        if z_index and z_index > 0:
             self.z_index = z_index
         return
 
-    def _is_hex_color(hex_string: str) -> bool:
+    def _is_hex_color(self, hex_string: str) -> bool:
         pattern = r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
         return bool(re.match(pattern, hex_string))
 
