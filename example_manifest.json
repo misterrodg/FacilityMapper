@@ -81,6 +81,20 @@
       }
     },
     {
+      "map_type": "CONTROLLED",
+      "definition": {
+        "airport_id": "KDCA",
+        "file_name": "001_DCA_CONTROLLED"
+      }
+    },
+    {
+      "map_type": "RESTRICTIVE",
+      "definition": {
+        "restrictive_id": "6601A",
+        "file_name": "001_6601A"
+      }
+    },
+    {
       "map_type": "LABEL",
       "definition": {
         "lines": [

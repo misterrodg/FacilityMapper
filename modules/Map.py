@@ -1,7 +1,9 @@
 from modules.Composite import Composite
+from modules.Controlled import Controlled
 from modules.ErrorHelper import print_top_level
 from modules.IAP import IAP
 from modules.Label import Label
+from modules.Restrictive import Restrictive
 from modules.Runways import Runways
 from modules.SIDSTAR import SIDSTAR
 from modules.VectorSID import VectorSID
@@ -10,16 +12,20 @@ from sqlite3 import Cursor
 
 ERROR_HEADER = "MAP: "
 COMPOSITE_TYPE = "COMPOSITE"
+CONTROLLED_TYPE = "CONTROLLED"
 IAP_TYPE = "IAP"
 LABEL_TYPE = "LABEL"
+RESTRICTIVE_TYPE = "RESTRICTIVE"
 RUNWAYS_TYPE = "RUNWAYS"
 SID_TYPE = "SID"
 STAR_TYPE = "STAR"
 VECTOR_SID_TYPE = "VECTOR" + SID_TYPE
 SUPPORTED_TYPES = [
+    CONTROLLED_TYPE,
     COMPOSITE_TYPE,
     IAP_TYPE,
     LABEL_TYPE,
+    RESTRICTIVE_TYPE,
     RUNWAYS_TYPE,
     SID_TYPE,
     STAR_TYPE,
@@ -75,3 +81,7 @@ class Map:
             Label(self.definition)
         if self.map_type == COMPOSITE_TYPE:
             Composite(self.definition)
+        if self.map_type == CONTROLLED_TYPE:
+            Controlled(self.db_cursor, self.definition)
+        if self.map_type == RESTRICTIVE_TYPE:
+            Restrictive(self.db_cursor, self.definition)

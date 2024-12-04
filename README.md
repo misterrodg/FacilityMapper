@@ -50,10 +50,10 @@ The `manifest.json` file has the following properties:
 
 The map object has the following properties:
 
-| Property     | Required | Type     | Default | Description                                                                                                                                      |
-| ------------ | -------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `map_type`   | \*       | `string` |         | A string representing the map type. Supported map types are: `"IAP"`,`"SID"`, `"VECTORSID"`, `"STAR"`, `"RUNWAYS"`, `"LABEL"` and `"COMPOSITE"`. |
-| `definition` | \*       | `object` |         | A [Definition Object](#definition-objects).                                                                                                      |
+| Property     | Required | Type     | Default | Description                                                                                                                                                                        |
+| ------------ | -------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `map_type`   | \*       | `string` |         | A string representing the map type. Supported map types are: `"CONTROLLED"`, `"IAP"`, `"LABEL"`, `"RESTRICTIVE"`, `"RUNWAYS"`, `"SID"`, `"VECTORSID"`, `"STAR"` and `"COMPOSITE"`. |
+| `definition` | \*       | `object` |         | A [Definition Object](#definition-objects).                                                                                                                                        |
 
 ### Definition Objects
 
@@ -165,6 +165,30 @@ The IAP object has the following properties:
 | RNV    | RNAV    | `RNV-A` |
 | VDM    | VOR/DME | `VDM-A` |
 | VOR    | VOR     | `VOR-A` |
+
+#### Controlled
+
+The Controlled object has the following properties:
+
+| Property     | Required | Type     | Default                    | Description                                                       |
+| ------------ | -------- | -------- | -------------------------- | ----------------------------------------------------------------- |
+| `airport_id` | \*       | `string` |                            | A string representing the identifier for the controlled airspace. |
+| `file_name`  |          | `string` | `{mapType}_{controlledId}` | A string representing the filename that the map will be saved to. |
+
+**NOTE**: For most airspace, the `airport_id` is straightforward, but for certain areas within Class B, it might not be obvious. It may be worth opening the CIFP file and searching for the entry. If your program supports regex, you can search with `SUSAUC...{airportId}` to see if anything pops up. For Washington DC, the Class B is centered on `KDCA` (and not `KIAD` or `KBWI`), whereas for NY it is centered on `KJFK` (and not `KEWR` or `KLGA`).
+
+#### Restrictive
+
+Restrictive airspace covers all airspace: Alert (A), Caution (C), Danger (D), Military Operations Area (M), Prohibited (P), Restricted (R), Training (T), and Warning (W).
+
+The Restrictive object has the following properties:
+
+| Property         | Required | Type     | Default                     | Description                                                        |
+| ---------------- | -------- | -------- | --------------------------- | ------------------------------------------------------------------ |
+| `restrictive_id` | \*       | `string` |                             | A string representing the identifier for the restrictive airspace. |
+| `file_name`      |          | `string` | `{mapType}_{restrictiveId}` | A string representing the filename that the map will be saved to.  |
+
+**NOTE**: Naming in the CIFP file is mostly standardized, but has some quirks, particularly for MOAs. It may be worth opening the CIFP file and searching for the entry. For example, Stumpy Point MOA appears in the file as `STUMPY PT`. If your program supports regex, you can search with `SUSAUR..M` and start typing the MOA name right after the `M` (e.g., `SUSAUR..MDEMO` for the DEMO MOA). For longer names, the name may actually be truncated. The Tombstone MOA, for example, is truncated as `TOMBSTON A`, `TOMBSTON B` and `TOMBSTON C`.
 
 #### Runways
 
