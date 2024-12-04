@@ -312,11 +312,13 @@ class Feature:
 
     def to_dict(self) -> dict:
         if self.properties is None:
-            self.properties = {}
+            properties = {}
+        else:
+            properties = self.properties.to_dict()
         return {
             "type": self.type,
             "geometry": self.geometry,
-            "properties": self.properties,
+            "properties": properties,
         }
 
     def from_dict(self, feature_dict: dict) -> None:
