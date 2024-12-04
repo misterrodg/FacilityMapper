@@ -2,7 +2,7 @@ import math
 
 ARC_MIN = 0.015  # 1 min of arc = 1/60, most facilities round this down to 0.015 resulting in 0.9nm tall letters
 DEG_TO_MIN = 60
-EARTH_RADIUS_NM = 3443.92
+EARTH_RADIUS_NM = 3440.065
 FEET_IN_NM = 6076.12
 
 
@@ -47,20 +47,23 @@ def correct_offsets(
 
 
 def lat_lon_from_pbd(lat: float, lon: float, bearing: float, distance: float) -> dict:
-    lat = math.radians(lat)
-    lon = math.radians(lon)
-    bearing = math.radians(bearing)
-    end_lat = math.asin(
-        math.sin(lat) * math.cos(distance / EARTH_RADIUS_NM)
-        + math.cos(lat) * math.sin(distance / EARTH_RADIUS_NM) * math.cos(bearing)
+    lat_rad = math.radians(lat)
+    lon_rad = math.radians(lon)
+    bearing_rad = math.radians(bearing)
+    angular_distance = distance / EARTH_RADIUS_NM
+    end_lat_rad = math.asin(
+        math.sin(lat_rad) * math.cos(angular_distance)
+        + math.cos(lat_rad) * math.sin(angular_distance) * math.cos(bearing_rad)
     )
-    end_lon = lon + math.atan2(
-        math.sin(bearing) * math.sin(distance / EARTH_RADIUS_NM) * math.cos(lat),
-        math.cos(distance / EARTH_RADIUS_NM) - math.sin(lat) * math.sin(end_lat),
+    end_lon_rad = lon_rad + math.atan2(
+        math.sin(bearing_rad) * math.sin(angular_distance) * math.cos(lat_rad),
+        math.cos(angular_distance) - math.sin(lat_rad) * math.sin(end_lat_rad),
     )
 
-    end_lat = math.degrees(end_lat)
-    end_lon = math.degrees(end_lon)
+    end_lat = math.degrees(end_lat_rad)
+    end_lon = math.degrees(end_lon_rad)
+
+    end_lon = (end_lon + 180) % 360 - 180
 
     result = {"lat": end_lat, "lon": end_lon}
     return result
@@ -69,19 +72,20 @@ def lat_lon_from_pbd(lat: float, lon: float, bearing: float, distance: float) ->
 def haversine_great_circle_distance(
     start_lat: float, start_lon: float, end_lat: float, end_lon: float
 ) -> float:
-    theta = start_lon - end_lon
-    arc = math.degrees(
-        math.acos(
-            (math.sin(math.radians(start_lat)) * math.sin(math.radians(end_lat)))
-            + (
-                math.cos(math.radians(start_lat))
-                * math.cos(math.radians(end_lat))
-                * math.cos(math.radians(theta))
-            )
-        )
-    )
-    distance = arc * DEG_TO_MIN
-    return distance
+    start_lat_rad = math.radians(start_lat)
+    start_lon_rad = math.radians(start_lon)
+    end_lat_rad = math.radians(end_lat)
+    end_lon_rad = math.radians(end_lon)
+
+    delta_lon = end_lon_rad - start_lon_rad
+    cos_c = math.sin(start_lat_rad) * math.sin(end_lat_rad) + math.cos(
+        start_lat_rad
+    ) * math.cos(end_lat_rad) * math.cos(delta_lon)
+    cos_c = min(1.0, max(-1.0, cos_c))
+    angular_distance_rad = math.acos(cos_c)
+
+    distance_nm = angular_distance_rad * EARTH_RADIUS_NM
+    return distance_nm
 
 
 def inverse_bearing(bearing: float) -> float:
@@ -92,10 +96,17 @@ def inverse_bearing(bearing: float) -> float:
 def haversine_great_circle_bearing(
     start_lat: float, start_lon: float, end_lat: float, end_lon: float
 ) -> float:
-    x = math.cos(math.radians(start_lat)) * math.sin(math.radians(end_lat)) - math.sin(
-        math.radians(start_lat)
-    ) * math.cos(math.radians(end_lat)) * math.cos(math.radians(end_lon - start_lon))
-    y = math.sin(math.radians(end_lon - start_lon)) * math.cos(math.radians(end_lat))
-    bearing = math.degrees(math.atan2(y, x))
-    bearing = math.fmod(bearing + 360, 360)
-    return bearing
+    start_lat_rad = math.radians(start_lat)
+    start_lon_rad = math.radians(start_lon)
+    end_lat_rad = math.radians(end_lat)
+    end_lon_rad = math.radians(end_lon)
+
+    delta_lon = end_lon_rad - start_lon_rad
+
+    x = math.cos(end_lat_rad) * math.sin(delta_lon)
+    y = math.cos(start_lat_rad) * math.sin(end_lat_rad) - math.sin(
+        start_lat_rad
+    ) * math.cos(end_lat_rad) * math.cos(delta_lon)
+    bearing_rad = math.atan2(x, y)
+    bearing_deg = (math.degrees(bearing_rad) + 360) % 360
+    return bearing_deg
