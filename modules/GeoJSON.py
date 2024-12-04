@@ -190,14 +190,17 @@ class Properties:
 class Point:
     def __init__(self):
         self.type = POINT_TYPE
-        self.coordinates = []
+        self.coordinates: list[Coordinate] = []
 
     def set_coordinate(self, coordinate: Coordinate) -> None:
-        self.coordinates.append(coordinate.to_geo_json())
+        self.coordinates.append(coordinate)
         return
 
     def to_dict(self) -> dict:
-        return {"type": self.type, "coordinates": self.coordinates}
+        coordinates = []
+        for coordinate in self.coordinates:
+            coordinates.append(coordinate.to_geo_json())
+        return {"type": self.type, "coordinates": coordinates}
 
     def from_dict(self, point_dict: dict) -> None:
         coordinates = point_dict.get("coordinates")
@@ -214,21 +217,36 @@ class Point:
 class LineString:
     def __init__(self):
         self.type = LINE_STRING_TYPE
-        self.coordinates = []
+        self.coordinates: list[Coordinate] = []
 
     def add_coordinate(self, coordinate: Coordinate) -> None:
-        self.coordinates.append(coordinate.to_geo_json())
+        self.coordinates.append(coordinate)
         return
 
-    def to_coordinates(self) -> list:
-        return self.coordinates
+    def add_coordinates(self, coordinates: list[Coordinate]) -> None:
+        self.coordinates.extend(coordinates)
+        return
+
+    def close_line(self) -> None:
+        first_coordinate = self.coordinates[0]
+        self.coordinates.append(first_coordinate)
+        return
+
+    def to_coordinates(self) -> list[Coordinate]:
+        result = []
+        for coordinate in self.coordinates:
+            result.append(coordinate.to_geo_json())
+        return result
 
     def is_empty(self) -> bool:
         result = len(self.coordinates) == 0
         return result
 
     def to_dict(self) -> dict:
-        return {"type": self.type, "coordinates": self.coordinates}
+        coordinates = []
+        for coordinate in self.coordinates:
+            coordinates.append(coordinate.to_geo_json())
+        return {"type": self.type, "coordinates": coordinates}
 
     def from_dict(self, line_string_dict: dict) -> None:
         coordinates = line_string_dict.get("coordinates")
@@ -245,14 +263,22 @@ class LineString:
 class MultiLineString:
     def __init__(self):
         self.type = MULTI_LINE_STRING_TYPE
-        self.coordinates = []
+        self.coordinates: list[LineString] = []
 
     def add_line_string(self, line_string: LineString) -> None:
-        self.coordinates.append(line_string.to_coordinates())
+        self.coordinates.append(line_string)
+        return
+
+    def add_line_strings(self, line_strings: list[LineString]) -> None:
+        self.coordinates.extend(line_strings)
         return
 
     def to_dict(self) -> dict:
-        return {"type": self.type, "coordinates": self.coordinates}
+        coordinates = []
+        for line_string in self.coordinates:
+            line_coordinates = line_string.to_coordinates()
+            coordinates.append(line_coordinates)
+        return {"type": self.type, "coordinates": coordinates}
 
     def from_dict(self, multi_line_string_dict: dict) -> None:
         coordinates = multi_line_string_dict.get("coordinates")
