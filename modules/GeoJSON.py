@@ -60,6 +60,7 @@ class Properties:
         self.opaque = None
         self.size = None
         self.style = None
+        self.text = None
         self.thickness = None
         self.underline = None
         self.x_offset = None
@@ -78,6 +79,7 @@ class Properties:
             "opaque": self.opaque,
             "size": self.size,
             "style": self.style,
+            "text": self.text,
             "thickness": self.thickness,
             "underline": self.underline,
             "xOffset": self.x_offset,
@@ -161,6 +163,13 @@ class Properties:
     def _set_symbol_size(self, symbol_size: int) -> None:
         if symbol_size >= SYMBOL_SIZE_MIN and symbol_size <= SYMBOL_SIZE_MAX:
             self.size = symbol_size
+        return
+
+    def _set_text(self, text_list: list[str]) -> None:
+        if isinstance(text_list, list) or all(
+            isinstance(item, str) for item in text_list
+        ):
+            self.text = text_list
         return
 
     def _set_text_size(self, text_size: int) -> None:
