@@ -65,86 +65,6 @@ class Properties:
         self.x_offset = None
         self.y_offset = None
 
-    def set_asdex(self, asdex_style: str) -> None:
-        if asdex_style in ASDEX_STYLES:
-            self.asdex = asdex_style
-        return
-
-    def set_bcg(self, bcg: int) -> None:
-        if bcg >= BCG_MIN and bcg <= BCG_MAX:
-            self.bcg = bcg
-        return
-
-    def set_color(self, hex_string: str) -> None:
-        if self._is_hex_color(hex_string):
-            self.color = hex_string
-        return
-
-    def set_filters(self, filter_list: list) -> None:
-        filters = []
-        for item in filter_list:
-            if item >= FILTER_MIN and item <= FILTER_MAX:
-                filters.append(item)
-        if len(filters) > 0:
-            self.filters = filters
-        return
-
-    def set_is_line_defaults(self, line_defaults: bool) -> None:
-        self.is_line_defaults = line_defaults
-        return
-
-    def set_is_symbol_defaults(self, symbol_defaults: bool) -> None:
-        self.is_symbol_defaults = symbol_defaults
-        return
-
-    def set_is_text_defaults(self, text_defaults: bool) -> None:
-        self.is_text_defaults = text_defaults
-        return
-
-    def set_line_style(self, line_style: str) -> None:
-        if line_style in LINE_STYLES:
-            self.style = line_style
-        return
-
-    def set_line_thickness(self, line_thickness: int) -> None:
-        if (
-            line_thickness >= LINE_THICKNESS_MIN
-            and line_thickness <= LINE_THICKNESS_MAX
-        ):
-            self.thickness = line_thickness
-        return
-
-    def set_symbol_style(self, symbol_style: str) -> None:
-        if symbol_style in SYMBOL_STYLES:
-            self.style = symbol_style
-        return
-
-    def set_symbol_size(self, symbol_size: int) -> None:
-        if symbol_size >= SYMBOL_SIZE_MIN and symbol_size <= SYMBOL_SIZE_MAX:
-            self.size = symbol_size
-        return
-
-    def set_text_size(self, text_size: int) -> None:
-        if text_size >= TEXT_SIZE_MIN and text_size <= TEXT_SIZE_MAX:
-            self.size = text_size
-        return
-
-    def set_text_opaque(self, text_opaque: bool) -> None:
-        self.opaque = text_opaque
-        return
-
-    def set_text_underline(self, text_underline: bool) -> None:
-        self.underline = text_underline
-        return
-
-    def set_text_offset(self, dimension: str, offset: int) -> None:
-        is_positive = offset > 0
-        if dimension == "x" and is_positive:
-            self.x_offset = offset
-        if dimension == "y" and is_positive:
-            self.y_offset = offset
-        return
-
     def to_dict(self) -> dict:
         result = {
             "asdex": self.asdex,
@@ -180,6 +100,86 @@ class Properties:
         self.underline = properties_dict.get("underline")
         self.x_offset = properties_dict.get("xOffset")
         self.y_offset = properties_dict.get("yOffset")
+        return
+
+    def _set_asdex(self, asdex_style: str) -> None:
+        if asdex_style in ASDEX_STYLES:
+            self.asdex = asdex_style
+        return
+
+    def _set_bcg(self, bcg: int) -> None:
+        if bcg >= BCG_MIN and bcg <= BCG_MAX:
+            self.bcg = bcg
+        return
+
+    def _set_color(self, hex_string: str) -> None:
+        if self._is_hex_color(hex_string):
+            self.color = hex_string
+        return
+
+    def _set_filters(self, filter_list: list) -> None:
+        filters = []
+        for item in filter_list:
+            if item >= FILTER_MIN and item <= FILTER_MAX:
+                filters.append(item)
+        if len(filters) > 0:
+            self.filters = filters
+        return
+
+    def _set_is_line_defaults(self, line_defaults: bool) -> None:
+        self.is_line_defaults = line_defaults
+        return
+
+    def _set_is_symbol_defaults(self, symbol_defaults: bool) -> None:
+        self.is_symbol_defaults = symbol_defaults
+        return
+
+    def _set_is_text_defaults(self, text_defaults: bool) -> None:
+        self.is_text_defaults = text_defaults
+        return
+
+    def _set_line_style(self, line_style: str) -> None:
+        if line_style in LINE_STYLES:
+            self.style = line_style
+        return
+
+    def _set_line_thickness(self, line_thickness: int) -> None:
+        if (
+            line_thickness >= LINE_THICKNESS_MIN
+            and line_thickness <= LINE_THICKNESS_MAX
+        ):
+            self.thickness = line_thickness
+        return
+
+    def _set_symbol_style(self, symbol_style: str) -> None:
+        if symbol_style in SYMBOL_STYLES:
+            self.style = symbol_style
+        return
+
+    def _set_symbol_size(self, symbol_size: int) -> None:
+        if symbol_size >= SYMBOL_SIZE_MIN and symbol_size <= SYMBOL_SIZE_MAX:
+            self.size = symbol_size
+        return
+
+    def _set_text_size(self, text_size: int) -> None:
+        if text_size >= TEXT_SIZE_MIN and text_size <= TEXT_SIZE_MAX:
+            self.size = text_size
+        return
+
+    def _set_text_opaque(self, text_opaque: bool) -> None:
+        self.opaque = text_opaque
+        return
+
+    def _set_text_underline(self, text_underline: bool) -> None:
+        self.underline = text_underline
+        return
+
+    def _set_text_offset(self, dimension: str, offset: int) -> None:
+        is_positive = offset > 0
+        if dimension == "x" and is_positive:
+            self.x_offset = offset
+        if dimension == "y" and is_positive:
+            self.y_offset = offset
         return
 
     def _is_hex_color(hex_string: str) -> bool:
