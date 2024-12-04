@@ -64,6 +64,7 @@ class Properties:
         self.underline = None
         self.x_offset = None
         self.y_offset = None
+        self.z_index = None
 
     def to_dict(self) -> dict:
         result = {
@@ -81,6 +82,7 @@ class Properties:
             "underline": self.underline,
             "xOffset": self.x_offset,
             "yOffset": self.y_offset,
+            "zIndex": self.z_index,
         }
         result = {key: value for key, value in result.items() if value is not None}
         return result
@@ -180,6 +182,11 @@ class Properties:
             self.x_offset = offset
         if dimension == "y" and is_positive:
             self.y_offset = offset
+        return
+
+    def _set_z_index(self, z_index: int) -> None:
+        if z_index > 0:
+            self.z_index = z_index
         return
 
     def _is_hex_color(hex_string: str) -> bool:
