@@ -274,3 +274,9 @@ python3 main.py --purge
 ```bash
 python3 main.py --refresh
 ```
+
+`--manifest` is available to specify different manifest files. By default, the script looks for a file named `manifest.json` in the program root, but additional manifests can be created with different file names in the `manifests` directory, and built using `--manifest`.
+
+```bash
+python3 main.py --manifest example_manifest.json
+```
