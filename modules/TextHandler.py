@@ -3,7 +3,7 @@ from modules.DrawHelper import ARC_MIN
 from modules.GeoJSON import Feature
 from modules.QueryHelper import filter_query
 from modules.SpeedData import SpeedData
-from modules.TextDraw import TextDraw
+from modules.TextData import TextData
 
 
 def get_text_features(
@@ -18,6 +18,7 @@ def get_text_features(
     filtered_rows = filter_query(db_rows, "fix_id")
     result = []
     for row in filtered_rows:
+        lines_used = 0
         row_lat = row.get("lat")
         row_lon = row.get("lon")
         if not row_lat or not row_lon:
@@ -25,9 +26,17 @@ def get_text_features(
         offset_lat = y_offset + row_lat
         offset_lon = x_offset + row_lon
         scaled_line_height = line_height * ARC_MIN
-        text_draw = TextDraw(row["fix_id"], offset_lat, offset_lon, text_scale)
-        result.append(text_draw.get_feature())
-        lines_used = 1
+        text_data = TextData(
+            row["fix_id"],
+            offset_lat,
+            offset_lon,
+            scaled_line_height,
+            text_scale,
+            lines_used,
+        )
+        text_feature = text_data.to_text_feature()
+        result.append(text_feature)
+        lines_used += 1
 
         if draw_altitudes:
             alt_desc = row.get("alt_desc")
