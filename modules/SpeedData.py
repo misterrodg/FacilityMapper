@@ -19,18 +19,17 @@ class SpeedData:
         self.offset_lon = offset_lon
         self.scaled_buffer = scaled_buffer
         self.text_scale = text_scale
-
-        self.SPEED_LINE_INDEX = start_line
+        self.start_line = start_line
 
     def to_text_feature(self) -> Feature:
-        return self._draw_line(self.speed_desc, self.speed, self.SPEED_LINE_INDEX)
+        return self._draw_line()
 
-    def _draw_line(
-        self, speed_desc: str, speed_value: str, line_number: int
-    ) -> Feature:
-        offset_lat = self.offset_lat - (self.scaled_buffer * line_number)
+    def _draw_line(self) -> Feature:
+        offset_lat = self.offset_lat - (self.scaled_buffer * self.start_line)
         speed_string = (
-            f"{speed_desc}{speed_value}" if speed_desc is not None else f"{speed_value}"
+            f"{self.speed_desc}{self.speed}"
+            if self.speed_desc is not None
+            else f"{self.speed}"
         )
         text = TextDraw(speed_string, offset_lat, self.offset_lon, self.text_scale)
         result = text.get_feature()
