@@ -103,7 +103,7 @@ class Properties:
             filters = properties_dict.get("filters")
             self._set_filters(filters)
             z_index = properties_dict.get("zIndex")
-            self._set_filters(z_index)
+            self._set_z_index(z_index)
 
             if feature_type == PROPERTY_TYPE_LINE:
                 is_line_defaults = properties_dict.get("isLineDefaults")
