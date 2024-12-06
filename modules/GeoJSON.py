@@ -236,12 +236,11 @@ class Properties:
         return
 
     def _set_text_offset(self, dimension: str, offset: int) -> None:
-        if offset:
-            is_positive = offset > 0
-            if dimension == "x" and is_positive:
-                self.x_offset = offset
-            if dimension == "y" and is_positive:
-                self.y_offset = offset
+        if offset and isinstance(offset, (int, float)):
+            if dimension == "x":
+                self.x_offset = int(offset)
+            if dimension == "y":
+                self.y_offset = int(offset)
         return
 
     def _set_z_index(self, z_index: int) -> None:
