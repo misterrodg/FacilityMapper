@@ -373,6 +373,9 @@ class Feature:
         self.geometry = multi_line_string.to_dict()
         return
 
+    def add_point(self, point: Point) -> None:
+        self.geometry = point.to_dict()
+
     def add_properties(self, properties: Properties) -> None:
         self.properties = properties
         return
