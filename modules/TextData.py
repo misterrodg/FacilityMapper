@@ -8,14 +8,14 @@ class TextData:
         text: str,
         offset_lat: float,
         offset_lon: float,
-        scaled_buffer: float,
+        scaled_line_height: float,
         text_scale: float,
         start_line: int,
     ):
         self.text = text
         self.offset_lat = offset_lat
         self.offset_lon = offset_lon
-        self.scaled_buffer = scaled_buffer
+        self.scaled_line_height = scaled_line_height
         self.text_scale = text_scale
         self.start_line = start_line
 
@@ -23,7 +23,7 @@ class TextData:
         return self._draw_line()
 
     def _draw_line(self) -> Feature:
-        offset_lat = self.offset_lat - (self.scaled_buffer * self.start_line)
+        offset_lat = self.offset_lat - (self.scaled_line_height * self.start_line)
         text_string = self.text
         text = TextDraw(text_string, offset_lat, self.offset_lon, self.text_scale)
         result = text.get_feature()

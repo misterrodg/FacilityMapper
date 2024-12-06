@@ -12,7 +12,7 @@ class AltitudeData:
         flight_level_2: int,
         offset_lat: float,
         offset_lon: float,
-        scaled_buffer: float,
+        scaled_line_height: float,
         text_scale: float,
         start_line: int,
     ):
@@ -23,7 +23,7 @@ class AltitudeData:
         self.flight_level_2 = flight_level_2
         self.offset_lat = offset_lat
         self.offset_lon = offset_lon
-        self.scaled_buffer = scaled_buffer
+        self.scaled_line_height = scaled_line_height
         self.text_scale = text_scale
 
         self.ALT_1_LINE_INDEX = start_line
@@ -83,7 +83,7 @@ class AltitudeData:
     def _draw_line(
         self, alt_desc: str, altitude_value: str, line_number: int
     ) -> Feature:
-        offset_lat = self.offset_lat - (self.scaled_buffer * line_number)
+        offset_lat = self.offset_lat - (self.scaled_line_height * line_number)
         altitude_string = (
             f"{alt_desc}{altitude_value}"
             if alt_desc is not None

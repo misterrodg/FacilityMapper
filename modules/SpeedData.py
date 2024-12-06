@@ -9,7 +9,7 @@ class SpeedData:
         speed: int,
         offset_lat: float,
         offset_lon: float,
-        scaled_buffer: float,
+        scaled_line_height: float,
         text_scale: float,
         start_line: int,
     ):
@@ -17,7 +17,7 @@ class SpeedData:
         self.speed = speed
         self.offset_lat = offset_lat
         self.offset_lon = offset_lon
-        self.scaled_buffer = scaled_buffer
+        self.scaled_line_height = scaled_line_height
         self.text_scale = text_scale
         self.start_line = start_line
 
@@ -25,7 +25,7 @@ class SpeedData:
         return self._draw_line()
 
     def _draw_line(self) -> Feature:
-        offset_lat = self.offset_lat - (self.scaled_buffer * self.start_line)
+        offset_lat = self.offset_lat - (self.scaled_line_height * self.start_line)
         speed_string = (
             f"{self.speed_desc}{self.speed}"
             if self.speed_desc is not None
