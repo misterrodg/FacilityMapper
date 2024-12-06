@@ -102,11 +102,11 @@ class Properties:
             self._set_bcg(bcg)
             filters = properties_dict.get("filters")
             self._set_filters(filters)
-            z_index = properties_dict.get("zIndex")
+            z_index = properties_dict.get("z_index")
             self._set_z_index(z_index)
 
             if feature_type == PROPERTY_TYPE_LINE:
-                is_line_defaults = properties_dict.get("isLineDefaults")
+                is_line_defaults = properties_dict.get("is_line_defaults")
                 self._set_is_line_defaults(is_line_defaults)
                 style = properties_dict.get("style")
                 self._set_line_style(style)
@@ -118,7 +118,7 @@ class Properties:
                 self._set_asdex(asdex)
 
             if feature_type == PROPERTY_TYPE_POINT:
-                is_text_defaults = properties_dict.get("isTextDefaults")
+                is_text_defaults = properties_dict.get("is_text_defaults")
                 self._set_is_text_defaults(is_text_defaults)
                 text = properties_dict.get("text")
                 self._set_text(text)
@@ -126,15 +126,15 @@ class Properties:
                 self._set_text_size(size)
                 underline = properties_dict.get("underline")
                 self._set_text_underline(underline)
-                x_offset = properties_dict.get("xOffset")
+                x_offset = properties_dict.get("x_offset")
                 self._set_text_offset("x", x_offset)
-                y_offset = properties_dict.get("yOffset")
+                y_offset = properties_dict.get("y_offset")
                 self._set_text_offset("y", y_offset)
                 opaque = properties_dict.get("opaque")
                 self._set_text_opaque(opaque)
 
             if feature_type == PROPERTY_TYPE_SYMBOL:
-                is_symbol_defaults = properties_dict.get("isSymbolDefaults")
+                is_symbol_defaults = properties_dict.get("is_symbol_defaults")
                 self._set_is_symbol_defaults(is_symbol_defaults)
                 size = properties_dict.get("size")
                 self._set_symbol_size(size)
