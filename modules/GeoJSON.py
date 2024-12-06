@@ -259,17 +259,15 @@ class Properties:
 class Point:
     def __init__(self):
         self.type = POINT_TYPE
-        self.coordinates: list[Coordinate] = []
+        self.coordinates = None
 
     def set_coordinate(self, coordinate: Coordinate) -> None:
-        self.coordinates.append(coordinate)
+        self.coordinates = coordinate
         return
 
     def to_dict(self) -> dict:
-        coordinates = []
-        for coordinate in self.coordinates:
-            coordinates.append(coordinate.to_geo_json())
-        return {"type": self.type, "coordinates": coordinates}
+        coordinate = self.coordinates.to_geo_json()
+        return {"type": self.type, "coordinates": coordinate}
 
     def from_dict(self, point_dict: dict) -> None:
         coordinates = point_dict.get("coordinates")
