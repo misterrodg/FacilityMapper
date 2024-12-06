@@ -158,9 +158,8 @@ class Properties:
         return
 
     def _set_filters(self, filter_list: list[int]) -> None:
-        if (
-            filter_list
-            and isinstance(filter_list, list)
+        if filter_list and (
+            isinstance(filter_list, list)
             or all(isinstance(item, int) for item in filter_list)
         ):
             filters = []
@@ -214,9 +213,8 @@ class Properties:
         return
 
     def _set_text(self, text_list: list[str]) -> None:
-        if (
-            text_list
-            and isinstance(text_list, list)
+        if text_list and (
+            isinstance(text_list, list)
             or all(isinstance(item, str) for item in text_list)
         ):
             self.text = text_list
