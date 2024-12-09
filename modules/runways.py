@@ -2,7 +2,7 @@ from modules.error_helper import print_top_level
 from modules.geo_json import FeatureCollection, GeoJSON
 from modules.query_handler import query_db
 from modules.db import select_runways_by_airport_id, RunwayRecords
-from modules.runway import get_line_strings, RunwayPairs
+from modules.runway import get_line_strings, RunwayPair, RunwayPairs
 
 from sqlite3 import Cursor
 
@@ -13,7 +13,7 @@ class Runways:
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
         self.map_type = "RUNWAYS"
         self.airport_ids = []
-        self.airport_runways: list[list[dict]] = []
+        self.airport_runways: list[list[RunwayPair]] = []
         self.file_name = None
         self.db_cursor = db_cursor
         self.is_valid = False
