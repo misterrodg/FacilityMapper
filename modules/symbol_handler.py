@@ -1,7 +1,7 @@
-from modules.DrawHelper import haversine_great_circle_bearing
-from modules.GeoJSON import Feature
-from modules.QueryHelper import filter_query, segment_query
-from modules.SymbolDraw import SymbolDraw
+from modules.draw_helper import haversine_great_circle_bearing
+from modules.geo_json import Feature
+from modules.query_helper import filter_query, segment_query
+from modules.symbol_draw import SymbolDraw
 
 
 def get_symbol_features(db_rows: list, symbol_scale: float) -> list[Feature]:

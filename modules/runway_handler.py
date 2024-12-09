@@ -1,10 +1,10 @@
-from modules.DrawHelper import (
+from modules.draw_helper import (
     FEET_IN_NM,
     haversine_great_circle_bearing,
     inverse_bearing,
     lat_lon_from_pbd,
 )
-from modules.GeoJSON import Coordinate, Feature, LineString, MultiLineString
+from modules.geo_json import Coordinate, Feature, LineString, MultiLineString
 
 
 def get_line_strings(airport_list: list[list[dict]]) -> Feature:

@@ -1,11 +1,11 @@
-from modules.DrawHelper import (
+from modules.draw_helper import (
     haversine_great_circle_bearing,
     haversine_great_circle_distance,
     inverse_bearing,
     lat_lon_from_pbd,
 )
-from modules.GeoJSON import Coordinate, Feature, LineString, MultiLineString
-from modules.QueryHelper import segment_query
+from modules.geo_json import Coordinate, Feature, LineString, MultiLineString
+from modules.query_helper import segment_query
 
 SHORT_DASH_LENGTH = 0.5
 LONG_DASH_LENGTH = 1.5

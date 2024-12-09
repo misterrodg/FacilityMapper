@@ -1,8 +1,8 @@
-from modules.AirspaceHandler import get_line_strings
-from modules.AirspaceQueries import select_controlled_points
-from modules.ErrorHelper import print_top_level
-from modules.GeoJSON import GeoJSON, FeatureCollection
-from modules.QueryHandler import query_db
+from modules.airspace_handler import get_line_strings
+from modules.airspace_queries import select_controlled_points
+from modules.error_helper import print_top_level
+from modules.geo_json import GeoJSON, FeatureCollection
+from modules.query_handler import query_db
 
 from sqlite3 import Cursor
 

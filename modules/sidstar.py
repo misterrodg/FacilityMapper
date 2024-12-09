@@ -1,13 +1,13 @@
-from modules.DrawHelper import ARC_MIN
-from modules.ErrorHelper import print_top_level
-from modules.GeoJSON import FeatureCollection, GeoJSON
-from modules.LineHandler import get_line_strings
-from modules.QueryHandler import query_db
-from modules.QueryHelper import translate_wildcard
-from modules.SIDSTARQueries import select_procedure_points
-from modules.SymbolHandler import get_arrow_line_symbol_features, get_symbol_features
-from modules.TextHandler import get_text_features
-from modules.vNAS import LINE_STYLES
+from modules.draw_helper import ARC_MIN
+from modules.error_helper import print_top_level
+from modules.geo_json import FeatureCollection, GeoJSON
+from modules.line_handler import get_line_strings
+from modules.query_handler import query_db
+from modules.query_helper import translate_wildcard
+from modules.sidstar_queries import select_procedure_points
+from modules.symbol_handler import get_arrow_line_symbol_features, get_symbol_features
+from modules.text_handler import get_text_features
+from modules.v_nas import LINE_STYLES
 
 from sqlite3 import Cursor
 

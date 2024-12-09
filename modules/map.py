@@ -1,12 +1,12 @@
-from modules.Composite import Composite
-from modules.Controlled import Controlled
-from modules.ErrorHelper import print_top_level
-from modules.IAP import IAP
-from modules.Label import Label
-from modules.Restrictive import Restrictive
-from modules.Runways import Runways
-from modules.SIDSTAR import SIDSTAR
-from modules.VectorSID import VectorSID
+from modules.composite import Composite
+from modules.controlled import Controlled
+from modules.error_helper import print_top_level
+from modules.iap import IAP
+from modules.label import Label
+from modules.restrictive import Restrictive
+from modules.runways import Runways
+from modules.sidstar import SIDSTAR
+from modules.vector_sid import VectorSID
 
 from sqlite3 import Cursor
 

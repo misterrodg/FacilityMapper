@@ -1,6 +1,6 @@
-from modules.DirPaths import MANIFEST_DIR, NAVDATA_DIR, VIDMAP_DIR
-from modules.FileHandler import check_path, delete_all_in_subdir
-from modules.Manifest import Manifest
+from modules.dir_paths import MANIFEST_DIR, NAVDATA_DIR, VIDMAP_DIR
+from modules.file_handler import check_path, delete_all_in_subdir
+from modules.manifest import Manifest
 
 from cifparse import CIFP
 

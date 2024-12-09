@@ -1,5 +1,5 @@
-from modules.GeoJSON import Feature
-from modules.TextDraw import TextDraw
+from modules.geo_json import Feature
+from modules.text_draw import TextDraw
 
 
 class TextData:

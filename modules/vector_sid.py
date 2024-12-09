@@ -1,11 +1,11 @@
-from modules.DrawHelper import ARC_MIN
-from modules.ErrorHelper import print_top_level
-from modules.GeoJSON import FeatureCollection, GeoJSON
-from modules.QueryHandler import query_db
-from modules.QueryHelper import translate_wildcard
-from modules.VectorSIDQueries import select_procedure_points
-from modules.SymbolHandler import get_symbol_features
-from modules.TextHandler import get_text_features
+from modules.draw_helper import ARC_MIN
+from modules.error_helper import print_top_level
+from modules.geo_json import FeatureCollection, GeoJSON
+from modules.query_handler import query_db
+from modules.query_helper import translate_wildcard
+from modules.vector_sid_queries import select_procedure_points
+from modules.symbol_handler import get_symbol_features
+from modules.text_handler import get_text_features
 
 from sqlite3 import Cursor
 

@@ -1,11 +1,11 @@
-from modules.AirspaceHelper import draw_arc, draw_circle
-from modules.GeoJSON import (
+from modules.airspace_helper import draw_arc, draw_circle
+from modules.geo_json import (
     Coordinate,
     Feature,
     FeatureCollection,
     LineString,
 )
-from modules.QueryHelper import segment_query
+from modules.query_helper import segment_query
 
 
 def get_line_strings(db_rows: list[dict]) -> FeatureCollection:

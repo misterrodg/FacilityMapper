@@ -1,5 +1,5 @@
-from modules.ErrorHelper import print_top_level
-from modules.GeoJSON import FeatureCollection, GeoJSON
+from modules.error_helper import print_top_level
+from modules.geo_json import FeatureCollection, GeoJSON
 
 ERROR_HEADER = "COMPOSITE: "
 

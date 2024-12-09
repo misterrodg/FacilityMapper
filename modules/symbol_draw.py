@@ -1,6 +1,6 @@
-from modules.DrawHelper import correct_offsets
-from modules.GeoJSON import Coordinate, Feature, LineString, MultiLineString
-from modules.SymbolPlots import (
+from modules.draw_helper import correct_offsets
+from modules.geo_json import Coordinate, Feature, LineString, MultiLineString
+from modules.symbol_plots import (
     PLOT_HEIGHT,
     PLOT_WIDTH,
     UNRECOGNIZED,

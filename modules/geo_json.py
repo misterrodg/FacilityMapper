@@ -1,6 +1,6 @@
-from modules.DirPaths import VIDMAP_DIR
-from modules.ErrorHelper import print_top_level
-from modules.vNAS import (
+from modules.dir_paths import VIDMAP_DIR
+from modules.error_helper import print_top_level
+from modules.v_nas import (
     ASDEX_STYLES,
     BCG_MIN,
     BCG_MAX,

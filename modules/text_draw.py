@@ -1,12 +1,12 @@
-from modules.TextPlots import (
+from modules.text_plots import (
     PLOT_HEIGHT,
     PLOT_WIDTH,
     SPACE,
     UNRECOGNIZED,
     get_plot_from_char,
 )
-from modules.DrawHelper import ARC_MIN, correct_offsets, correction_factor
-from modules.GeoJSON import Coordinate, Feature, LineString, MultiLineString
+from modules.draw_helper import ARC_MIN, correct_offsets, correction_factor
+from modules.geo_json import Coordinate, Feature, LineString, MultiLineString
 
 
 class TextDraw:

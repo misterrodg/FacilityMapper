@@ -1,5 +1,5 @@
-from modules.ErrorHelper import print_top_level
-from modules.Map import Map
+from modules.error_helper import print_top_level
+from modules.map import Map
 
 from os.path import isfile, getsize
 from sqlite3 import Cursor

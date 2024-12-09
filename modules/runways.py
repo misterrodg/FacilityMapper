@@ -1,9 +1,9 @@
-from modules.ErrorHelper import print_top_level
-from modules.GeoJSON import FeatureCollection, GeoJSON
-from modules.QueryHandler import query_db
-from modules.RunwayHandler import get_line_strings
-from modules.RunwayHelper import inverse_runway
-from modules.RunwayQueries import select_runways_by_airport_id
+from modules.error_helper import print_top_level
+from modules.geo_json import FeatureCollection, GeoJSON
+from modules.query_handler import query_db
+from modules.runway_handler import get_line_strings
+from modules.runway_helper import inverse_runway
+from modules.runway_queries import select_runways_by_airport_id
 
 from sqlite3 import Cursor
 

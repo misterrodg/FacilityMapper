@@ -1,8 +1,8 @@
-from modules.DrawHelper import (
+from modules.draw_helper import (
     haversine_great_circle_bearing,
     lat_lon_from_pbd,
 )
-from modules.GeoJSON import (
+from modules.geo_json import (
     Coordinate,
     LineString,
 )
