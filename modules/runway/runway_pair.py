@@ -39,9 +39,6 @@ class RunwayPair:
         self._validate()
 
         if self.is_valid:
-            print(
-                f"Runway {self.base_id}/{self.reciprocal_id} at {self.airport_id} is valid."
-            )
             self._process()
 
     def _validate(self) -> None:
