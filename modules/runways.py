@@ -1,9 +1,8 @@
 from modules.error_helper import print_top_level
 from modules.geo_json import FeatureCollection, GeoJSON
 from modules.query_handler import query_db
-from modules.runway_handler import get_line_strings
-from modules.runway_helper import inverse_runway
-from modules.runway_queries import select_runways_by_airport_id
+from modules.db import select_runways_by_airport_id, RunwayRecords
+from modules.runway import get_line_strings, RunwayPairs
 
 from sqlite3 import Cursor
 
@@ -48,37 +47,11 @@ class Runways:
     def _process(self) -> None:
         for airport_id in self.airport_ids:
             runways_query = self._build_query_string(airport_id)
-            runways_rows = query_db(self.db_cursor, runways_query)
-            paired_runways = self._pair_runways(runways_rows)
-            self.airport_runways.append(paired_runways)
+            query_result = query_db(self.db_cursor, runways_query)
+            runway_records = RunwayRecords(query_result)
+            paired_runways = RunwayPairs(runway_records)
+            self.airport_runways.append(paired_runways.get_runway_pairs())
         return
-
-    def _find_runway_in_list(self, runway_list: list[dict], runway_id: str) -> dict:
-        result = next((r for r in runway_list if r.get("runway_id") == runway_id), None)
-        return result
-
-    def _pair_runways(self, db_rows: list[dict]) -> list[dict]:
-        result = []
-        runway_end_count = len(db_rows)
-        runway_count = int(runway_end_count / 2)
-        runway_bases = db_rows[:runway_count]
-        runway_reciprocals = db_rows[runway_count:]
-        for base in runway_bases:
-            pair_dict = {}
-            runway_id = base.get("runway_id")
-            reciprocal_id = inverse_runway(runway_id)
-            reciprocal = self._find_runway_in_list(runway_reciprocals, reciprocal_id)
-            pair_dict["airport_id"] = base["airport_id"]
-            pair_dict["base_id"] = base["runway_id"]
-            pair_dict["base_lat"] = base["lat"]
-            pair_dict["base_lon"] = base["lon"]
-            pair_dict["base_displaced"] = base["displaced_threshold"]
-            pair_dict["reciprocal_id"] = reciprocal["runway_id"]
-            pair_dict["reciprocal_lat"] = reciprocal["lat"]
-            pair_dict["reciprocal_lon"] = reciprocal["lon"]
-            pair_dict["reciprocal_displaced"] = reciprocal["displaced_threshold"]
-            result.append(pair_dict)
-        return result
 
     def _build_query_string(self, airport_id: str) -> str:
         airport_id = f"'{airport_id}'"
