@@ -1,4 +1,4 @@
-from modules.db.runway import RunwayRecord
+from modules.db.runway_record import RunwayRecord
 
 
 def select_runways_by_airport_id(airport_id: str) -> str:

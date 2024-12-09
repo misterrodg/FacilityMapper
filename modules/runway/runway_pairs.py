@@ -1,5 +1,5 @@
 from modules.runway.runway_pair import RunwayPair
-from modules.db.runways import RunwayRecords
+from modules.db.runway_records import RunwayRecords
 
 
 class RunwayPairs:
