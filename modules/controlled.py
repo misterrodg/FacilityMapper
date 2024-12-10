@@ -1,8 +1,8 @@
-from modules.airspace_handler import get_line_strings
-from modules.airspace_queries import select_controlled_points
 from modules.error_helper import print_top_level
 from modules.geo_json import GeoJSON, FeatureCollection
 from modules.query_handler import query_db
+from modules.db import ControlledRecords, select_controlled_points
+from modules.airspace import process_controlled
 
 from sqlite3 import Cursor
 
@@ -13,7 +13,7 @@ class Controlled:
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
         self.map_type = "CONTROLLED"
         self.airport_id = None
-        self.controlled = list[dict]
+        self.controlled = ControlledRecords
         self.file_name = None
         self.db_cursor = db_cursor
         self.is_valid = False
@@ -43,7 +43,9 @@ class Controlled:
 
     def _process(self) -> None:
         controlled_query = self._build_query_string()
-        self.controlled = query_db(self.db_cursor, controlled_query)
+        query_result = query_db(self.db_cursor, controlled_query)
+        controlled_records = ControlledRecords(query_result)
+        self.controlled = controlled_records
         return
 
     def _build_query_string(self) -> str:
@@ -54,7 +56,7 @@ class Controlled:
     def _to_file(self) -> None:
         feature_collection = FeatureCollection()
 
-        feature_collection = get_line_strings(self.controlled)
+        feature_collection = process_controlled(self.controlled)
 
         geo_json = GeoJSON(self.file_name)
         geo_json.add_feature_collection(feature_collection)

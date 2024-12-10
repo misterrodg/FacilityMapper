@@ -1,8 +1,8 @@
-from modules.airspace_handler import get_line_strings
-from modules.airspace_queries import select_restrictive_points
 from modules.error_helper import print_top_level
 from modules.geo_json import GeoJSON, FeatureCollection
 from modules.query_handler import query_db
+from modules.db import RestrictiveRecords, select_restrictive_points
+from modules.airspace import process_restrictive
 
 from sqlite3 import Cursor
 
@@ -13,7 +13,7 @@ class Restrictive:
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
         self.map_type = "RESTRICTIVE"
         self.restrictive_id = None
-        self.restrictive = list[dict]
+        self.restrictive = RestrictiveRecords
         self.file_name = None
         self.db_cursor = db_cursor
         self.is_valid = False
@@ -43,7 +43,9 @@ class Restrictive:
 
     def _process(self) -> None:
         restrictive_query = self._build_query_string()
-        self.restrictive = query_db(self.db_cursor, restrictive_query)
+        query_result = query_db(self.db_cursor, restrictive_query)
+        restrictive_records = RestrictiveRecords(query_result)
+        self.restrictive = restrictive_records
         return
 
     def _build_query_string(self) -> str:
@@ -54,7 +56,7 @@ class Restrictive:
     def _to_file(self) -> None:
         feature_collection = FeatureCollection()
 
-        feature_collection = get_line_strings(self.restrictive)
+        feature_collection = process_restrictive(self.restrictive)
 
         geo_json = GeoJSON(self.file_name)
         geo_json.add_feature_collection(feature_collection)
