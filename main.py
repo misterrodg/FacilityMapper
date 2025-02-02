@@ -1,6 +1,7 @@
 from modules.dir_paths import MANIFEST_DIR, NAVDATA_DIR, VIDMAP_DIR
 from modules.file_handler import check_path, delete_all_in_subdir
 from modules.manifest import Manifest
+from modules.map_list import MapList
 
 from cifparse import CIFP
 
@@ -42,11 +43,15 @@ def main():
     parser.add_argument(
         "-m", "--manifest", type=str, help="user-defined manifest file name"
     )
+    parser.add_argument(
+        "-l", "--list", action="store_true", help="create STARS map list"
+    )
     parser.add_argument("-n", "--nodraw", action="store_true", help="skip draw")
     args = parser.parse_args()
     should_purge = args.purge
     should_refresh = args.refresh
     should_skip_draw = args.nodraw
+    should_create_map_list = args.list
     alternate_manifest_file = args.manifest
     if should_purge:
         purge_vidmaps()
@@ -61,8 +66,15 @@ def main():
         manifest_file = DEFAULT_MANIFEST_NAME
         if alternate_manifest_file != None:
             manifest_file = f"{MANIFEST_DIR}/{alternate_manifest_file}"
-        Manifest(cursor, manifest_file)
 
+        map_list = None
+        if should_create_map_list:
+            map_list = MapList()
+
+        Manifest(cursor, manifest_file, map_list)
+
+        if map_list is not None:
+            map_list.write()
         connection.close()
 
 

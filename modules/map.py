@@ -3,9 +3,11 @@ from modules.controlled import Controlled
 from modules.error_helper import print_top_level
 from modules.iap import IAP
 from modules.label import Label
+from modules.map_list import MapList
 from modules.restrictive import Restrictive
 from modules.runways import Runways
 from modules.sidstar import SIDSTAR
+from modules.stars_definition import STARSDefinition
 from modules.vector_sid import VectorSID
 
 from sqlite3 import Cursor
@@ -34,10 +36,12 @@ SUPPORTED_TYPES = [
 
 
 class Map:
-    def __init__(self, db_cursor: Cursor, map_dict: dict) -> None:
+    def __init__(self, db_cursor: Cursor, map_dict: dict, map_list: MapList = None) -> None:
         self.map_type = None
         self.definition = None
+        self.stars_definition = None
         self.db_cursor = db_cursor
+        self.map_list = map_list
         self.is_valid = False
 
         self._validate(map_dict)
@@ -62,9 +66,12 @@ class Map:
                 f"{ERROR_HEADER}Missing `definition` in:\n{print_top_level(map_dict)}"
             )
             return
+        
+        stars_definition = map_dict.get("stars_definition")
 
         self.map_type = map_type
         self.definition = definition
+        self.stars_definition = stars_definition
         self.is_valid = True
         return
 
@@ -85,3 +92,7 @@ class Map:
             Controlled(self.db_cursor, self.definition)
         if self.map_type == RESTRICTIVE_TYPE:
             Restrictive(self.db_cursor, self.definition)
+
+        if self.map_list is not None and self.stars_definition is not None:
+            stars_definition = STARSDefinition(self.stars_definition)
+            self.map_list.write_line(stars_definition)
