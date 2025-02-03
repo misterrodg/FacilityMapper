@@ -62,5 +62,5 @@ class STARSDefinition:
     def to_line(self) -> str:
         result = None
         if self.is_valid:
-            result = f"{self.short_name},{self.name},{self.brightness_category},{self.is_tdm_only},{self.is_always_visible},{self.note}\n"
+            result = f"{self.map_id},{self.short_name},{self.name},{self.brightness_category},{self.is_tdm_only},{self.is_always_visible},{self.note}\n"
         return result
