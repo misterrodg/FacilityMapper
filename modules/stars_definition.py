@@ -30,6 +30,7 @@ class STARSDefinition:
                 f"{ERROR_HEADER}Missing `name` in:\n{print_top_level(stars_definition_dict)}."
             )
             return
+        self.name = name
 
         short_name = stars_definition_dict.get("short_name")
         if short_name is None:
