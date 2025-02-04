@@ -21,7 +21,8 @@ def get_text_features(
         lines_used = 0
         row_lat = row.get("lat")
         row_lon = row.get("lon")
-        if not row_lat or not row_lon:
+        row_type = row.get("type")
+        if not row_lat or not row_lon or row_type == "AIRPORT":
             continue
         offset_lat = y_offset + row_lat
         offset_lon = x_offset + row_lon

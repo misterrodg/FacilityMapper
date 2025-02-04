@@ -30,6 +30,7 @@ class SIDSTAR:
         self.y_offset = None
         self.text_scale = None
         self.line_height = None
+        self.vector_length = None
         self.core: list[dict] = []
         self.draw_enroute_transitions = True
         self.enroute_transitions: list[dict] = []
@@ -76,6 +77,7 @@ class SIDSTAR:
         y_offset = definition_dict.get("y_offset", 0) * ARC_MIN
         text_scale = definition_dict.get("text_scale", 1.0)
         line_height = definition_dict.get("line_height", 1.5 * text_scale)
+        vector_length = definition_dict.get("vector_length", 2.5)
         draw_enroute_transitions = definition_dict.get("draw_enroute_transitions", True)
         draw_runway_transitions = definition_dict.get("draw_runway_transitions", False)
         file_name = definition_dict.get("file_name")
@@ -94,6 +96,7 @@ class SIDSTAR:
         self.y_offset = y_offset
         self.text_scale = text_scale
         self.line_height = line_height
+        self.vector_length = vector_length
         self.draw_enroute_transitions = draw_enroute_transitions
         self.draw_runway_transitions = draw_runway_transitions
         self.file_name = file_name
@@ -146,6 +149,12 @@ class SIDSTAR:
             if self.draw_runway_transitions:
                 result = result + ["3", "6"]
         return result
+    
+    def _get_path_term_list(self) -> list:
+        result = ['FM','HA','HF','HM','PI','VM']
+        if self.map_type == "STAR":
+            result = ['HA','HF','HM','PI']
+        return result
 
     def _build_query_string(self, segment: str = "") -> str:
         fac_id = f"'{self.airport_id}'"
@@ -153,8 +162,10 @@ class SIDSTAR:
         procedure_id = f"'{translate_wildcard(self.procedure_id)}'"
         route_type_list = self._get_route_type_list(segment)
         route_type_string = ",".join(f"'{str(x)}'" for x in route_type_list)
+        path_term_list = self._get_path_term_list()
+        path_term_string = ",".join(f"'{str(x)}'" for x in path_term_list)
         result = select_procedure_points(
-            fac_id, fac_sub_code, procedure_id, route_type_string
+            fac_id, fac_sub_code, procedure_id, route_type_string, path_term_string
         )
         return result
 
@@ -175,13 +186,15 @@ class SIDSTAR:
                 feature = get_line_strings(
                     self.runway_transitions + self.core + self.enroute_transitions,
                     self.line_style,
-                    True,
+                    self.vector_length,
                     self.symbol_scale,
+                    True,
                 )
             else:
                 feature = get_line_strings(
                     self.runway_transitions + self.core + self.enroute_transitions,
                     self.line_style,
+                    self.vector_length,
                 )
             feature_collection.add_feature(feature)
 
