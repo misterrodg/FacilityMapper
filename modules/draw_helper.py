@@ -113,5 +113,6 @@ def haversine_great_circle_bearing(
         start_lat_rad
     ) * math.cos(end_lat_rad) * math.cos(delta_lon)
     bearing_rad = math.atan2(x, y)
-    bearing_deg = (math.degrees(bearing_rad) + 360) % 360
+    bearing_deg = math.degrees(bearing_rad)
+    bearing_deg = normalize_bearing(bearing_deg)
     return bearing_deg
