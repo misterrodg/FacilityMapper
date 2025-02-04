@@ -19,6 +19,11 @@ def purge_vidmaps() -> None:
         delete_all_in_subdir(".geojson", VIDMAP_DIR)
 
 
+def purge_maplist() -> None:
+    if check_path(VIDMAP_DIR):
+        delete_all_in_subdir(".txt", VIDMAP_DIR)
+
+
 def refresh_database() -> None:
     if os.path.exists(DB_FILE_PATH):
         os.remove(DB_FILE_PATH)
@@ -55,6 +60,7 @@ def main():
     alternate_manifest_file = args.manifest
     if should_purge:
         purge_vidmaps()
+        purge_maplist()
     if should_refresh:
         refresh_database()
 
