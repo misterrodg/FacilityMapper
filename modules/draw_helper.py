@@ -88,6 +88,11 @@ def haversine_great_circle_distance(
     return distance_nm
 
 
+def normalize_bearing(bearing: float) -> float:
+    result = math.fmod(bearing + 360, 360)
+    return result
+
+
 def inverse_bearing(bearing: float) -> float:
     result = math.fmod(bearing + 180, 360)
     return result
