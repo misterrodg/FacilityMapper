@@ -1,4 +1,4 @@
-from modules.runway.runway_pair import RunwayPair
+from modules.runway import RunwayPair, inverse_runway
 from modules.db.runway_records import RunwayRecords
 
 
@@ -18,7 +18,8 @@ class RunwayPairs:
         runway_bases = records[:runway_count]
         for base in runway_bases:
             runway_id = base.runway_id
-            reciprocal = runway_records.find_runway(runway_id, True)
+            reciprocal_id = inverse_runway(runway_id)
+            reciprocal = runway_records.find_runway(reciprocal_id)
             runway_pair = RunwayPair(
                 base.airport_id,
                 base.runway_id,

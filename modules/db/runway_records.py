@@ -1,5 +1,4 @@
 from modules.db.runway_record import RunwayRecord
-from modules.runway.runway_helper import inverse_runway
 
 
 def select_runways_by_airport_id(airport_id: str) -> str:
@@ -26,12 +25,7 @@ class RunwayRecords:
             runway_record = RunwayRecord(record)
             self.records.append(runway_record)
 
-    def find_runway(
-        self, runway_id: str, find_inverse_id: bool = False
-    ) -> RunwayRecord:
-        if find_inverse_id:
-            runway_id = inverse_runway(runway_id)
-
+    def find_runway(self, runway_id: str) -> RunwayRecord:
         result = next((r for r in self.records if r.runway_id == runway_id), None)
         return result
 
