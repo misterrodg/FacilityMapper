@@ -19,13 +19,13 @@ class Manifest:
         self.map_list = map_list
         self.is_valid = False
 
-        manifest_dict = self.get_manifest(manifest_path)
+        manifest_dict = self._get_manifest(manifest_path)
         self._validate(manifest_dict)
 
         if self.is_valid:
-            self.process()
+            self._process()
 
-    def get_manifest(self, manifest_path: str) -> dict:
+    def _get_manifest(self, manifest_path: str) -> dict:
         result = {}
         try:
             if isfile(manifest_path) and getsize(manifest_path) > 0:
@@ -62,7 +62,7 @@ class Manifest:
         self.is_valid = True
         return
 
-    def process(self) -> None:
+    def _process(self) -> None:
         for map in self.maps:
             Map(self.db_cursor, map, self.map_list)
         return
