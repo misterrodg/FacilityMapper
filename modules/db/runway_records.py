@@ -1,4 +1,5 @@
 from modules.db.runway_record import RunwayRecord
+from modules.runway.runway_helper import inverse_runway
 
 
 def select_runways_by_airport_id(airport_id: str) -> str:
@@ -29,33 +30,10 @@ class RunwayRecords:
         self, runway_id: str, find_inverse_id: bool = False
     ) -> RunwayRecord:
         if find_inverse_id:
-            runway_id = self._inverse_runway(runway_id)
+            runway_id = inverse_runway(runway_id)
 
         result = next((r for r in self.records if r.runway_id == runway_id), None)
         return result
 
     def get_records(self) -> list[RunwayRecord]:
         return self.records
-
-    def _handle_bearing_component(self, bearing_component: int) -> int:
-        if bearing_component == 18:
-            return 36
-        return (bearing_component + 18) % 36
-
-    def _handle_side_component(self, side_component: str) -> str:
-        if side_component == "L":
-            return "R"
-        if side_component == "R":
-            return "L"
-        return "C"
-
-    def _inverse_runway(self, runway_id: str) -> str:
-        runway_prefix = "RW"
-        bearing_component = int(runway_id[2:4])
-        inverse_bearing = self._handle_bearing_component(bearing_component)
-        side_component = runway_id[4:]
-        inverse_side = ""
-        if side_component:
-            inverse_side = self._handle_side_component(side_component)
-        result = f"{runway_prefix}{inverse_bearing:02}{inverse_side}"
-        return result
