@@ -8,6 +8,13 @@ def select_runways_by_airport_id(airport_id: str) -> str:
     return result
 
 
+def select_runway_by_airport_id_and_runway_id(airport_id: str, runway_id: str) -> str:
+    result = f"""
+    SELECT * FROM runways WHERE airport_id = {airport_id} AND runway_id = {runway_id};
+    """
+    return result
+
+
 def translate_runway_b(runway_id: str) -> list:
     without_b = runway_id[:-1]
     with_l = f"{without_b}L"

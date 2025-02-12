@@ -9,7 +9,11 @@ from .procedure_records import (
 from .restrictive_record import RestrictiveRecord
 from .restrictive_records import RestrictiveRecords, select_restrictive_points
 from .runway_record import RunwayRecord
-from .runway_records import RunwayRecords, select_runways_by_airport_id
+from .runway_records import (
+    RunwayRecords,
+    select_runways_by_airport_id,
+    select_runway_by_airport_id_and_runway_id,
+)
 
 __all__ = [
     "ControlledRecord",
@@ -26,4 +30,5 @@ __all__ = [
     "RunwayRecord",
     "RunwayRecords",
     "select_runways_by_airport_id",
+    "select_runway_by_airport_id_and_runway_id",
 ]
