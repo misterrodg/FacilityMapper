@@ -22,12 +22,11 @@ class SymbolDraw:
         self.lon = lon
         self.rotation_deg = rotation_deg
         self.symbol_scale = symbol_scale
-        self.feature = Feature()
+        self.line_strings: list[LineString] = []
 
         self._to_point_array()
 
     def _to_point_array(self) -> None:
-        multi_line_string = MultiLineString()
         line_string = LineString()
         symbol_plot = get_plot_from_string(self.symbol_type)
         if symbol_plot != UNRECOGNIZED:
@@ -45,9 +44,15 @@ class SymbolDraw:
                 coordinate = Coordinate(line["lat"], line["lon"])
                 line_string.add_coordinate(coordinate)
             if not line_string.is_empty():
-                multi_line_string.add_line_string(line_string)
-            self.feature.add_multi_line_string(multi_line_string)
+                self.line_strings.append(line_string)
         return
 
     def get_feature(self) -> Feature:
-        return self.feature
+        feature = Feature()
+        multi_line_string = MultiLineString()
+        multi_line_string.add_line_strings(self.line_strings)
+        feature.add_multi_line_string(multi_line_string)
+        return feature
+
+    def get_lines(self) -> list[LineString]:
+        return self.line_strings
