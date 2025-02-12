@@ -97,6 +97,11 @@ CIRCLE_S = [
     {"lat_offset": 3, "lon_offset": 0},
 ]
 
+CROSSBAR = [
+    {"lat_offset": 0, "lon_offset": -10},
+    {"lat_offset": 0, "lon_offset": 10},
+]
+
 DME_BOX = [
     {"lat_offset": 9, "lon_offset": -10},
     {"lat_offset": 9, "lon_offset": 10},
@@ -152,6 +157,8 @@ def get_plot_from_string(textValue: str) -> list[dict]:
         return CIRCLE_L
     if upperValue == "CIRCLE_S":
         return CIRCLE_S
+    if upperValue == "CROSSBAR":
+        return CROSSBAR
     if upperValue == "DME_BOX":
         return DME_BOX
     if upperValue == "RNAV":
