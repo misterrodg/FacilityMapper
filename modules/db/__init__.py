@@ -1,5 +1,6 @@
 from .controlled_record import ControlledRecord
 from .controlled_records import ControlledRecords, select_controlled_points
+from .loc_gs_record import LOC_GS_Record, select_loc_gs_by_airport_id_and_loc_id
 from .procedure_record import JoinedProcedureRecord, ProcedureRecord
 from .procedure_records import (
     JoinedProcedureRecords,
@@ -19,6 +20,8 @@ __all__ = [
     "ControlledRecord",
     "ControlledRecords",
     "select_controlled_points",
+    "LOC_GS_Record",
+    "select_loc_gs_by_airport_id_and_loc_id",
     "JoinedProcedureRecord",
     "JoinedProcedureRecords",
     "ProcedureRecord",
