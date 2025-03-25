@@ -118,6 +118,37 @@
       }
     },
     {
+      "map_type": "LABELS",
+      "definition": {
+        "labels": [
+          {
+            "lines": ["JYO 127.5", "0800-2200L"],
+            "lat": 39.0779722,
+            "lon": -77.5575,
+            "x_offset": 1,
+            "y_offset": -1,
+            "text_scale": 0.5
+          },
+          {
+            "lines": ["IAD 120.1"],
+            "lat": 38.9474564,
+            "lon": -77.4599286,
+            "x_offset": -1,
+            "y_offset": -4
+          },
+          {
+            "lines": ["HEF 133.1", "0630-2230L"],
+            "lat": 38.7210247,
+            "lon": -77.5151047,
+            "x_offset": 1,
+            "y_offset": -1,
+            "text_scale": 0.5
+          }
+        ],
+        "file_name": "TOWER_FREQS_MULTILINE"
+      }
+    },
+    {
       "map_type": "COMPOSITE",
       "definition": {
         "file_names": ["003_BUNZZ", "003_RNLDI"],

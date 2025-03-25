@@ -18,7 +18,8 @@ The types are relatively straightforward. To view the Definition for the Map Typ
 | ------------------------------- | --------------------------------------------------------------------------------- |
 | [CONTROLLED](./CONTROLLED.md)   | Creates a map of controlled airspace for a specific airport.                      |
 | [IAP](./IAP.md)                 | Creates a map of a specific Instrument Approach Procedure.                        |
-| [LABEL](./LABEL.md)             | Creates a map with labels at specific locations.                                  |
+| [LABEL](./LABEL.md)             | Creates a map with labels at specific locations. (DEPRECATED)                     |
+| [LABELS](./LABELS.md)           | Creates a map with multiline labels at specific locations.                        |
 | [RESTRICTIVE](./RESTRICTIVE.md) | Creates a map of restrictive airspace (Restricted, MOA, Warning, etc.) by name.   |
 | [RUNWAYS](./RUNWAYS.md)         | Creates a map of runway lines for the specified airports.                         |
 | [SID](./SIDSTAR.md#sid)         | Creates a map of a specific (non-vector) Standard Instrument Departure procedure. |

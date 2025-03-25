@@ -3,6 +3,7 @@ from modules.controlled import Controlled
 from modules.error_helper import print_top_level
 from modules.iap import IAP
 from modules.label import Label
+from modules.labels import Labels
 from modules.map_list import MapList
 from modules.restrictive import Restrictive
 from modules.runways import Runways
@@ -17,6 +18,7 @@ COMPOSITE_TYPE = "COMPOSITE"
 CONTROLLED_TYPE = "CONTROLLED"
 IAP_TYPE = "IAP"
 LABEL_TYPE = "LABEL"
+LABELS_TYPE = "LABELS"
 RESTRICTIVE_TYPE = "RESTRICTIVE"
 RUNWAYS_TYPE = "RUNWAYS"
 SID_TYPE = "SID"
@@ -27,6 +29,7 @@ SUPPORTED_TYPES = [
     COMPOSITE_TYPE,
     IAP_TYPE,
     LABEL_TYPE,
+    LABELS_TYPE,
     RESTRICTIVE_TYPE,
     RUNWAYS_TYPE,
     SID_TYPE,
@@ -86,6 +89,8 @@ class Map:
             Runways(self.db_cursor, self.definition)
         if self.map_type == LABEL_TYPE:
             Label(self.definition)
+        if self.map_type == LABELS_TYPE:
+            Labels(self.definition)
         if self.map_type == COMPOSITE_TYPE:
             Composite(self.definition)
         if self.map_type == CONTROLLED_TYPE:
