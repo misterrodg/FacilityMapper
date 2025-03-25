@@ -1,4 +1,6 @@
 class ProcedureRecord:
+    SEGMENT_FIELD = "transition_id"
+
     def __init__(self, db_record: dict):
         self.area = db_record.get("area")
         self.sec_code = db_record.get("sec_code")
