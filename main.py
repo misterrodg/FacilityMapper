@@ -40,6 +40,9 @@ def refresh_database() -> None:
 
 
 def main():
+    if os.path.exists(CIFP_FILE_PATH) and not os.path.exists(DB_FILE_PATH):
+        refresh_database()
+
     parser = argparse.ArgumentParser(description="FacilityMapper")
     parser.add_argument(
         "-p", "--purge", action="store_true", help="purge files from vidmaps dir"
