@@ -1,3 +1,4 @@
+from modules.centerlines import Centerlines
 from modules.composite import Composite
 from modules.controlled import Controlled
 from modules.error_helper import print_top_level
@@ -14,6 +15,7 @@ from modules.vector_sid import VectorSID
 from sqlite3 import Cursor
 
 ERROR_HEADER = "MAP: "
+CENTERLINES = "CENTERLINES"
 COMPOSITE_TYPE = "COMPOSITE"
 CONTROLLED_TYPE = "CONTROLLED"
 IAP_TYPE = "IAP"
@@ -25,6 +27,7 @@ SID_TYPE = "SID"
 STAR_TYPE = "STAR"
 VECTOR_SID_TYPE = "VECTOR" + SID_TYPE
 SUPPORTED_TYPES = [
+    CENTERLINES,
     CONTROLLED_TYPE,
     COMPOSITE_TYPE,
     IAP_TYPE,
@@ -79,6 +82,8 @@ class Map:
         return
 
     def process(self) -> None:
+        if self.map_type == CENTERLINES:
+            Centerlines(self.db_cursor, self.definition)
         if self.map_type == IAP_TYPE:
             IAP(self.db_cursor, self.definition)
         if self.map_type == SID_TYPE or self.map_type == STAR_TYPE:

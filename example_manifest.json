@@ -81,6 +81,40 @@
       }
     },
     {
+      "map_type": "CENTERLINES",
+      "definition": {
+        "airport_id": "KIAD",
+        "centerlines": [
+          {
+            "runway_id": "19L",
+            "length": 20,
+            "selected_iap": "I19L",
+            "selected_transition": "LEMIU"
+          },
+          {
+            "runway_id": "19C",
+            "length": 20,
+            "selected_iap": "I19C",
+            "selected_transition": "NOOXX"
+          },
+          {
+            "runway_id": "19R",
+            "length": 20,
+            "selected_iap": "I19R",
+            "selected_transition": "RUBNZ"
+          },
+          { "runway_id": "12", "selected_iap": "I12" }
+        ],
+        "file_name": "IAD_CONFIG_S12"
+      },
+      "stars_definition": {
+        "brightness_category": "A",
+        "map_id": 1,
+        "short_name": "S OPS W 12",
+        "name": "IAD CONFIG S"
+      }
+    },
+    {
       "map_type": "CONTROLLED",
       "definition": {
         "airport_id": "KDCA",
