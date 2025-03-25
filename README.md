@@ -19,12 +19,10 @@ See [Manifest File Format](#manifest-file-format) for more details.
 
 # Instructions for Use
 
-- Copy this repository to your computer using `git clone https://github.com/misterrodg/FacilityMapper.git` or download the ZIP under the Code drop down and unzip to a location of your choice.
-- Install `cifparse` with:
-
-```bash
-pip install cifparse
-```
+- Copy this repository to your computer using:
+  - `git clone https://github.com/misterrodg/FacilityMapper.git`; or
+  - Download the ZIP under the Code drop down and unzip to a location of your choice.
+- Install `cifparse` with `pip install cifparse`.
 
 - Download the [FAA CIFP](https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/cifp/download/) zip file. Copy the `FAACIFP18` file from the zip into the `./navdata` directory.
 - Create a manifest file in the project root with the file name `manifest.json` (see [Manifest File Format](#manifest-file-format) for more detail).
