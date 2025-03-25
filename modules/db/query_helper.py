@@ -1,3 +1,22 @@
+def str_to_sql_string(string: str) -> str:
+    result = f"'{string}'"
+    return result
+
+
+def list_to_sql_string(list: list) -> str:
+    result = ",".join(f"'{str(x)}'" for x in list)
+    result = f"({result})"
+    return result
+
+
+def translate_condition(field: str, value: str) -> str:
+    result = f"{field} = {value}"
+    if "#" in value:
+        wildcard_value = translate_wildcard(value)
+        result = f"{field} LIKE '{wildcard_value}'"
+    return result
+
+
 def translate_wildcard(wildcard_string: str) -> str:
     return wildcard_string.replace("#", "_")
 

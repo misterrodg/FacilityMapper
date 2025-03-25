@@ -1,7 +1,7 @@
+from modules.db import filter_query
 from modules.altitude_data import AltitudeData
 from modules.draw_helper import ARC_MIN
 from modules.geo_json import Feature
-from modules.query_helper import filter_query
 from modules.speed_data import SpeedData
 from modules.text_data import TextData
 

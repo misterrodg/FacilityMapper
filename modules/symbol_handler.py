@@ -1,6 +1,6 @@
+from modules.db import filter_query, segment_query
 from modules.draw_helper import haversine_great_circle_bearing
 from modules.geo_json import Feature
-from modules.query_helper import filter_query, segment_query
 from modules.symbol_draw import SymbolDraw
 
 
