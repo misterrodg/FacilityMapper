@@ -4,7 +4,7 @@ A VidMap draw tool for use with [vNAS](https://virtualnas.net). It is a spiritua
 
 While VidMapper is aimed at drawing ad hoc maps for smaller TRACONs, FacilityMapper is designed to build maps on the AIRAC cycle for entire ARTCCs. It is based on a `manifest.json` file, which is effectively a list of "recipes" for your facility maps, making it easy to issue updates on the cycle no matter what changes.
 
-All maps are run through optimization prior to being written to file. Depending on the procedure, map type, and options, the way the source data defines the paths can cause several duplicate segments. Removing any segments that have already been drawn can save anywhere between a few and several thousand lines. For [Composite](#composite) maps, this optimization is run again after the two maps are combined.
+All maps are run through optimization prior to being written to file. Depending on the procedure, map type, and options, the way the source data defines the paths can cause several duplicate segments. Removing any segments that have already been drawn can save anywhere between a few and several thousand lines. For [Composite](./readme/COMPOSITE.md) maps, this optimization is run again after the two maps are combined.
 
 ## Testing Note
 
@@ -19,6 +19,7 @@ See [Manifest File Format](#manifest-file-format) for more details.
 
 # Instructions for Use
 
+- Copy this repository to your computer using `git clone https://github.com/misterrodg/FacilityMapper.git` or download the ZIP under the Code drop down and unzip to a location of your choice.
 - Install `cifparse` with:
 
 ```bash
@@ -26,276 +27,19 @@ pip install cifparse
 ```
 
 - Download the [FAA CIFP](https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/cifp/download/) zip file. Copy the `FAACIFP18` file from the zip into the `./navdata` directory.
-- Create a manifest file.
+- Create a manifest file in the project root with the file name `manifest.json` (see [Manifest File Format](#manifest-file-format) for more detail).
 - Run the script (see [Drawing the Facility](#drawing-the-facility) for more detail).
 
 ## Manifest File Format
 
+An example manifest is available in the project root. You can rename the example to `manifest.json` in the project root, or use it as a guide to creating your own. As projects become more complex, it might be helpful to have different manifests per facility. In this case, additional manifests can be placed in the `./manifests` directory and called via the `--manifest [file_name].json` switch.
+
+More detail about Manifests can be found on the [Manifest](./readme/MANIFEST.md) page.
+
 Examples:
 
 - `example_manifest.json`: Basic example manifest file showing all of the fields and their defaults, available in the root folder.
-- `example_zdc_manifest.json`: Completed manifest showing the options used for a "production" build, available in the root folder.
-
-More detail, and images of the various settings is available in [EXAMPLES](./examples/EXAMPLES.md).
-
-### Manifest
-
-The `manifest.json` file has the following properties:
-
-| Property | Required | Type    | Default | Description                             |
-| -------- | -------- | ------- | ------- | --------------------------------------- |
-| `maps`   | \*       | `array` |         | An array of [Map Objects](#map-objects) |
-
-### Map Objects
-
-The map object has the following properties:
-
-| Property     | Required | Type     | Default | Description                                                                                                                                                                        |
-| ------------ | -------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `map_type`   | \*       | `string` |         | A string representing the map type. Supported map types are: `"CONTROLLED"`, `"IAP"`, `"LABEL"`, `"RESTRICTIVE"`, `"RUNWAYS"`, `"SID"`, `"VECTORSID"`, `"STAR"` and `"COMPOSITE"`. |
-| `definition` | \*       | `object` |         | A [Definition Object](#definition-objects).                                                                                                                                        |
-
-### Definition Objects
-
-The definition object has fields that depend on the map type being defined.
-
-#### SID
-
-The SID object has the following properties:
-
-| Property                   | Required | Type     | Default                               | Description                                                                                                                                                                                                                                |
-| -------------------------- | -------- | -------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `airport_id`               | \*       | `string` |                                       | A string representing the ICAO identifier for the airport.                                                                                                                                                                                 |
-| `procedure_id`             | \*       | `string` |                                       | A string representing the computer code of the procedure, in the format `"AAA#"` or `"AAAAA#"` (`"JCOBY#"`), where the `#` is the literal `#` symbol.                                                                                      |
-| `line_type`                |          | `string` | `"solid"`                             | A string representing the line type that should be drawn. Supported line types are: `"solid"`, `"longDashed"`, `"shortDashed"`, `"longDashShortDash"`, `"arrows"`, and `"none"`.                                                           |
-| `draw_symbols`             |          | `bool`   | `false`                               | A boolean value that tells the script to draw a symbol at the fix location. The symbol is driven by the data in the CIFP, and clips the line around the point.                                                                             |
-| `symbol_scale`             |          | `float`  | `1.0`                                 | A float value representing the scale of the symbols.                                                                                                                                                                                       |
-| `draw_altitudes`           |          | `bool`   | `false`                               | A boolean value that tells the script to draw the speed restriction (if present) for the fix near the fix location.                                                                                                                        |
-| `draw_speeds`              |          | `bool`   | `false`                               | A boolean value that tells the script to draw the altitude restriction(s) (if present) for the fix near the fix location.                                                                                                                  |
-| `draw_names`               |          | `bool`   | `false`                               | A boolean value that tells the script to draw the name of the fix near the fix location.                                                                                                                                                   |
-| `x_offset`                 |          | `float`  | `0`                                   | A float value representing the lateral text offset in nautical miles (positive for East and negative for West).                                                                                                                            |
-| `y_offset`                 |          | `float`  | `0`                                   | A float value representing the vertical text offset in nautical miles (positive for North and negative for South).                                                                                                                         |
-| `text_scale`               |          | `float`  | `1.0`                                 | A float value representing the scale of the text.                                                                                                                                                                                          |
-| `line_height`              |          | `float`  | `1.5` \* `text_scale`                 | A float value representing the line height of the text, used in spacing the fix name, altitude, and speed.                                                                                                                                 |
-| `draw_enroute_transitions` |          | `bool`   | `true`                                | A boolean value that tells the script to draw the enroute transitions.                                                                                                                                                                     |
-| `draw_runway_transitions`  |          | `bool`   | `false`                               | A boolean value that tells the script to draw the runway transitions. NOTE: Many SID runway transitions have performance/altitude-based points. These are not currently supported, so the line draws might be odd in this segment for now. |
-| `file_name`                |          | `string` | `{airportId}_{mapType}_{procedureId}` | A string representing the filename that the map will be saved to (`"003_JCOBY"`).                                                                                                                                                          |
-
-#### STAR
-
-The STAR object is defined using the same properties as [SID](#sid).
-
-#### Vector SID
-
-Vectored SIDs don't have any specific path information, so it is being offered as a special type in cases where the map is still desired. Unlike the SID and STAR types, the Vector SID does not print any path information, and defaults to printing the symbols and names.
-
-The Vector SID object has the following properties:
-
-| Property       | Required | Type     | Default                               | Description                                                                                                                                           |
-| -------------- | -------- | -------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `airport_id`   | \*       | `string` |                                       | A string representing the ICAO identifier for the airport.                                                                                            |
-| `procedure_id` | \*       | `string` |                                       | A string representing the computer code of the procedure, in the format `"AAA#"` or `"AAAAA#"` (`"JCOBY#"`), where the `#` is the literal `#` symbol. |
-| `draw_symbols` |          | `bool`   | `true`                                | A boolean value that tells the script to draw a symbol at the fix location. The symbol is driven by the data in the CIFP.                             |
-| `symbol_scale` |          | `float`  | `1.0`                                 | A float value representing the scale of the symbols.                                                                                                  |
-| `draw_names`   |          | `bool`   | `true`                                | A boolean value that tells the script to draw the name of the fix near the fix location.                                                              |
-| `x_offset`     |          | `float`  | `0`                                   | A float value representing the lateral text offset in nautical miles (positive for East and negative for West).                                       |
-| `y_offset`     |          | `float`  | `0`                                   | A float value representing the vertical text offset in nautical miles (positive for North and negative for South).                                    |
-| `text_scale`   |          | `float`  | `1.0`                                 | A float value representing the scale of the text.                                                                                                     |
-| `line_height`  |          | `float`  | `1.5` \* `text_scale`                 | A float value representing the line height of the text, used in spacing the fix name, altitude, and speed.                                            |
-| `file_name`    |          | `string` | `{airportId}_{mapType}_{procedureId}` | A string representing the filename that the map will be saved to (`"003_CPTAL"`).                                                                     |
-
-#### IAP
-
-The interpretation of the paths is still relatively limited. As such, more advanced draws like those on RTF legs are not yet supported.
-
-The IAP object has the following properties:
-
-| Property         | Required | Type     | Default                               | Description                                                                                                                                                          |
-| ---------------- | -------- | -------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `airport_id`     | \*       | `string` |                                       | A string representing the ICAO identifier for the airport.                                                                                                           |
-| `procedure_id`   | \*       | `string` |                                       | A string representing the computer code of the procedure. These aren't always straightforward. See [ICAO IAP Codes](#icao-iap-codes) for more detail.                |
-| `line_type`      |          | `string` | `"solid"`                             | A string representing the line type that should be drawn. Supported line types are: `"solid"`, `"longDashed"`, `"shortDashed"`, `"longDashShortDash"`, and `"none"`. |
-| `draw_symbols`   |          | `bool`   | `false`                               | A boolean value that tells the script to draw a symbol at the fix location. The symbol is driven by the data in the CIFP, and clips the line around the point.       |
-| `symbol_scale`   |          | `float`  | `1.0`                                 | A float value representing the scale of the symbols.                                                                                                                 |
-| `draw_altitudes` |          | `bool`   | `false`                               | A boolean value that tells the script to draw the speed restriction (if present) for the fix near the fix location.                                                  |
-| `draw_speeds`    |          | `bool`   | `false`                               | A boolean value that tells the script to draw the altitude restriction(s) (if present) for the fix near the fix location.                                            |
-| `draw_names`     |          | `bool`   | `false`                               | A boolean value that tells the script to draw the name of the fix near the fix location.                                                                             |
-| `x_offset`       |          | `float`  | `0`                                   | A float value representing the lateral text offset in nautical miles (positive for East and negative for West).                                                      |
-| `y_offset`       |          | `float`  | `0`                                   | A float value representing the vertical text offset in nautical miles (positive for North and negative for South).                                                   |
-| `text_scale`     |          | `float`  | `1.0`                                 | A float value representing the scale of the text.                                                                                                                    |
-| `line_height`    |          | `float`  | `1.5` \* `text_scale`                 | A float value representing the line height of the text, used in spacing the fix name, altitude, and speed.                                                           |
-| `transition_ids` |          | `array`  |                                       | An array of strings representing the names of the transitions to include.                                                                                            |
-| `draw_missed`    |          | `bool`   | `false`                               | A boolean value that tells the script to draw the missed approach. (Generally functional but not recommended for use.)                                               |
-| `file_name`      |          | `string` | `{airportId}_{mapType}_{procedureId}` | A string representing the filename that the map will be saved to (`"003_KOKV_VDMA"`).                                                                                |
-
-##### ICAO IAP Codes
-
-| Prefix | Type    | Example      |
-| ------ | ------- | ------------ |
-| B      | LOC/BC  | `B30L`       |
-| D      | VOR/DME | `D25`        |
-| F      | FMS     | _Deprecated_ |
-| G      | IGS     | _Deprecated_ |
-| H      | RNP     | `H21-Y`      |
-| I      | ILS     | `I01R`       |
-| J      | GNSS    | _Deprecated_ |
-| L      | LOC     | `L17`        |
-| M      | MLS     | _Deprecated_ |
-| N      | NDB     | `N34`        |
-| P      | GPS     | `P04`        |
-| Q      | NDB/DME | `Q06R`       |
-| R      | RNAV    | `R14`        |
-| S      | VORTAC  | `S13`        |
-| T      | TACAN   | _Deprecated_ |
-| U      | SDF     | _Deprecated_ |
-| V      | VOR     | `V22`        |
-| W      | MLS-A   | _Deprecated_ |
-| X      | LDA     | `X19-Y`      |
-| Y      | MLS-B/C | _Deprecated_ |
-
-...and because the CIFP is an FAA product, these additional oddities that seem to be specific to procedures not tied to a specific runway:
-
-| Prefix | Type    | Example |
-| ------ | ------- | ------- |
-| GPS    | GPS     | `GPS-A` |
-| LBC    | LOC/BC  | `LBC-A` |
-| LDA    | LDA     | `LDA-A` |
-| LOC    | LOC     | `LOC-A` |
-| NDB    | NDB     | `NDB-A` |
-| RNV    | RNAV    | `RNV-A` |
-| VDM    | VOR/DME | `VDM-A` |
-| VOR    | VOR     | `VOR-A` |
-
-#### Controlled
-
-The Controlled object has the following properties:
-
-| Property     | Required | Type     | Default                    | Description                                                       |
-| ------------ | -------- | -------- | -------------------------- | ----------------------------------------------------------------- |
-| `airport_id` | \*       | `string` |                            | A string representing the identifier for the controlled airspace. |
-| `file_name`  |          | `string` | `{mapType}_{controlledId}` | A string representing the filename that the map will be saved to. |
-
-**NOTE**: For most airspace, the `airport_id` is straightforward, but for certain areas within Class B, it might not be obvious. It may be worth opening the CIFP file and searching for the entry. If your program supports regex, you can search with `SUSAUC...{airportId}` to see if anything pops up. For Washington DC, the Class B is centered on `KDCA` (and not `KIAD` or `KBWI`), whereas for NY it is centered on `KJFK` (and not `KEWR` or `KLGA`).
-
-#### Restrictive
-
-Restrictive airspace covers all airspace: Alert (A), Caution (C), Danger (D), Military Operations Area (M), Prohibited (P), Restricted (R), Training (T), and Warning (W).
-
-The Restrictive object has the following properties:
-
-| Property         | Required | Type     | Default                     | Description                                                        |
-| ---------------- | -------- | -------- | --------------------------- | ------------------------------------------------------------------ |
-| `restrictive_id` | \*       | `string` |                             | A string representing the identifier for the restrictive airspace. |
-| `file_name`      |          | `string` | `{mapType}_{restrictiveId}` | A string representing the filename that the map will be saved to.  |
-
-**NOTE**: Naming in the CIFP file is mostly standardized, but has some quirks, particularly for MOAs. It may be worth opening the CIFP file and searching for the entry. For example, Stumpy Point MOA appears in the file as `STUMPY PT`. If your program supports regex, you can search with `SUSAUR..M` and start typing the MOA name right after the `M` (e.g., `SUSAUR..MDEMO` for the DEMO MOA). For longer names, the name may actually be truncated. The Tombstone MOA, for example, is truncated as `TOMBSTON A`, `TOMBSTON B` and `TOMBSTON C`.
-
-#### Runways
-
-The Runways object has the following properties:
-
-| Property      | Required | Type     | Default | Description                                                            |
-| ------------- | -------- | -------- | ------- | ---------------------------------------------------------------------- |
-| `airport_ids` | \*       | `array`  |         | An array of string representing the ICAO identifiers for the airports. |
-| `file_name`   | \*       | `string` |         | A string representing the filename that the map will be saved to.      |
-
-#### Label
-
-The Label object has the following properties:
-
-| Property    | Required | Type     | Default | Description                                                       |
-| ----------- | -------- | -------- | ------- | ----------------------------------------------------------------- |
-| `lines`     | \*       | `array`  |         | An array of [Label Line](#label-line) objects.                    |
-| `file_name` | \*       | `string` |         | A string representing the filename that the map will be saved to. |
-
-##### Label Line
-
-The Label Line object has the following properties:
-
-| Property     | Required | Type     | Default | Description                                                   |
-| ------------ | -------- | -------- | ------- | ------------------------------------------------------------- |
-| `line`       | \*       | `string` |         | A text line of [supported characters](#supported-characters). |
-| `lat`        | \*       | `float`  |         | A float value representing the latitude.                      |
-| `lon`        | \*       | `float`  |         | A float value representing the longitude.                     |
-| `text_scale` |          | `float`  | `1.0`   | A float value representing the scale of the text.             |
-
-NOTE: The "origin" of the text is at the bottom left corner.
-
-#### Composite
-
-A Composite Map is a map made up of other maps. This is useful in cases where you would like to show several SIDs on a single map. As best practice, all Composites should be listed at the end of the manifest to ensure that the relevant maps are generated before trying to combine them.
-
-The Composite object has the following properties:
-
-| Property           | Required | Type     | Default | Description                                                                             |
-| ------------------ | -------- | -------- | ------- | --------------------------------------------------------------------------------------- |
-| `file_names`       | \*       | `string` |         | A string representing the filenames to combine into a single map.                       |
-| `file_name`        | \*       | `string` |         | A string representing the filename that the map will be saved to.                       |
-| `delete_originals` |          | `bool`   | `false` | A boolean value that tells the script to delete the original maps after combining them. |
-
-#### Supported Characters
-
-The following characters are currently supported:
-
-| Type    | Supported                                                                                               |
-| ------- | ------------------------------------------------------------------------------------------------------- |
-| Numeric | `0`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`                                                                 |
-| Alpha   | `A`,`B`,`C`,`D`,`E`,`F`,`G`,`H`,`I`,`J`,`K`,`L`,`M`,`N`,`O`,`P`,`Q`,`R`,`S`,`T`,`U`,`V`,`W`,`X`,`Y`,`Z` |
-| Other   | `+`,`-`,`.`,`⎵` (space)                                                                                 |
-
-What the characters look like is shown in [EXAMPLES](./examples/EXAMPLES.md#label-supported-characters).
-
-### STARS Definition Objects
-
-When managing larger facilities, the map list can exceed the available display area. In these circumstances,
-it is necessary to provide a map list to controllers by other means. Additionally, this method helps in adding
-or auditing the list in Data Admin.
-
-NOTE: This definition only sets the creation of a textual map list for controllers. STARS Video Maps must be configured in Data Admin.
-
-The STARS Definition object has the following properties:
-
-| Property              | Required | Type     | Default           | Description                                                     |
-| --------------------- | -------- | -------- | ----------------- | --------------------------------------------------------------- |
-| `name`                | \*       | `string` |                   | A string value representing the Map Name.                       |
-| `map_id`              |          | `int`    | `{last_used + 1}` | An integer value representing the Map ID.                       |
-| `short_name`          |          | `string` | `{name}`          | A string value representing the Short Map Name (for STARS DCB). |
-| `brightness_category` |          | `char`   | `A`               | A character value representing the STARS Brightness Category.   |
-| `tdm_only`            |          | `bool`   | `False`           | A boolean value that restricts the map visibility to TDM only.  |
-| `always_visible`      |          | `bool`   | `False`           | A boolean value that forces TDM maps to be always visible.      |
-| `note`                |          | `string` | `""`              | A string value representing a note to controllers.              |
-
-NOTE: For the `map_id` values, be sure you are providing unique IDs. There is no verification of uniqueness in the code.
-If no `map_id`s are provided, then the code will assign them in the order they are provided in the manifest.
-If only the first `map_id` is provided, then the code will start at that ID and increment by one from there.
-If all maps have `map_id`s, the code will use those IDs exactly as provided.
-If providing only some map IDs, use care to ensure the maps are ordered properly. If not, the code will not properly handle the IDs.
-
-The following example would cause the Map IDs to be `201, 202, 200, 201`:
-
-```json
-    ...
-    "stars_definition": {
-        "map_id": 201,
-        "short_name": "CAPSS",
-        "name": "DCA STAR CAPSS"
-    },
-    ...
-    "stars_definition": {
-        "short_name": "CLIPR",
-        "name": "DCA STAR CLIPR"
-    },
-    ...
-    "stars_definition": {
-        "map_id": 200,
-        "short_name": "TIKEE",
-        "name": "DCA STAR TIKEE"
-    },
-    "stars_definition": {
-        "short_name": "TRUPS",
-        "name": "DCA STAR TRUPS",
-    }
-```
+- [EXAMPLES](./examples/EXAMPLES.md): More detail, and images of some of the various settings that are available.
 
 ## Drawing the Facility
 
@@ -315,25 +59,25 @@ The resulting file(s) will be in `./vidmaps`.
 python3 main.py --nodraw
 ```
 
-`--purge` is available to quickly clean up the vidmap directory.
+`--purge` is available to quickly delete all files in the `./vidmaps` directory.
 
 ```bash
 python3 main.py --purge
 ```
 
-`--refresh` is available to refresh the database data. By default, the script will skip parsing the CIFP to save time if it has already parsed it into a database (found at `./navdata/FAACIFP18.db`). Run this command any time you replace the `FAACIFP18` file.
+`--refresh` is available to refresh the database data (found at `./navdata/FAACIFP18.db`). Run this command any time you replace the `FAACIFP18` file. By default, the script will skip parsing the CIFP file and read from the database to save time.
 
 ```bash
 python3 main.py --refresh
 ```
 
-`--manifest` is available to specify different manifest files. By default, the script looks for a file named `manifest.json` in the program root, but additional manifests can be created with different file names in the `manifests` directory, and built using `--manifest`.
+`--manifest` is available to specify different manifest files. By default, the script looks for a file named `manifest.json` in the project root, but additional manifests can be created with different file names in the `./manifests` directory, and built using `--manifest`.
 
 ```bash
-python3 main.py --manifest example_manifest.json
+python3 main.py --manifest manifest_name.json
 ```
 
-`--list` is available to print a map list in the vidmaps directory based on the [STARS Definition Objects](#stars-definition-objects) in the manifest.
+`--list` is available to print a map list text file in the `./vidmaps` directory based on the [STARS Definition Objects](./readme/STARS_DEFINITION_OBJECT.md) in the manifest.
 
 Note: The map list will only contain a list of those maps with STARS Definitions.
 
