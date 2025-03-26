@@ -25,7 +25,7 @@ class ControlledRecords:
         return self.records
 
     def get_segmented_records(self) -> list[list[ControlledRecord]]:
-        result = segment_records(self.records, ControlledRecord.SEGMENT_FIELD)
+        result = segment_records(self.records, ControlledRecord.SEGMENT_FIELDS)
         return result
 
     def get_line_definitions(self) -> list[AirspaceRecord]:
@@ -40,5 +40,5 @@ class ControlledRecords:
         for record in self.records:
             line_definition = record.get_line_definition()
             airspace_records.append(line_definition)
-        result = segment_records(airspace_records, ControlledRecord.SEGMENT_FIELD)
+        result = segment_records(airspace_records, ControlledRecord.SEGMENT_FIELDS)
         return result
