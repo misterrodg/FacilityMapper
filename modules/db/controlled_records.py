@@ -8,7 +8,7 @@ def select_controlled_points(airport_id: str) -> str:
     SELECT * 
     FROM controlled_airspace_points 
     WHERE center_id = {airport_id}
-    ORDER BY center_id, multiple_code, sequence_number;
+    ORDER BY center_id, airspace_class, multiple_code, sequence_number;
     """
     return result
 
