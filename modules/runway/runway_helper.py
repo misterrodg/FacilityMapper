@@ -17,8 +17,17 @@ def _handle_bearing_component(bearing_component: int) -> int:
 
 
 def _handle_side_component(side_component: str) -> str:
+    # Shortcut the edge cases where a runway is named like "RW212" (usually mil field tactical strips)
+    if side_component.isnumeric():
+        return side_component
+    # Side-based Runways
     if side_component == "L":
         return "R"
     if side_component == "R":
         return "L"
-    return "C"
+    if side_component == "C":
+        return "C"
+    # Other oddities (surface types, generally)
+    if side_component in ["G", "S", "U", "W"]:
+        return side_component
+    return ""
