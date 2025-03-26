@@ -21,16 +21,16 @@ python3 main.py --airport {airport_id} {--optional switches}
 
 #### Other Commands
 
-`--controlled` is available to generate a manifest for [CONTROLLED](./CONTROLLED.md) map types. It will select all controlled airspace that has a point within the defining box between the `min_lat, min_lon` (bottom left corner) and `max_lat, max_lon` (top right corner).
+`--controlled` is available to generate a manifest for [CONTROLLED](./CONTROLLED.md) map types. It will select all controlled airspace that has a point within the defining box between the `min_lat, min_lon` (bottom left corner) and `max_lat, max_lon` (top right corner). Since controlled airspace maps are individual, and several can exist within a specific area, an optional `--composite` switch is available to generate an additional composite map type.
 
 ```bash
-python3 main.py --controlled {min_lat,min_lon,max_lat,max_lon}
+python3 main.py --controlled {min_lat,min_lon,max_lat,max_lon} {--optional composite switch}
 ```
 
-`--restrictive` is available to generate a manifest for [RESTRICTIVE](./RESTRICTIVE.md) map types. It will select all restrictive airspace that has a point within the defining box between the `min_lat, min_lon` (bottom left corner) and `max_lat, max_lon` (top right corner).
+`--restrictive` is available to generate a manifest for [RESTRICTIVE](./RESTRICTIVE.md) map types. It will select all restrictive airspace that has a point within the defining box between the `min_lat, min_lon` (bottom left corner) and `max_lat, max_lon` (top right corner). Since restrictive airspace maps are individual, and several can exist within a specific area, an optional `--composite` switch is available to generate an additional composite map type.
 
 ```bash
-python3 main.py --restrictive {min_lat,min_lon,max_lat,max_lon}
+python3 main.py --restrictive {min_lat,min_lon,max_lat,max_lon} {--optional composite switch}
 ```
 
 `--runways` is available to generate a manifest for a [RUNWAYS](./RUNWAYS.md) map type. It will select all airports by defining a box between the `min_lat, min_lon` (bottom left corner) and `max_lat, max_lon` (top right corner).

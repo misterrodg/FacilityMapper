@@ -1,6 +1,7 @@
 from modules.definitions import (
     Centerline,
     Centerlines,
+    Composite,
     Controlled,
     IAP,
     Manifest,
@@ -62,6 +63,11 @@ if os.path.exists(DB_FILE_PATH):
         type=lambda s: s.split(","),
         help="generate a list of Restrictive Airspace (min_lat,min_lon,max_lat,max_lon)",
     )
+    airspace_group.add_argument(
+        "--composite",
+        action="store_true",
+        help="generate a composite from the individual maps",
+    )
 
     args = parser.parse_args()
     airport_id = args.airport
@@ -71,6 +77,7 @@ if os.path.exists(DB_FILE_PATH):
     find_centerlines = args.centerlines
     controlled = args.controlled
     restrictive = args.restrictive
+    composite = args.composite
     runways = args.runways
 
     if airport_id:
@@ -158,15 +165,28 @@ if os.path.exists(DB_FILE_PATH):
         query = f"SELECT DISTINCT center_id, airspace_class FROM controlled_airspace_points WHERE (lat BETWEEN {min_lat} AND {max_lat} AND lon BETWEEN {min_lon} AND {max_lon}) OR (arc_lat BETWEEN {min_lat} AND {max_lat} AND arc_lon BETWEEN {min_lon} AND {max_lon});"
         controlled_list = query_db(cursor, query)
 
+        file_names = []
+
         for cont in controlled_list:
             map = Map(MapType.CONTROLLED_TYPE)
             definition = Controlled(cont["center_id"], cont["airspace_class"])
-            map_name = definition.file_name.replace("_", " ")
+            file_name = definition.file_name
+            file_names.append(file_name)
+            map_name = file_name.replace("_", " ")
             stars_definition = STARSDefinition(map_name, map_id)
             map.add_definition(definition)
             map.add_stars_definition(stars_definition)
             manifest.add_map(map)
             map_id += 1
+
+        if composite:
+            composite_map = Map(MapType.COMPOSITE_TYPE)
+            definition = Composite(file_names, "ALL_CONTROLLED")
+            map_name = definition.file_name.replace("_", " ")
+            stars_definition = STARSDefinition(map_name, 0)
+            composite_map.add_definition(definition)
+            composite_map.add_stars_definition(stars_definition)
+            manifest.add_map(composite_map)
 
         manifest.to_file(f"{GENERATED_PREFIX}_controlled")
 
@@ -184,17 +204,30 @@ if os.path.exists(DB_FILE_PATH):
         query = f"SELECT DISTINCT restrictive_designation, restrictive_type FROM restrictive_airspace_points WHERE (lat BETWEEN {min_lat} AND {max_lat} AND lon BETWEEN {min_lon} AND {max_lon}) OR (arc_lat BETWEEN {min_lat} AND {max_lat} AND arc_lon BETWEEN {min_lon} AND {max_lon});"
         restrictive_list = query_db(cursor, query)
 
+        file_names = []
+
         for rest in restrictive_list:
             map = Map(MapType.RESTRICTIVE_TYPE)
             definition = Restrictive(
                 rest["restrictive_designation"], rest["restrictive_type"]
             )
-            map_name = definition.file_name.replace("_", " ")
+            file_name = definition.file_name
+            file_names.append(file_name)
+            map_name = file_name.replace("_", " ")
             stars_definition = STARSDefinition(map_name, map_id)
             map.add_definition(definition)
             map.add_stars_definition(stars_definition)
             manifest.add_map(map)
             map_id += 1
+
+        if composite:
+            composite_map = Map(MapType.COMPOSITE_TYPE)
+            definition = Composite(file_names, "ALL_RESTRICTIVE")
+            map_name = definition.file_name.replace("_", " ")
+            stars_definition = STARSDefinition(map_name, 0)
+            composite_map.add_definition(definition)
+            composite_map.add_stars_definition(stars_definition)
+            manifest.add_map(composite_map)
 
         manifest.to_file(f"{GENERATED_PREFIX}_restrictive")
 

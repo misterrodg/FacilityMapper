@@ -1,5 +1,6 @@
 from .centerline import Centerline
 from .centerlines import Centerlines
+from .composite import Composite
 from .controlled import Controlled
 from .iap import IAP
 from .manifest import Manifest
@@ -13,6 +14,7 @@ from .stars_definition import STARSDefinition
 __all__ = [
     "Centerline",
     "Centerlines",
+    "Composite",
     "Controlled",
     "IAP",
     "Manifest",
