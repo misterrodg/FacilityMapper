@@ -25,7 +25,9 @@ See [Manifest File Format](#manifest-file-format) for more details.
 - Install `cifparse` with `pip install cifparse`.
 
 - Download the [FAA CIFP](https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/cifp/download/) zip file. Copy the `FAACIFP18` file from the zip into the `./navdata` directory.
-- Create a manifest file in the project root with the file name `manifest.json` (see [Manifest File Format](#manifest-file-format) for more detail).
+- Create a manifest file in the project root with the file name `manifest.json`.
+  - See [Manifest File Format](#manifest-file-format) for more detail.
+  - If you want to auto-generate more targeted manifests to work from, try the [Find](#find-function) function.
 - Run the script (see [Drawing the Facility](#drawing-the-facility) for more detail).
 
 ## Manifest File Format
@@ -38,6 +40,12 @@ Examples:
 
 - `example_manifest.json`: Basic example manifest file showing all of the fields and their defaults, available in the root folder.
 - [EXAMPLES](./examples/EXAMPLES.md): More detail, and images of some of the various settings that are available.
+
+### Find Function
+
+A Find function is available to generate example manifests. For example, running the command `python3 find.py --airport KIAD --sid --star --iap --centerlines` will generate a manifest called `generated_kiad.json` in the `./manifests` directory containing all SIDs, STARs, IAPs, and Centerlines for `KIAD`. All defaults are included so that you can modify them if you desire, or delete lines if you are okay with the default.
+
+For more detail, see [FIND](./readme/FIND.md).
 
 ## Drawing the Facility
 
