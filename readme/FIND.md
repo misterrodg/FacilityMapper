@@ -15,6 +15,8 @@ The Find function is available to generate targeted manifests that can be used a
 | `--iap`         | [IAP](./IAP.md)                 |
 | `--centerlines` | [CENTERLINES](./CENTERLINES.md) |
 
+An additional `--select` switch is available when using `--centerlines`, which tries to find an appropriate IAP for the runway, and adds it to the manifest if found.
+
 ```bash
 python3 main.py --airport {airport_id} {--optional switches}
 ```

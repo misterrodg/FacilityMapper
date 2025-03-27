@@ -14,7 +14,8 @@ from modules.definitions import (
     STARSDefinition,
 )
 from modules.dir_paths import NAVDATA_DIR
-from modules.query_handler import query_db
+from modules.query_handler import query_db, query_db_one
+from modules.runway import split_runway_id
 
 import argparse
 import os
@@ -51,6 +52,11 @@ if os.path.exists(DB_FILE_PATH):
         action="store_true",
         help="generate a list of Centerlines for --airport",
     )
+    airport_group.add_argument(
+        "--select",
+        action="store_true",
+        help="select an IAP for each Centerline for --airport (if it exists)",
+    )
     # Airspace Options
     airspace_group = parser.add_argument_group("Airspace Options")
     airspace_group.add_argument(
@@ -75,6 +81,7 @@ if os.path.exists(DB_FILE_PATH):
     find_sid = args.sid
     find_star = args.star
     find_centerlines = args.centerlines
+    select_iap = args.select
     controlled = args.controlled
     restrictive = args.restrictive
     composite = args.composite
@@ -131,7 +138,7 @@ if os.path.exists(DB_FILE_PATH):
                 map_id += 1
 
         if find_centerlines:
-            query = f"SELECT runway_id FROM runways WHERE airport_id = '{airport_id}';"
+            query = f"SELECT runway_id, ls_ident FROM runways WHERE airport_id = '{airport_id}';"
             runway_list = query_db(cursor, query)
 
             map = Map(MapType.CENTERLINES)
@@ -140,8 +147,31 @@ if os.path.exists(DB_FILE_PATH):
             stars_definition = STARSDefinition(map_name, map_id)
 
             for runway in runway_list:
-                trimmed_runway = runway["runway_id"].lstrip("RW")
+                runway_id_dict = split_runway_id(runway["runway_id"])
+                trimmed_runway = f"{runway_id_dict["bearing_component"]}{runway_id_dict["side_component"]}"
                 centerline = Centerline(trimmed_runway)
+
+                if select_iap and runway["ls_ident"]:
+                    procedure_wildcard = "_" + trimmed_runway + "%"
+                    rec_vhf = runway["ls_ident"]
+                    query = f"""
+                    SELECT DISTINCT procedure_id 
+                    FROM procedure_points 
+                    WHERE procedure_id LIKE '{procedure_wildcard}' AND fac_id = '{airport_id}' AND fac_sub_code = 'F' AND rec_vhf = '{rec_vhf}' 
+                    ORDER BY 
+                        CASE 
+                            WHEN procedure_id LIKE 'I%' THEN 1
+                            WHEN procedure_id LIKE 'L%' THEN 2
+	                        WHEN procedure_id LIKE 'LOC%' THEN 3
+                            WHEN procedure_id LIKE 'X%' THEN 4
+	                        WHEN procedure_id LIKE 'LDA%' THEN 5
+                            ELSE 6
+                        END
+                    LIMIT 1;
+                    """
+                    procedure = query_db_one(cursor, query)
+                    centerline.selected_iap = procedure["procedure_id"]
+
                 definition.add_centerline(centerline)
 
             map_id += 1
