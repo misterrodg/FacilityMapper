@@ -14,18 +14,28 @@ def select_controlled_points(airport_id: str) -> str:
 
 
 class ControlledRecords:
-    def __init__(self, db_records: list[dict]):
+    def __init__(self):
         self.records: list[ControlledRecord] = []
 
+    def from_list(self, controlled_record_list: list[ControlledRecord]) -> None:
+        self.records.extend(controlled_record_list)
+        return
+
+    def from_db_records(self, db_records: list[dict]) -> None:
         for record in db_records:
             controlled_record = ControlledRecord(record)
             self.records.append(controlled_record)
+        return
 
     def get_records(self) -> list[ControlledRecord]:
         return self.records
 
     def get_segmented_records(self) -> list[list[ControlledRecord]]:
         result = segment_records(self.records, ControlledRecord.SEGMENT_FIELD)
+        return result
+
+    def get_segmented_by_airspace_class(self) -> list[list[ControlledRecord]]:
+        result = segment_records(self.records, "airspace_class")
         return result
 
     def get_line_definitions(self) -> list[AirspaceRecord]:
@@ -42,3 +52,14 @@ class ControlledRecords:
             airspace_records.append(line_definition)
         result = segment_records(airspace_records, ControlledRecord.SEGMENT_FIELD)
         return result
+
+    def check_for_multiple_classes(self) -> bool:
+        last_airspace_class = None
+        for record in self.records:
+            if (
+                last_airspace_class != None
+                and record.airspace_class != last_airspace_class
+            ):
+                return True
+            last_airspace_class = record.airspace_class
+        return False

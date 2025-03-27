@@ -44,7 +44,8 @@ class Controlled:
     def _process(self) -> None:
         controlled_query = self._build_query_string()
         query_result = query_db(self.db_cursor, controlled_query)
-        controlled_records = ControlledRecords(query_result)
+        controlled_records = ControlledRecords()
+        controlled_records.from_db_records(query_result)
         self.controlled = controlled_records
         return
 
@@ -54,11 +55,19 @@ class Controlled:
         return result
 
     def _to_file(self) -> None:
-        feature_collection = FeatureCollection()
-
-        feature_collection = process_controlled(self.controlled)
-
-        geo_json = GeoJSON(self.file_name)
-        geo_json.add_feature_collection(feature_collection)
-        geo_json.to_file()
+        if self.controlled.check_for_multiple_classes():
+            airspace_classes = self.controlled.get_segmented_by_airspace_class()
+            for a_class in airspace_classes:
+                airspace_class_id = a_class[0].airspace_class
+                geo_json = GeoJSON(f"{self.file_name}_{airspace_class_id}")
+                controlled_records = ControlledRecords()
+                controlled_records.from_list(a_class)
+                feature_collection = process_controlled(controlled_records)
+                geo_json.add_feature_collection(feature_collection)
+                geo_json.to_file()
+        else:
+            geo_json = GeoJSON(self.file_name)
+            feature_collection = process_controlled(self.controlled)
+            geo_json.add_feature_collection(feature_collection)
+            geo_json.to_file()
         return
