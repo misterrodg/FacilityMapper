@@ -28,7 +28,7 @@ if os.path.exists(DB_FILE_PATH):
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    parser = argparse.ArgumentParser(description="FacilityMapper")
+    parser = argparse.ArgumentParser(description="FacilityMapper Finder")
     parser.add_argument(
         "--runways",
         type=lambda s: s.split(","),
