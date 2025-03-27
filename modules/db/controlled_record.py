@@ -2,7 +2,7 @@ from modules.db.airspace_record import AirspaceRecord
 
 
 class ControlledRecord(AirspaceRecord):
-    SEGMENT_FIELDS = ["airspace_class", "multiple_code"]
+    SEGMENT_FIELD = "multiple_code"
 
     def __init__(self, db_record: dict):
         self.area = db_record.get("area")

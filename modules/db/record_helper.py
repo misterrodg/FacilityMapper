@@ -1,22 +1,16 @@
-def segment_records(records: list[any], segment_fields: list[str]) -> list[list[any]]:
-    def get_composite_key(record):
-        return tuple(getattr(record, field, None) for field in segment_fields)
-
-    last_key = None
+def segment_records(records: list[any], segment_field: str) -> list[list[any]]:
+    last_id = ""
     segment = []
     result = []
-
     for record in records:
-        current_key = get_composite_key(record)
-        if current_key != last_key and last_key is not None:
+        current_id = getattr(record, segment_field, None)
+        if current_id != last_id and last_id != "":
             result.append(segment)
             segment = []
         segment.append(record)
-        last_key = current_key
-
+        last_id = current_id
     if segment:
         result.append(segment)
-
     return result
 
 
