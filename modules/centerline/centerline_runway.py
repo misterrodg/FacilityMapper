@@ -240,4 +240,4 @@ class CenterlineRunway:
             if max_distance > self.length:
                 self.length = max_distance
             self.bearing = bearing
-            return
+        return
