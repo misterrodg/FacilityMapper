@@ -10,6 +10,7 @@ class Centerline(Serializable):
         self.selected_iap: str = None
         self.selected_transition: str = None
         self.selected_loc: Optional[Literal[1, 2]] = None
+        self.selected_distances: list = []
 
     def to_dict(self) -> dict:
         return {
@@ -19,4 +20,5 @@ class Centerline(Serializable):
             "selected_iap": self.selected_iap,
             "selected_transition": self.selected_transition,
             "selected_loc": self.selected_loc,
+            "selected_distances": self.selected_distances,
         }

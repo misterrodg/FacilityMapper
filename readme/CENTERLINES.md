@@ -24,17 +24,21 @@ The Centerline object defines how a specific centerline is drawn. Centerline dra
 - Specifying a `selected_loc` is an option to draw a basic centerline along the specified localizer course.
   - Use this option only if you want a basic centerline that follows a localizer offset, and don't need crossbars.
   - The FAA data has up to two associated LOC arrays (usually 1 if there is an IAP, rarely 2), which can be selected by specifying `1` or `2`.
+- Specifying `selected_distances` will add crossbars for any distances in the provided list.
+  - If any of the distances is further than the default or manually-specified length, the length will be overridden to accommodate the max distance.
+  - This option is provided as a backup for the occasional cases where the FAA does not include an approach in the CIFP.
 
 The Centerline object has the following properties:
 
-| Property              | Required | Type     | Default | Description                                                                                     |
-| --------------------- | -------- | -------- | ------- | ----------------------------------------------------------------------------------------------- |
-| `runway_id`           | \*       | `string` |         | A string value representing the runway id.                                                      |
-| `length`              |          | `float`  | `10.0`  | A float value representing the length of the centerline in nautical miles.                      |
-| `crossbar_scale`      |          | `float`  | `0.5`   | A float value representing the width of the crossbars in nautical miles.                        |
-| `selected_iap`        |          | `string` |         | A string value representing the selected Instrument Approach Procedure used to draw crossbars.  |
-| `selected_transition` |          | `string` |         | A string value representing the selected IAP transition used to draw crossbars.                 |
-| `selected_loc`        |          | `int`    |         | An integer value of `1` or `2` representing the selected LOC array used to draw the centerline. |
+| Property              | Required | Type     | Default | Description                                                                                      |
+| --------------------- | -------- | -------- | ------- | ------------------------------------------------------------------------------------------------ |
+| `runway_id`           | \*       | `string` |         | A string value representing the runway id.                                                       |
+| `length`              |          | `float`  | `10.0`  | A float value representing the length of the centerline in nautical miles.                       |
+| `crossbar_scale`      |          | `float`  | `0.5`   | A float value representing the width of the crossbars in nautical miles.                         |
+| `selected_iap`        |          | `string` |         | A string value representing the selected Instrument Approach Procedure used to draw crossbars.   |
+| `selected_transition` |          | `string` |         | A string value representing the selected IAP transition used to draw crossbars.                  |
+| `selected_loc`        |          | `int`    |         | An integer value of `1` or `2` representing the selected LOC array used to draw the centerline.  |
+| `selected_distances`  |          | `array`  |         | An array of float values representing the distance from the end of the runway in nautical miles. |
 
 [Back to Map Objects](./MAP_OBJECTS.md)
 

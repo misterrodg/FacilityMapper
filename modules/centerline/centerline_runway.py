@@ -3,6 +3,7 @@ from modules.draw_helper import (
     haversine_great_circle_bearing,
     haversine_great_circle_distance,
     inverse_bearing,
+    lat_lon_from_pbd,
 )
 from modules.error_helper import print_top_level
 from modules.geo_json import LineString
@@ -41,6 +42,7 @@ class CenterlineRunway:
         self.selected_loc = None
         self.selected_transition = None
         self.selected_iap = None
+        self.selected_distances = None
         self.runway_record = None
         self.iap_records = None
         self.centerline_multi_line: list[LineString] = []
@@ -56,6 +58,9 @@ class CenterlineRunway:
         if self.selected_iap is not None:
             self._draw_crossbars()
             self._draw_centerline()
+        elif self.selected_distances is not None:
+            self._draw_centerline()
+            self._draw_crossbars()
         else:
             self._draw_centerline()
         result.extend(self.centerline_line_strings)
@@ -81,6 +86,7 @@ class CenterlineRunway:
         selected_iap = definition_dict.get("selected_iap")
         selected_transition = definition_dict.get("selected_transition")
         selected_loc = definition_dict.get("selected_loc")
+        selected_distances = definition_dict.get("selected_distances")
 
         self.runway_id = runway_id
         self.length = length
@@ -88,6 +94,7 @@ class CenterlineRunway:
         self.selected_iap = selected_iap
         self.selected_transition = selected_transition
         self.selected_loc = selected_loc
+        self.selected_distances = selected_distances
         self.is_valid = self._format_runway()
         return
 
@@ -197,6 +204,12 @@ class CenterlineRunway:
                 bearing = haversine_great_circle_bearing(
                     inverse_runway.lat, inverse_runway.lon, lat, lon
                 )
+                self.bearing = bearing
+                if (
+                    self.selected_distances
+                    and max(self.selected_distances) > self.length
+                ):
+                    self.length = self.selected_distances[-1]
         else:
             if not self.iap_records:
                 print(
@@ -240,4 +253,21 @@ class CenterlineRunway:
             if max_distance > self.length:
                 self.length = max_distance
             self.bearing = bearing
+
+        if self.selected_distances:
+            selected_distances = self.selected_distances
+            bearing = self.bearing
+            for selected_distance in selected_distances:
+                point = lat_lon_from_pbd(
+                    self.base_lat, self.base_lon, self.bearing, selected_distance
+                )
+                symbol = SymbolDraw(
+                    "CROSSBAR",
+                    point["lat"],
+                    point["lon"],
+                    self.bearing,
+                    self.crossbar_scale,
+                )
+                self.crossbar_line_strings.extend(symbol.get_lines())
+
         return
