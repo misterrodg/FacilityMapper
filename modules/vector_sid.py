@@ -14,20 +14,20 @@ ERROR_HEADER = "VECTORSID: "
 
 class VectorSID:
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
-        self.map_type = "VECTORSID"
-        self.airport_id = None
-        self.procedure_id = None
-        self.draw_symbols = False
-        self.symbol_scale = None
-        self.draw_names = False
-        self.x_offset = None
-        self.y_offset = None
-        self.text_scale = None
-        self.line_height = None
+        self.map_type: str = "VECTORSID"
+        self.airport_id: str = None
+        self.procedure_id: str = None
+        self.draw_symbols: bool = False
+        self.symbol_scale: float = None
+        self.draw_names: bool = False
+        self.x_offset: float = None
+        self.y_offset: float = None
+        self.text_scale: float = None
+        self.line_height: float = None
         self.core: list[dict] = []
-        self.file_name = None
-        self.db_cursor = db_cursor
-        self.is_valid = False
+        self.file_name: str = None
+        self.db_cursor: Cursor = db_cursor
+        self.is_valid: bool = False
 
         self._validate(definition_dict)
 

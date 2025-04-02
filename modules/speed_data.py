@@ -13,13 +13,13 @@ class SpeedData:
         text_scale: float,
         start_line: int,
     ):
-        self.speed_desc = speed_desc
-        self.speed = speed
-        self.offset_lat = offset_lat
-        self.offset_lon = offset_lon
-        self.scaled_line_height = scaled_line_height
-        self.text_scale = text_scale
-        self.start_line = start_line
+        self.speed_desc: str = speed_desc
+        self.speed: int = speed
+        self.offset_lat: float = offset_lat
+        self.offset_lon: float = offset_lon
+        self.scaled_line_height: float = scaled_line_height
+        self.text_scale: float = text_scale
+        self.start_line: int = start_line
 
     def to_text_feature(self) -> Feature:
         return self._draw_line()

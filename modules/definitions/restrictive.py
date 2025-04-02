@@ -3,7 +3,7 @@ from modules.definitions.airspace import Airspace
 
 class Restrictive(Airspace):
     def __init__(self, restrictive_id: str, restrictive_type: str):
-        self.restrictive_id = restrictive_id
+        self.restrictive_id: str = restrictive_id
         file_name = f"{restrictive_type}_{restrictive_id}"
         super().__init__(file_name)
 

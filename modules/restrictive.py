@@ -11,12 +11,12 @@ ERROR_HEADER = "RESTRICTIVE: "
 
 class Restrictive:
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
-        self.map_type = "RESTRICTIVE"
-        self.restrictive_id = None
-        self.restrictive = RestrictiveRecords
-        self.file_name = None
-        self.db_cursor = db_cursor
-        self.is_valid = False
+        self.map_type: str = "RESTRICTIVE"
+        self.restrictive_id: str = None
+        self.restrictive: RestrictiveRecords = None
+        self.file_name: str = None
+        self.db_cursor: Cursor = db_cursor
+        self.is_valid: bool = False
 
         self._validate(definition_dict)
 

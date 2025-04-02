@@ -6,7 +6,7 @@ MAP_LIST_NAME = "map_list.txt"
 
 class MapList:
     def __init__(self):
-        self.map_id = 0
+        self.map_id: int = 0
         self.stars_definitions: list[STARSDefinition] = []
 
     def write_line(self, stars_definition: STARSDefinition) -> None:

@@ -9,13 +9,13 @@ ERROR_HEADER = "CENTERLINES: "
 
 class Centerlines:
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
-        self.map_type = "CENTERLINES"
-        self.airport_id = None
-        self.centerline_list = None
+        self.map_type: str = "CENTERLINES"
+        self.airport_id: str = None
+        self.centerline_list: list[str] = []
         self.multi_line_strings: list[MultiLineString] = []
-        self.file_name = None
-        self.db_cursor = db_cursor
-        self.is_valid = False
+        self.file_name: str = None
+        self.db_cursor: Cursor = db_cursor
+        self.is_valid: bool = False
 
         self._validate(definition_dict)
 

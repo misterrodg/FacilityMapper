@@ -31,24 +31,24 @@ IAP_SUB_CODE = "F"
 
 class CenterlineRunway:
     def __init__(self, db_cursor: Cursor, airport_id: str, definition_dict: dict):
-        self.airport_id = airport_id
-        self.runway_id = None
-        self.inverse_runway_id = None
-        self.length = None
-        self.crossbar_scale = None
-        self.base_lat = None
-        self.base_lon = None
-        self.bearing = None
-        self.selected_loc = None
-        self.selected_transition = None
-        self.selected_iap = None
-        self.selected_distances = None
-        self.runway_record = None
-        self.iap_records = None
+        self.airport_id: str = airport_id
+        self.runway_id: str = None
+        self.inverse_runway_id: str = None
+        self.length: float = None
+        self.crossbar_scale: float = None
+        self.base_lat: float = None
+        self.base_lon: float = None
+        self.bearing: float = None
+        self.selected_loc: int = None
+        self.selected_transition: str = None
+        self.selected_iap: str = None
+        self.selected_distances: list[float] = None
+        self.runway_record: RunwayRecord = None
+        self.iap_records: JoinedProcedureRecords = None
         self.centerline_multi_line: list[LineString] = []
         self.crossbar_line_strings: list[LineString] = []
-        self.db_cursor = db_cursor
-        self.is_valid = False
+        self.db_cursor: Cursor = db_cursor
+        self.is_valid: bool = False
 
         self._validate(definition_dict)
         self._process()

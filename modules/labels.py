@@ -8,10 +8,10 @@ ERROR_HEADER = "LABELS: "
 
 class Labels:
     def __init__(self, definition_dict: dict):
-        self.map_type = "LABELS"
+        self.map_type: str = "LABELS"
         self.labels: list[dict] = []
-        self.file_name = None
-        self.is_valid = False
+        self.file_name: str = None
+        self.is_valid: bool = False
 
         self._validate(definition_dict)
 

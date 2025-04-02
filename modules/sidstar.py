@@ -17,28 +17,28 @@ SIDSTAR_LINE_TYPES = ["none", "arrows"]
 
 class SIDSTAR:
     def __init__(self, db_cursor: Cursor, map_type: str, definition_dict: dict):
-        self.map_type = map_type
-        self.airport_id = None
-        self.procedure_id = None
-        self.line_style = None
-        self.draw_symbols = False
-        self.symbol_scale = None
-        self.draw_altitudes = False
-        self.draw_speeds = False
-        self.draw_names = False
-        self.x_offset = None
-        self.y_offset = None
-        self.text_scale = None
-        self.line_height = None
-        self.vector_length = None
+        self.map_type: str = map_type
+        self.airport_id: str = None
+        self.procedure_id: str = None
+        self.line_style: str = None
+        self.draw_symbols: bool = False
+        self.symbol_scale: float = None
+        self.draw_altitudes: bool = False
+        self.draw_speeds: bool = False
+        self.draw_names: bool = False
+        self.x_offset: float = None
+        self.y_offset: float = None
+        self.text_scale: float = None
+        self.line_height: float = None
+        self.vector_length: float = None
         self.core: list[dict] = []
-        self.draw_enroute_transitions = True
+        self.draw_enroute_transitions: bool = True
         self.enroute_transitions: list[dict] = []
-        self.draw_runway_transitions = False
+        self.draw_runway_transitions: bool = False
         self.runway_transitions: list[dict] = []
-        self.file_name = None
-        self.db_cursor = db_cursor
-        self.is_valid = False
+        self.file_name: str = None
+        self.db_cursor: Cursor = db_cursor
+        self.is_valid: bool = False
 
         self._validate(definition_dict)
 
@@ -149,11 +149,11 @@ class SIDSTAR:
             if self.draw_runway_transitions:
                 result = result + ["3", "6"]
         return result
-    
+
     def _get_path_term_list(self) -> list:
-        result = ['FM','HA','HF','HM','PI','VM']
+        result = ["FM", "HA", "HF", "HM", "PI", "VM"]
         if self.map_type == "STAR":
-            result = ['HA','HF','HM','PI']
+            result = ["HA", "HF", "HM", "PI"]
         return result
 
     def _build_query_string(self, segment: str = "") -> str:

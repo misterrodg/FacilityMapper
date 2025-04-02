@@ -7,10 +7,10 @@ ERROR_HEADER = "LABEL: "
 
 class Label:
     def __init__(self, definition_dict: dict):
-        self.map_type = "LABEL"
+        self.map_type: str = "LABEL"
         self.lines: list[dict] = []
-        self.file_name = None
-        self.is_valid = False
+        self.file_name: str = None
+        self.is_valid: bool = False
 
         self._validate(definition_dict)
 

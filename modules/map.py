@@ -42,13 +42,15 @@ SUPPORTED_TYPES = [
 
 
 class Map:
-    def __init__(self, db_cursor: Cursor, map_dict: dict, map_list: MapList = None) -> None:
-        self.map_type = None
-        self.definition = None
-        self.stars_definition = None
-        self.db_cursor = db_cursor
-        self.map_list = map_list
-        self.is_valid = False
+    def __init__(
+        self, db_cursor: Cursor, map_dict: dict, map_list: MapList = None
+    ) -> None:
+        self.map_type: str = None
+        self.definition: dict = None
+        self.stars_definition: dict = None
+        self.db_cursor: Cursor = db_cursor
+        self.map_list: MapList = map_list
+        self.is_valid: bool = False
 
         self._validate(map_dict)
 
@@ -72,7 +74,7 @@ class Map:
                 f"{ERROR_HEADER}Missing `definition` in:\n{print_top_level(map_dict)}"
             )
             return
-        
+
         stars_definition = map_dict.get("stars_definition")
 
         self.map_type = map_type

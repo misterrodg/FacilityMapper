@@ -6,11 +6,11 @@ ERROR_HEADER = "COMPOSITE: "
 
 class Composite:
     def __init__(self, definition_dict: dict):
-        self.map_type = "COMPOSITE"
+        self.map_type: str = "COMPOSITE"
         self.file_names: list[dict] = []
-        self.file_name = None
-        self.delete_originals = False
-        self.is_valid = False
+        self.file_name: str = None
+        self.delete_originals: bool = False
+        self.is_valid: bool = False
 
         self._validate(definition_dict)
 

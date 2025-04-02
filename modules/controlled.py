@@ -11,12 +11,12 @@ ERROR_HEADER = "CONTROLLED: "
 
 class Controlled:
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
-        self.map_type = "CONTROLLED"
-        self.airport_id = None
-        self.controlled = ControlledRecords
-        self.file_name = None
-        self.db_cursor = db_cursor
-        self.is_valid = False
+        self.map_type: str = "CONTROLLED"
+        self.airport_id: str = None
+        self.controlled: ControlledRecords = None
+        self.file_name: str = None
+        self.db_cursor: Cursor = db_cursor
+        self.is_valid: bool = False
 
         self._validate(definition_dict)
 
