@@ -12,7 +12,7 @@ def handle_transitions(transition_ids: list) -> str:
     if transition_ids:
         transition_ids_as_string = list_to_sql_string(transition_ids)
         return f"AND (transition_id IS NULL OR transition_id IN {transition_ids_as_string})"
-    return "AND transition_id IS NULL"
+    return "AND (transition_id IS NULL OR transition_id = 'ALL')"
 
 
 def handle_route_type(route_types: list) -> str:
