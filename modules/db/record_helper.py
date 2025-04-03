@@ -27,3 +27,13 @@ def filter_records(records: list[any], segment_field: str) -> list[any]:
 
 def cast_from_to(records: list[any]) -> list[tuple[any, any]]:
     return zip(records, records[1:])
+
+
+def revert_from_to(records: list[tuple[any, any]]) -> list[any]:
+    if not records:
+        return []
+
+    first_element = records[0][0]
+    to_records = [to for _, to in records]
+
+    return [first_element] + to_records
