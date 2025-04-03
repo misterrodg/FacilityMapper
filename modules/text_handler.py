@@ -1,9 +1,24 @@
 from modules.db import filter_query
-from modules.altitude_data import AltitudeData
+from modules.altitude import AltitudeData
 from modules.draw_helper import ARC_MIN
 from modules.geo_json import Feature
-from modules.speed_data import SpeedData
+from modules.speed import SpeedData
 from modules.text_data import TextData
+from modules.text_draw import TextDraw
+
+
+def _draw_line(
+    text_string: str,
+    offset_lat: float,
+    offset_lon: float,
+    scaled_line_height: float,
+    text_scale: float,
+    line_number: int,
+) -> Feature:
+    offset_lat = offset_lat - (scaled_line_height * line_number)
+    text = TextDraw(text_string, offset_lat, offset_lon, text_scale)
+    result = text.get_feature()
+    return result
 
 
 def get_text_features(
@@ -47,34 +62,37 @@ def get_text_features(
             flight_level_2 = row.get("flight_level_2")
             if altitude or flight_level or altitude_2 or flight_level_2:
                 altitude_data = AltitudeData(
-                    alt_desc,
-                    altitude,
-                    flight_level,
-                    altitude_2,
-                    flight_level_2,
-                    offset_lat,
-                    offset_lon,
-                    scaled_line_height,
-                    text_scale,
-                    lines_used,
+                    alt_desc, altitude, flight_level, altitude_2, flight_level_2
                 )
-                altitude_features = altitude_data.to_text_features()
-                result.extend(altitude_features)
-                lines_used += len(altitude_features)
+                altitudes = altitude_data.to_list()
+                for altitude in altitudes:
+                    altitude_feature = _draw_line(
+                        altitude,
+                        offset_lat,
+                        offset_lon,
+                        scaled_line_height,
+                        text_scale,
+                        lines_used,
+                    )
+                    result.append(altitude_feature)
+                    lines_used += 1
 
         if draw_speeds:
             speed_desc = row.get("speed_limit_2")
             speed_limit = row.get("speed_limit")
             if speed_limit:
-                speed_data = SpeedData(
-                    speed_desc,
-                    speed_limit,
-                    offset_lat,
-                    offset_lon,
-                    scaled_line_height,
-                    text_scale,
-                    lines_used,
-                )
-                speed_feature = speed_data.to_text_feature()
-                result.append(speed_feature)
+                speed_data = SpeedData(speed_desc, speed_limit)
+                speeds = speed_data.to_list()
+                for speed in speeds:
+                    speed_feature = _draw_line(
+                        speed,
+                        offset_lat,
+                        offset_lon,
+                        scaled_line_height,
+                        text_scale,
+                        lines_used,
+                    )
+                    result.append(speed_feature)
+                    lines_used += 1
+
     return result
