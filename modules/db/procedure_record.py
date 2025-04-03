@@ -50,12 +50,3 @@ class ProcedureRecord:
         self.rte_qual_2: str = db_record.get("rte_qual_2")
         self.record_number: int = db_record.get("record_number")
         self.cycle_data: str = db_record.get("cycle_data")
-
-
-class JoinedProcedureRecord(ProcedureRecord):
-    def __init__(self, db_record: dict):
-        super().__init__(db_record)
-        self.id = db_record.get("id")
-        self.lat = db_record.get("lat")
-        self.lon = db_record.get("lon")
-        self.type = db_record.get("type")
