@@ -23,3 +23,7 @@ def filter_records(records: list[any], segment_field: str) -> list[any]:
             result.append(record)
             seen_ids.add(field_value)
     return result
+
+
+def cast_from_to(records: list[any]) -> list[tuple[any, any]]:
+    return zip(records, records[1:])

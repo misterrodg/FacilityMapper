@@ -63,9 +63,6 @@ class JoinedProcedureRecords:
     def get_records(self) -> list[JoinedProcedureRecord]:
         return self.records
 
-    def get_from_to(self) -> list[tuple[JoinedProcedureRecord]]:
-        return zip(self.records, self.records[1:])
-
     def get_segmented_records(self) -> list[list[JoinedProcedureRecord]]:
         result = segment_records(self.records, JoinedProcedureRecord.SEGMENT_FIELD)
         return result
