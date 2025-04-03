@@ -19,6 +19,7 @@ from .query_helper import (
     segment_query,
     filter_query,
 )
+from .record_helper import cast_from_to, filter_records, revert_from_to, segment_records
 from .restrictive_record import RestrictiveRecord
 from .restrictive_records import RestrictiveRecords, select_restrictive_points
 from .runway_record import RunwayRecord
@@ -42,6 +43,10 @@ __all__ = [
     "ProcedureRecord",
     "ProcedureRecords",
     "select_procedure_points",
+    "cast_from_to",
+    "filter_records",
+    "revert_from_to",
+    "segment_records",
     "RestrictiveRecord",
     "RestrictiveRecords",
     "segment_query",
