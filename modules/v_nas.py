@@ -25,24 +25,41 @@ PROPERTY_TYPES = [
     PROPERTY_TYPE_POLYGON,
     PROPERTY_TYPE_SYMBOL,
 ]
+SYMBOL_STYLE_OBSTRUCTION1 = "obstruction1"
+SYMBOL_STYLE_OBSTRUCTION2 = "obstruction2"
+SYMBOL_STYLE_HELIPORT = "heliport"
+SYMBOL_STYLE_NUCLEAR = "nuclear"
+SYMBOL_STYLE_EMERGENCY_AIRPORT = "emergencyAirport"
+SYMBOL_STYLE_RADAR = "radar"
+SYMBOL_STYLE_IAF = "iaf"
+SYMBOL_STYLE_RNAV_ONLY = "rnavOnlyWaypoint"
+SYMBOL_STYLE_RNAV = "rnav"
+SYMBOL_STYLE_AIRWAY_INTERSECTION = "airwayIntersections"
+SYMBOL_STYLE_NDB = "ndb"
+SYMBOL_STYLE_VOR = "vor"
+SYMBOL_STYLE_OTHER_WAYPOINTS = "otherWaypoints"
+SYMBOL_STYLE_AIRPORT = "airport"
+SYMBOL_STYLE_SATELLITE_AIRPORT = "satelliteAirport"
+SYMBOL_STYLE_TACAN = "tacan"
+SYMBOL_STYLE_DME = "dme"
 SYMBOL_STYLES = [
-    "obstruction1",
-    "obstruction2",
-    "heliport",
-    "nuclear",
-    "emergencyAirport",
-    "radar",
-    "iaf",
-    "rnavOnlyWaypoint",
-    "rnav",
-    "airwayIntersections",
-    "ndb",
-    "vor",
-    "otherWaypoints",
-    "airport",
-    "satelliteAirport",
-    "tacan",
-    "dme",
+    SYMBOL_STYLE_OBSTRUCTION1,
+    SYMBOL_STYLE_OBSTRUCTION2,
+    SYMBOL_STYLE_HELIPORT,
+    SYMBOL_STYLE_NUCLEAR,
+    SYMBOL_STYLE_EMERGENCY_AIRPORT,
+    SYMBOL_STYLE_RADAR,
+    SYMBOL_STYLE_IAF,
+    SYMBOL_STYLE_RNAV_ONLY,
+    SYMBOL_STYLE_RNAV,
+    SYMBOL_STYLE_AIRWAY_INTERSECTION,
+    SYMBOL_STYLE_NDB,
+    SYMBOL_STYLE_VOR,
+    SYMBOL_STYLE_OTHER_WAYPOINTS,
+    SYMBOL_STYLE_AIRPORT,
+    SYMBOL_STYLE_SATELLITE_AIRPORT,
+    SYMBOL_STYLE_TACAN,
+    SYMBOL_STYLE_DME,
 ]
 SYMBOL_SIZE_MIN = 1
 SYMBOL_SIZE_MAX = 4
