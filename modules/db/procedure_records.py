@@ -16,11 +16,19 @@ def _handle_transitions(transition_ids: list) -> str:
     return "AND transition_id IS NULL"
 
 
+def _handle_route_type(route_types: list) -> str:
+    result = ""
+    if route_types:
+        route_types_as_string = list_to_sql_string(route_types)
+        result = f"AND p.route_type IN {route_types_as_string}"
+    return result
+
+
 def _handle_path_term(path_terms: list) -> str:
-    result = "p.path_term NOT IN ('FM','HA','HF','HM','PI','VM')"
+    result = "AND p.path_term NOT IN ('FM','HA','HF','HM','PI','VM')"
     if path_terms:
         path_terms_as_string = list_to_sql_string(path_terms)
-        result = f"p.path_term NOT IN {path_terms_as_string}"
+        result = f"AND p.path_term NOT IN {path_terms_as_string}"
     return result
 
 
@@ -29,12 +37,14 @@ def select_joined_procedure_points(
     fac_sub_code: str,
     procedure_id: str,
     transitions: list = [],
+    route_types: list = [],
     path_terms: list = [],
 ) -> str:
     fac_id_string = str_to_sql_string(fac_id)
     fac_sub_code_string = str_to_sql_string(fac_sub_code)
-    transition_string = _handle_transitions(transitions)
     procedure_id_string = translate_condition("procedure_id", procedure_id)
+    transition_string = _handle_transitions(transitions)
+    route_type_string = _handle_route_type(route_types)
     path_term_string = _handle_path_term(path_terms)
     result = f"""
     WITH unified_table AS (
@@ -53,7 +63,7 @@ def select_joined_procedure_points(
     SELECT p.*,id,lat,lon,type
     FROM procedure_points AS p
     LEFT JOIN unified_table AS u ON p.fix_id = u.id
-    WHERE fac_id = {fac_id_string} AND fac_sub_code = {fac_sub_code_string} AND {procedure_id_string} {transition_string} AND {path_term_string}
+    WHERE fac_id = {fac_id_string} AND fac_sub_code = {fac_sub_code_string} AND {procedure_id_string} {route_type_string} {transition_string} {path_term_string}
     ORDER BY p.procedure_id,p.route_type,p.transition_id DESC,p.sequence_number;
     """
     return result

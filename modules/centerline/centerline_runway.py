@@ -144,7 +144,7 @@ class CenterlineRunway:
         iap_sub_code = IAP_SUB_CODE
         if self.selected_transition:
             result = select_joined_procedure_points(
-                airport_id, iap_sub_code, iap_id, [self.selected_transition]
+                airport_id, iap_sub_code, iap_id, transitions=[self.selected_transition]
             )
         else:
             result = select_joined_procedure_points(airport_id, iap_sub_code, iap_id)
