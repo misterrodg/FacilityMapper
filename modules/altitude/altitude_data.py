@@ -16,12 +16,21 @@ class AltitudeData:
     def to_list(self) -> list[str]:
         result = []
 
-        value_1 = str(self.altitude) if self.altitude else f"FL{self.flight_level}"
-        value_2 = (
-            str(self.altitude_2) if self.altitude_2 else f"FL{self.flight_level_2}"
-        )
         alt_desc = self.alt_desc
 
+        value_1 = None
+        if self.altitude is not None or self.flight_level is not None:
+            value_1 = str(self.altitude) if self.altitude else f"FL{self.flight_level}"
+
+        value_2 = None
+        if self.altitude_2 is not None or self.flight_level_2 is not None:
+            value_2 = (
+                str(self.altitude_2) if self.altitude_2 else f"FL{self.flight_level_2}"
+            )
+
+        if alt_desc is None and value_1 is not None:
+            # [Blank]: AT
+            result.append(value_1)
         if alt_desc in ["+", "-"]:
             # +:AOA // -:AOB
             result.append(f"{alt_desc}{value_1}")
