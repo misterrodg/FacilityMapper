@@ -8,7 +8,7 @@ from modules.db.query_helper import (
     str_to_sql_string,
     translate_condition,
 )
-from modules.db.record_helper import segment_records
+from modules.db.record_helper import cast_from_to, revert_from_to, segment_records
 
 
 def select_joined_procedure_points(
@@ -67,6 +67,31 @@ class JoinedProcedureRecords:
         result = segment_records(self.records, JoinedProcedureRecord.SEGMENT_FIELD)
         return result
 
+    def get_unique_paths(self) -> list[list[JoinedProcedureRecord]]:
+        result: list = []
+        segmented_records = segment_records(
+            self.records, JoinedProcedureRecord.SEGMENT_FIELD
+        )
+
+        seen: list = []
+
+        for segment in segmented_records:
+            from_to = cast_from_to(segment)
+            unique: list = []
+            for record_from, record_to in from_to:
+                pair = f"{record_from.fix_id}-{record_to.fix_id}"
+                value = None
+                if pair not in seen:
+                    seen.append(pair)
+                    value = (record_from, record_to)
+                unique.append(value)
+            if unique:
+                split = _check_for_split(unique)
+                for item in split:
+                    result.append(revert_from_to(item))
+
+        return result
+
     def trim_missed(self) -> list[JoinedProcedureRecord]:
         result = []
         missed_reached = False
@@ -77,3 +102,21 @@ class JoinedProcedureRecords:
                 missed_reached = True
 
         return result
+
+
+def _check_for_split(list_to_verify: list) -> list[list]:
+    result: list = []
+    temporary: list = []
+
+    for item in list_to_verify:
+        if item is not None:
+            temporary.append(item)
+        else:
+            if temporary:
+                result.append(temporary)
+                temporary = []
+
+    if temporary:
+        result.append(temporary)
+
+    return result
