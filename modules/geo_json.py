@@ -1,31 +1,10 @@
 from modules.dir_paths import VIDMAP_DIR
 from modules.error_helper import print_top_level
-from modules.v_nas import (
-    ASDEX_STYLES,
-    BCG_MIN,
-    BCG_MAX,
-    FILTER_MIN,
-    FILTER_MAX,
-    LINE_STYLES,
-    LINE_THICKNESS_MIN,
-    LINE_THICKNESS_MAX,
-    PROPERTY_TYPE_LINE,
-    PROPERTY_TYPE_POINT,
-    PROPERTY_TYPE_POLYGON,
-    PROPERTY_TYPE_SYMBOL,
-    PROPERTY_TYPES,
-    SYMBOL_STYLES,
-    SYMBOL_SIZE_MIN,
-    SYMBOL_SIZE_MAX,
-    TEXT_SIZE_MIN,
-    TEXT_SIZE_MAX,
-)
 
 from os.path import isfile, getsize
 
 import json
 import os
-import re
 
 ERROR_HEADER = "GEOJSON: "
 POINT_TYPE = "Point"
@@ -55,202 +34,16 @@ class Coordinate:
 
 class Properties:
     def __init__(self):
-        self.asdex = None
-        self.bcg = None
-        self.color = None
-        self.filters = None
-        self.is_line_defaults = None
-        self.is_symbol_defaults = None
-        self.is_text_defaults = None
-        self.opaque = None
-        self.size = None
-        self.style = None
-        self.text = None
-        self.thickness = None
-        self.underline = None
-        self.x_offset = None
-        self.y_offset = None
-        self.z_index = None
+        self.properties: dict = None
 
     def to_dict(self) -> dict:
         result = {
-            "asdex": self.asdex,
-            "bcg": self.bcg,
-            "color": self.color,
-            "filters": self.filters,
-            "isLineDefaults": self.is_line_defaults,
-            "isSymbolDefaults": self.is_symbol_defaults,
-            "isTextDefaults": self.is_text_defaults,
-            "opaque": self.opaque,
-            "size": self.size,
-            "style": self.style,
-            "text": self.text,
-            "thickness": self.thickness,
-            "underline": self.underline,
-            "xOffset": self.x_offset,
-            "yOffset": self.y_offset,
-            "zIndex": self.z_index,
+            key: value for key, value in self.properties.items() if value is not None
         }
-        result = {key: value for key, value in result.items() if value is not None}
         return result
 
-    def from_dict(self, feature_type: str, properties_dict: dict) -> None:
-        if feature_type in PROPERTY_TYPES:
-            color = properties_dict.get("color")
-            self._set_color(color)
-            bcg = properties_dict.get("bcg")
-            self._set_bcg(bcg)
-            filters = properties_dict.get("filters")
-            self._set_filters(filters)
-            z_index = properties_dict.get("z_index")
-            self._set_z_index(z_index)
-
-            if feature_type == PROPERTY_TYPE_LINE:
-                is_line_defaults = properties_dict.get("is_line_defaults")
-                self._set_is_line_defaults(is_line_defaults)
-                style = properties_dict.get("style")
-                self._set_line_style(style)
-                thickness = properties_dict.get("thickness")
-                self._set_line_thickness(thickness)
-
-            if feature_type == PROPERTY_TYPE_POLYGON:
-                asdex = properties_dict.get("asdex")
-                self._set_asdex(asdex)
-
-            if feature_type == PROPERTY_TYPE_POINT:
-                is_text_defaults = properties_dict.get("is_text_defaults")
-                self._set_is_text_defaults(is_text_defaults)
-                text = properties_dict.get("text")
-                self._set_text(text)
-                size = properties_dict.get("size")
-                self._set_text_size(size)
-                underline = properties_dict.get("underline")
-                self._set_text_underline(underline)
-                x_offset = properties_dict.get("x_offset")
-                self._set_text_offset("x", x_offset)
-                y_offset = properties_dict.get("y_offset")
-                self._set_text_offset("y", y_offset)
-                opaque = properties_dict.get("opaque")
-                self._set_text_opaque(opaque)
-
-            if feature_type == PROPERTY_TYPE_SYMBOL:
-                is_symbol_defaults = properties_dict.get("is_symbol_defaults")
-                self._set_is_symbol_defaults(is_symbol_defaults)
-                size = properties_dict.get("size")
-                self._set_symbol_size(size)
-                style = properties_dict.get("style")
-                self._set_symbol_style(style)
-        return
-
-    def _set_asdex(self, asdex_style: str) -> None:
-        if asdex_style and asdex_style in ASDEX_STYLES:
-            self.asdex = asdex_style
-        return
-
-    def _set_bcg(self, bcg: int) -> None:
-        if bcg and bcg >= BCG_MIN and bcg <= BCG_MAX:
-            self.bcg = bcg
-        return
-
-    def _set_color(self, hex_string: str) -> None:
-        if hex_string and self._is_hex_color(hex_string):
-            self.color = hex_string
-        return
-
-    def _set_filters(self, filter_list: list[int]) -> None:
-        if filter_list and (
-            isinstance(filter_list, list)
-            or all(isinstance(item, int) for item in filter_list)
-        ):
-            filters = []
-            for item in filter_list:
-                if item >= FILTER_MIN and item <= FILTER_MAX:
-                    filters.append(item)
-            if len(filters) > 0:
-                self.filters = filters
-        return
-
-    def _set_is_line_defaults(self, line_defaults: bool) -> None:
-        if line_defaults != None:
-            self.is_line_defaults = line_defaults
-        return
-
-    def _set_is_symbol_defaults(self, symbol_defaults: bool) -> None:
-        if symbol_defaults != None:
-            self.is_symbol_defaults = symbol_defaults
-        return
-
-    def _set_is_text_defaults(self, text_defaults: bool) -> None:
-        if text_defaults != None:
-            self.is_text_defaults = text_defaults
-        return
-
-    def _set_line_style(self, line_style: str) -> None:
-        if line_style in LINE_STYLES:
-            self.style = line_style
-        return
-
-    def _set_line_thickness(self, line_thickness: int) -> None:
-        if line_thickness and (
-            line_thickness >= LINE_THICKNESS_MIN
-            and line_thickness <= LINE_THICKNESS_MAX
-        ):
-            self.thickness = line_thickness
-        return
-
-    def _set_symbol_style(self, symbol_style: str) -> None:
-        if symbol_style in SYMBOL_STYLES:
-            self.style = symbol_style
-        return
-
-    def _set_symbol_size(self, symbol_size: int) -> None:
-        if (
-            symbol_size
-            and symbol_size >= SYMBOL_SIZE_MIN
-            and symbol_size <= SYMBOL_SIZE_MAX
-        ):
-            self.size = symbol_size
-        return
-
-    def _set_text(self, text_list: list[str]) -> None:
-        if text_list and (
-            isinstance(text_list, list)
-            or all(isinstance(item, str) for item in text_list)
-        ):
-            self.text = text_list
-        return
-
-    def _set_text_size(self, text_size: int) -> None:
-        if text_size and text_size >= TEXT_SIZE_MIN and text_size <= TEXT_SIZE_MAX:
-            self.size = text_size
-        return
-
-    def _set_text_opaque(self, text_opaque: bool) -> None:
-        if text_opaque != None:
-            self.opaque = text_opaque
-        return
-
-    def _set_text_underline(self, text_underline: bool) -> None:
-        if text_underline != None:
-            self.underline = text_underline
-        return
-
-    def _set_text_offset(self, dimension: str, offset: int) -> None:
-        if offset and isinstance(offset, (int, float)):
-            if dimension == "x":
-                self.x_offset = int(offset)
-            if dimension == "y":
-                self.y_offset = int(offset)
-        return
-
-    def _set_z_index(self, z_index: int) -> None:
-        if z_index and z_index > 0:
-            self.z_index = z_index
-        return
-
-    def _is_hex_color(self, hex_string: str) -> bool:
-        pattern = r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
-        return bool(re.match(pattern, hex_string))
+    def from_dict(self, properties_dict: dict) -> None:
+        self.properties = properties_dict
 
 
 class Point:
