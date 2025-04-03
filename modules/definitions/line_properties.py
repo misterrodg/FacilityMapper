@@ -17,12 +17,12 @@ class LineProperties(vNASProperties):
         self.is_defaults = is_defaults
 
     def _verify_style(self, line_style: str) -> None:
-        if line_style in LINE_STYLES:
+        if line_style is not None and line_style in LINE_STYLES:
             return line_style
         return None
 
     def _verify_thickness(self, line_thickness: int) -> None:
-        if line_thickness and (
+        if line_thickness is not None and (
             line_thickness >= LINE_THICKNESS_MIN
             and line_thickness <= LINE_THICKNESS_MAX
         ):

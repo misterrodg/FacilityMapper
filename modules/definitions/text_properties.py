@@ -4,6 +4,8 @@ from modules.v_nas import (
     TEXT_SIZE_MAX,
 )
 
+ERROR_HEADER = "TEXT PROPERTIES: "
+
 
 class TextProperties(vNASProperties):
     def __init__(self, properties_dict: dict, is_defaults: bool = False):
@@ -20,7 +22,7 @@ class TextProperties(vNASProperties):
         self.is_defaults: bool = is_defaults
 
     def _verify_text(self, text_list: list[str]) -> list[str]:
-        if text_list and (
+        if text_list is not None and (
             isinstance(text_list, list)
             or all(isinstance(item, str) for item in text_list)
         ):
@@ -28,22 +30,24 @@ class TextProperties(vNASProperties):
         return None
 
     def _verify_size(self, text_size: int) -> int:
-        if text_size and (text_size >= TEXT_SIZE_MIN and text_size <= TEXT_SIZE_MAX):
+        if text_size is not None and (
+            text_size >= TEXT_SIZE_MIN and text_size <= TEXT_SIZE_MAX
+        ):
             return text_size
         return None
 
     def _verify_underline(self, text_underline: bool) -> bool:
-        if text_underline and isinstance(text_underline, bool):
+        if text_underline is not None and isinstance(text_underline, bool):
             return text_underline
         return None
 
     def _verify_offset(self, text_offset: int) -> None:
-        if text_offset and isinstance(text_offset, (int, float)):
+        if text_offset is not None and isinstance(text_offset, (int, float)):
             return int(text_offset)
         return None
 
     def _verify_opaque(self, text_opaque: bool) -> bool:
-        if text_opaque and isinstance(text_opaque, bool):
+        if text_opaque is not None and isinstance(text_opaque, bool):
             return text_opaque
         return None
 

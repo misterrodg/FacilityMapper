@@ -17,15 +17,13 @@ class SymbolProperties(vNASProperties):
         self.is_defaults = is_defaults
 
     def _verify_style(self, symbol_style: str) -> str:
-        if symbol_style in SYMBOL_STYLES:
+        if symbol_style is not None and symbol_style in SYMBOL_STYLES:
             return symbol_style
         return None
 
     def _verify_size(self, symbol_size: int) -> int:
-        if (
-            symbol_size
-            and symbol_size >= SYMBOL_SIZE_MIN
-            and symbol_size <= SYMBOL_SIZE_MAX
+        if symbol_size is not None and (
+            symbol_size >= SYMBOL_SIZE_MIN and symbol_size <= SYMBOL_SIZE_MAX
         ):
             return symbol_size
         return None
