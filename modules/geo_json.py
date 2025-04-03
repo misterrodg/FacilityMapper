@@ -123,11 +123,14 @@ class MultiLineString:
         self.coordinates: list[LineString] = []
 
     def add_line_string(self, line_string: LineString) -> None:
-        self.coordinates.append(line_string)
+        if not line_string.is_empty():
+            self.coordinates.append(line_string)
         return
 
     def add_line_strings(self, line_strings: list[LineString]) -> None:
-        self.coordinates.extend(line_strings)
+        for line in line_strings:
+            if not line.is_empty():
+                self.coordinates.append(line)
         return
 
     def to_dict(self) -> dict:
