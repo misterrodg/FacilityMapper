@@ -21,6 +21,7 @@ from modules.procedure import (
     DE_LEADING_ROUTE_TYPES,
     DE_CORE_ROUTE_TYPES,
     DE_TRAILING_ROUTE_TYPES,
+    F_LEADING_ROUTE_TYPES,
     get_line_feature,
     get_symbol_features,
     get_text_features,
@@ -145,23 +146,40 @@ class ERAMProcedure:
 
         return
 
-    def _process(self) -> None:
+    def _process_iap(self) -> None:
         if not self.suppress_core:
-            route_types = DE_CORE_ROUTE_TYPES if self.sub_code != "F" else []
-            self.core = self._retrieve_records(route_types_list=route_types)
-
-            if self.sub_code == "F":
-                self.core.trim_missed(True)
+            core_route_type = [self.procedure_id[:1]]
+            self.core = self._retrieve_records(route_types_list=core_route_type)
+            self.core.trim_missed()
 
         if self.leading_transitions:
-            route_types = DE_LEADING_ROUTE_TYPES if self.sub_code != "F" else []
-            self.leading = self._retrieve_records(self.leading_transitions, route_types)
+            self.leading = self._retrieve_records(
+                self.leading_transitions, F_LEADING_ROUTE_TYPES
+            )
+
+        return
+
+    def _process_sid_star(self) -> None:
+        if not self.suppress_core:
+            self.core = self._retrieve_records(route_types_list=DE_CORE_ROUTE_TYPES)
+
+        if self.leading_transitions:
+            self.leading = self._retrieve_records(
+                self.leading_transitions, DE_LEADING_ROUTE_TYPES
+            )
 
         if self.trailing_transitions:
-            route_types = DE_TRAILING_ROUTE_TYPES if self.sub_code != "F" else []
             self.trailing = self._retrieve_records(
-                self.trailing_transitions, route_types
+                self.trailing_transitions, DE_TRAILING_ROUTE_TYPES
             )
+
+        return
+
+    def _process(self) -> None:
+        if self.sub_code == "F":
+            self._process_iap()
+        else:
+            self._process_sid_star()
 
         return
 
