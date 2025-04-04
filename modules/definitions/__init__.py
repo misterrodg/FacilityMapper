@@ -13,6 +13,7 @@ from .star import STAR
 from .stars_definition import STARSDefinition
 from .symbol_properties import SymbolProperties
 from .text_properties import TextProperties
+from .v_nas_properties import vNASProperties
 
 __all__ = [
     "Centerline",
@@ -31,4 +32,5 @@ __all__ = [
     "STARSDefinition",
     "SymbolProperties",
     "TextProperties",
+    "vNASProperties",
 ]
