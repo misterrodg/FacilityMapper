@@ -92,7 +92,7 @@ class JoinedProcedureRecords:
 
         return result
 
-    def trim_missed(self) -> list[JoinedProcedureRecord]:
+    def trim_missed(self) -> None:
         result = []
         missed_reached = False
         for record in self.records:
@@ -101,7 +101,7 @@ class JoinedProcedureRecords:
             if record.description_code[3] == "M":
                 missed_reached = True
 
-        return result
+        self.records = result
 
 
 def _check_for_split(list_to_verify: list) -> list[list]:

@@ -117,7 +117,8 @@ class CenterlineRunway:
             iap_query = self._build_iap_query_string()
             query_result = query_db(self.db_cursor, iap_query)
             procedure_records = JoinedProcedureRecords(query_result)
-            self.iap_records = procedure_records.trim_missed()
+            procedure_records.trim_missed()
+            self.iap_records = procedure_records.get_records()
 
             rec_vhf = None
             for record in self.iap_records:
