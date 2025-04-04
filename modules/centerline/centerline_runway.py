@@ -140,7 +140,7 @@ class CenterlineRunway:
 
     def _build_iap_query_string(self) -> str:
         airport_id = self.airport_id
-        iap_id = f"'{self.selected_iap}'"
+        iap_id = self.selected_iap
         iap_sub_code = IAP_SUB_CODE
         if self.selected_transition:
             result = select_joined_procedure_points(
