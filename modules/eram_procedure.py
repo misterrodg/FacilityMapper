@@ -150,7 +150,7 @@ class ERAMProcedure:
         if not self.suppress_core:
             core_route_type = [self.procedure_id[:1]]
             self.core = self._retrieve_records(route_types_list=core_route_type)
-            self.core.trim_missed()
+            self.core.trim_missed(True)
 
         if self.leading_transitions:
             self.leading = self._retrieve_records(
