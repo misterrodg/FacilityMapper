@@ -1,6 +1,7 @@
 from modules.centerlines import Centerlines
 from modules.composite import Composite
 from modules.controlled import Controlled
+from modules.eram_procedure import ERAMProcedure
 from modules.error_helper import print_top_level
 from modules.iap import IAP
 from modules.label import Label
@@ -18,6 +19,7 @@ ERROR_HEADER = "MAP: "
 CENTERLINES = "CENTERLINES"
 COMPOSITE_TYPE = "COMPOSITE"
 CONTROLLED_TYPE = "CONTROLLED"
+ERAM_PROCEDURE = "ERAM PROCEDURE"
 IAP_TYPE = "IAP"
 LABEL_TYPE = "LABEL"
 LABELS_TYPE = "LABELS"
@@ -30,6 +32,7 @@ SUPPORTED_TYPES = [
     CENTERLINES,
     CONTROLLED_TYPE,
     COMPOSITE_TYPE,
+    ERAM_PROCEDURE,
     IAP_TYPE,
     LABEL_TYPE,
     LABELS_TYPE,
@@ -86,6 +89,8 @@ class Map:
     def process(self) -> None:
         if self.map_type == CENTERLINES:
             Centerlines(self.db_cursor, self.definition)
+        if self.map_type == ERAM_PROCEDURE:
+            ERAMProcedure(self.db_cursor, self.definition)
         if self.map_type == IAP_TYPE:
             IAP(self.db_cursor, self.definition)
         if self.map_type == SID_TYPE or self.map_type == STAR_TYPE:
