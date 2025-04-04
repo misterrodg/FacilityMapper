@@ -92,11 +92,11 @@ class JoinedProcedureRecords:
 
         return result
 
-    def trim_missed(self) -> None:
+    def trim_missed(self, keep_runway: bool = False) -> None:
         result = []
         missed_reached = False
         for record in self.records:
-            if missed_reached == False and record.fix_id[0:2] != "RW":
+            if missed_reached == False and (keep_runway or record.fix_id[0:2] != "RW"):
                 result.append(record)
             if record.description_code[3] == "M":
                 missed_reached = True
