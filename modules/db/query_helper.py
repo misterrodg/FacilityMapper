@@ -10,7 +10,7 @@ def list_to_sql_string(list: list) -> str:
 
 
 def translate_condition(field: str, value: str) -> str:
-    result = f"{field} = {value}"
+    result = f"{field} = '{value}'"
     if "#" in value:
         wildcard_value = translate_wildcard(value)
         result = f"{field} LIKE '{wildcard_value}'"
