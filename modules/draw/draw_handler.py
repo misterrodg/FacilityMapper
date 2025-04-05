@@ -109,7 +109,6 @@ def _handle_dash_segment(
 
 
 def draw_truncated_line(
-    self,
     from_lat: float,
     from_lon: float,
     to_lat: float,
@@ -121,7 +120,7 @@ def draw_truncated_line(
     inverse = inverse_bearing(bearing)
     new_to = lat_lon_from_pbd(to_lat, to_lon, inverse, buffer_length)
 
-    result = self._draw_simple_line(
+    result = draw_simple_line(
         new_from.get("lat"),
         new_from.get("lon"),
         new_to.get("lat"),
