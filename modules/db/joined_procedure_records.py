@@ -8,7 +8,12 @@ from modules.db.query_helper import (
     str_to_sql_string,
     translate_condition,
 )
-from modules.db.record_helper import cast_from_to, revert_from_to, segment_records
+from modules.db.record_helper import (
+    cast_from_to,
+    revert_from_to,
+    segment_records,
+    segment_from_to,
+)
 
 
 def select_joined_procedure_points(
@@ -67,6 +72,12 @@ class JoinedProcedureRecords:
         result = segment_records(self.records, JoinedProcedureRecord.SEGMENT_FIELD)
         return result
 
+    def get_segmented_from_to(
+        self,
+    ) -> list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]]:
+        result = segment_from_to(self.records, JoinedProcedureRecord.SEGMENT_FIELD)
+        return result
+
     def get_unique_paths(self) -> list[list[JoinedProcedureRecord]]:
         result: list = []
         segmented_records = segment_records(
@@ -89,6 +100,33 @@ class JoinedProcedureRecords:
                 split = _check_for_split(unique)
                 for item in split:
                     result.append(revert_from_to(item))
+
+        return result
+
+    def get_unique_paths_from_to(
+        self,
+    ) -> list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]]:
+        result: list = []
+        segmented_records = segment_records(
+            self.records, JoinedProcedureRecord.SEGMENT_FIELD
+        )
+
+        seen: list = []
+
+        for segment in segmented_records:
+            from_to = cast_from_to(segment)
+            unique: list = []
+            for record_from, record_to in from_to:
+                pair = f"{record_from.fix_id}-{record_to.fix_id}"
+                value = None
+                if pair not in seen:
+                    seen.append(pair)
+                    value = (record_from, record_to)
+                unique.append(value)
+            if unique:
+                split = _check_for_split(unique)
+                for item in split:
+                    result.append(item)
 
         return result
 
