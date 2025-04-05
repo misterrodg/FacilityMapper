@@ -1,6 +1,7 @@
 from modules.altitude import AltitudeData
 from modules.db import JoinedProcedureRecord, JoinedProcedureRecords
 from modules.definitions import SymbolProperties, TextProperties
+from modules.draw.draw_handler import draw_truncated_line
 from modules.geo_json import (
     Coordinate,
     Feature,
@@ -131,11 +132,28 @@ def _get_line_coordinate(joined_procedure_record: JoinedProcedureRecord) -> Coor
     return Coordinate(joined_procedure_record.lat, joined_procedure_record.lon)
 
 
-def _get_simple_line(joined_procedure_records: JoinedProcedureRecords) -> LineString:
+def _get_line(joined_procedure_records: JoinedProcedureRecords) -> LineString:
     result = LineString()
     for record in joined_procedure_records.get_records():
         coordinate = _get_line_coordinate(record)
         result.add_coordinate(coordinate)
+    return result
+
+
+def _get_truncated_lines(
+    joined_procedure_records: JoinedProcedureRecords, buffer_length: float
+) -> list[LineString]:
+    result = []
+    for segment in joined_procedure_records.get_segmented_from_to():
+        for from_point, to_point in segment:
+            line_string = draw_truncated_line(
+                from_point.lat,
+                from_point.lon,
+                to_point.lat,
+                to_point.lon,
+                buffer_length,
+            )
+            result.append(line_string)
     return result
 
 
@@ -152,19 +170,45 @@ def _get_unique_lines(
     return result
 
 
+def _get_truncated_unique_lines(
+    joined_procedure_records: JoinedProcedureRecords, buffer_length: float
+) -> list[LineString]:
+    result = []
+    for segment in joined_procedure_records.get_unique_paths_from_to():
+        for from_point, to_point in segment:
+            line_string = draw_truncated_line(
+                from_point.lat,
+                from_point.lon,
+                to_point.lat,
+                to_point.lon,
+                buffer_length,
+            )
+            result.append(line_string)
+    return result
+
+
 def get_line_feature(
     joined_procedure_records_list: list[tuple[JoinedProcedureRecords, bool]],
+    buffer_length: float = 0.0,
 ) -> Feature:
     result = Feature()
     multi_line_string = MultiLineString()
 
     for segment in joined_procedure_records_list:
         if segment[1] == True:
-            line_strings = _get_unique_lines(segment[0])
-            multi_line_string.add_line_strings(line_strings)
+            if buffer_length > 0.0:
+                line_strings = _get_truncated_unique_lines(segment[0], buffer_length)
+                multi_line_string.add_line_strings(line_strings)
+            else:
+                line_strings = _get_unique_lines(segment[0])
+                multi_line_string.add_line_strings(line_strings)
         else:
-            line_string = _get_simple_line(segment[0])
-            multi_line_string.add_line_string(line_string)
+            if buffer_length > 0.0:
+                line_strings = _get_truncated_lines(segment[0], buffer_length)
+                multi_line_string.add_line_strings(line_strings)
+            else:
+                line_string = _get_line(segment[0])
+                multi_line_string.add_line_string(line_string)
 
     result.add_multi_line_string(multi_line_string)
     return result

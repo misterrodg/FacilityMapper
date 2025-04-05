@@ -48,6 +48,7 @@ class ERAMProcedure:
         self.draw_symbols: bool = False
         self.draw_lines: bool = True
         self.suppress_core: bool = False
+        self.truncation: float = None
         self.line_defaults: LineProperties = None
         self.symbol_defaults: SymbolProperties = None
         self.text_defaults: TextProperties = None
@@ -98,6 +99,9 @@ class ERAMProcedure:
         draw_speeds = definition_dict.get("draw_speeds", False)
         draw_symbols = definition_dict.get("draw_symbols", False)
         draw_lines = definition_dict.get("draw_lines", True)
+        truncation = definition_dict.get("truncation")
+        if truncation and truncation <= 0:
+            truncation = None
         leading_transitions = definition_dict.get("leading_transitions", [])
         suppress_core = definition_dict.get("suppress_core", False)
         trailing_transitions = definition_dict.get("trailing_transitions", [])
@@ -135,6 +139,7 @@ class ERAMProcedure:
         self.draw_speeds = draw_speeds
         self.draw_names = draw_names
         self.draw_lines = draw_lines
+        self.truncation = truncation
         self.line_defaults = line_defaults
         self.symbol_defaults = symbol_defaults
         self.text_defaults = text_defaults
@@ -252,7 +257,12 @@ class ERAMProcedure:
             joined_procedure_records_tuples_list.append((self.trailing, True))
 
         if joined_procedure_records_tuples_list:
-            result = get_line_feature(joined_procedure_records_tuples_list)
+            if self.truncation:
+                result = get_line_feature(
+                    joined_procedure_records_tuples_list, self.truncation
+                )
+            else:
+                result = get_line_feature(joined_procedure_records_tuples_list)
 
         return result
 
