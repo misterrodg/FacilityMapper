@@ -141,6 +141,21 @@ class JoinedProcedureRecords:
 
         self.records = result
 
+    def add_procedure_name_to_enroute_transitions(self) -> None:
+        for record in self.records:
+            if record.fix_id == record.transition_id:
+                record.fix_id = f"{record.procedure_id}.{record.fix_id}"
+        return
+
+    def add_procedure_name_to_core(self, last: bool = False) -> None:
+        record = self.records[-1] if last else self.records[0]
+        record.fix_id = f"{record.procedure_id}.{record.fix_id}"
+
+    def add_procedure_name_to_runway_transitions(self) -> None:
+        for record in self.records:
+            if record.fix_id == record.procedure_id[:-1]:
+                record.fix_id = f"{record.procedure_id}.{record.fix_id}"
+
 
 def _check_for_split(list_to_verify: list) -> list[list]:
     result: list = []

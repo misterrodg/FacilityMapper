@@ -34,6 +34,10 @@ from sqlite3 import Cursor
 ERROR_HEADER = "ERAM Procedure: "
 
 PROCEDURE_TYPES = ["SID", "STAR", "IAP"]
+LEADING = "leading"
+CORE = "core"
+TRAILING = "trailing"
+PROCEDURE_SEGMENTS = [LEADING, CORE, TRAILING]
 
 
 class ERAMProcedure:
@@ -47,6 +51,7 @@ class ERAMProcedure:
         self.draw_speeds: bool = False
         self.draw_symbols: bool = False
         self.draw_lines: bool = True
+        self.append_name: str = None
         self.suppress_core: bool = False
         self.truncation: float = None
         self.line_defaults: LineProperties = None
@@ -99,6 +104,9 @@ class ERAMProcedure:
         draw_speeds = definition_dict.get("draw_speeds", False)
         draw_symbols = definition_dict.get("draw_symbols", False)
         draw_lines = definition_dict.get("draw_lines", True)
+        append_name = definition_dict.get("append_name")
+        if append_name and append_name not in PROCEDURE_SEGMENTS:
+            append_name = None
         truncation = definition_dict.get("truncation")
         if truncation and truncation <= 0:
             truncation = None
@@ -139,6 +147,7 @@ class ERAMProcedure:
         self.draw_speeds = draw_speeds
         self.draw_names = draw_names
         self.draw_lines = draw_lines
+        self.append_name = append_name
         self.truncation = truncation
         self.line_defaults = line_defaults
         self.symbol_defaults = symbol_defaults
@@ -185,6 +194,8 @@ class ERAMProcedure:
             self._process_iap()
         else:
             self._process_sid_star()
+            if self.append_name:
+                self._append_name()
 
         return
 
@@ -306,3 +317,22 @@ class ERAMProcedure:
             result.extend(features)
 
         return result
+
+    def _append_name(self) -> None:
+        if self.sub_code == "D":
+            if self.trailing and self.append_name == TRAILING:
+                self.trailing.add_procedure_name_to_enroute_transitions()
+            elif self.core.records and self.append_name == CORE:
+                self.core.add_procedure_name_to_core(True)
+            elif self.leading.records and self.append_name == LEADING:
+                self.leading.add_procedure_name_to_runway_transitions()
+
+        if self.sub_code == "E":
+            if self.leading and self.append_name == LEADING:
+                self.leading.add_procedure_name_to_enroute_transitions()
+            elif self.core.records and self.append_name == CORE:
+                self.core.add_procedure_name_to_core()
+            elif self.trailing.records and self.append_name == TRAILING:
+                self.trailing.add_procedure_name_to_runway_transitions()
+
+        return
