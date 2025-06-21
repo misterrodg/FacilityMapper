@@ -18,10 +18,10 @@ from modules.geo_json import (
 )
 from modules.error_helper import print_top_level
 from modules.procedure import (
-    DE_LEADING_ROUTE_TYPES,
-    DE_CORE_ROUTE_TYPES,
-    DE_TRAILING_ROUTE_TYPES,
-    F_LEADING_ROUTE_TYPES,
+    DE_LEADING_PROCEDURE_TYPES,
+    DE_CORE_PROCEDURE_TYPES,
+    DE_TRAILING_PROCEDURE_TYPES,
+    F_LEADING_PROCEDURE_TYPES,
     get_line_feature,
     get_symbol_features,
     get_text_features,
@@ -162,29 +162,31 @@ class ERAMProcedure:
 
     def _process_iap(self) -> None:
         if not self.suppress_core:
-            core_route_type = [self.procedure_id[:1]]
-            self.core = self._retrieve_records(route_types_list=core_route_type)
+            core_procedure_type = [self.procedure_id[:1]]
+            self.core = self._retrieve_records(procedure_types_list=core_procedure_type)
             self.core.trim_missed(True)
 
         if self.leading_transitions:
             self.leading = self._retrieve_records(
-                self.leading_transitions, F_LEADING_ROUTE_TYPES
+                self.leading_transitions, F_LEADING_PROCEDURE_TYPES
             )
 
         return
 
     def _process_sid_star(self) -> None:
         if not self.suppress_core:
-            self.core = self._retrieve_records(route_types_list=DE_CORE_ROUTE_TYPES)
+            self.core = self._retrieve_records(
+                procedure_types_list=DE_CORE_PROCEDURE_TYPES
+            )
 
         if self.leading_transitions:
             self.leading = self._retrieve_records(
-                self.leading_transitions, DE_LEADING_ROUTE_TYPES
+                self.leading_transitions, DE_LEADING_PROCEDURE_TYPES
             )
 
         if self.trailing_transitions:
             self.trailing = self._retrieve_records(
-                self.trailing_transitions, DE_TRAILING_ROUTE_TYPES
+                self.trailing_transitions, DE_TRAILING_PROCEDURE_TYPES
             )
 
         return
@@ -232,14 +234,14 @@ class ERAMProcedure:
         return
 
     def _retrieve_records(
-        self, transition_list: list[str] = [], route_types_list: list[str] = []
+        self, transition_list: list[str] = [], procedure_types_list: list[str] = []
     ) -> JoinedProcedureRecords:
         query_string = select_joined_procedure_points(
             self.airport_id,
             self.sub_code,
             self.procedure_id,
             transitions=transition_list,
-            route_types=route_types_list,
+            procedure_types=procedure_types_list,
         )
         query_result = query_db(self.db_cursor, query_string)
         result = JoinedProcedureRecords(query_result)

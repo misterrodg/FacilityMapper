@@ -25,18 +25,9 @@ def purge_maplist() -> None:
 
 
 def refresh_database() -> None:
-    if os.path.exists(DB_FILE_PATH):
-        os.remove(DB_FILE_PATH)
-    connection = sqlite3.connect(DB_FILE_PATH)
-    cursor = connection.cursor()
-
     c = CIFP(CIFP_FILE_PATH)
-    c.initialize_database(cursor)
     c.parse()
-    c.to_db(cursor)
-
-    connection.commit()
-    connection.close()
+    c.to_db(DB_FILE_PATH)
 
 
 def main():

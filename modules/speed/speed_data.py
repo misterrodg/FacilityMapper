@@ -1,14 +1,14 @@
 class SpeedData:
-    def __init__(self, speed_desc: str, speed: int):
+    def __init__(self, speed_desc: str, speed_limit: int):
         self.speed_desc: str = speed_desc
-        self.speed: int = speed
+        self.speed_limit: int = speed_limit
 
     def to_list(self) -> list[str]:
         result = []
-        if self.speed is not None:
+        if self.speed_limit is not None:
             result.append(
-                f"{self.speed_desc}{self.speed}"
+                f"{self.speed_desc}{self.speed_limit}"
                 if self.speed_desc is not None
-                else f"{self.speed}"
+                else f"{self.speed_limit}"
             )
         return result

@@ -56,14 +56,12 @@ def get_text_features(
 
         if draw_altitudes:
             alt_desc = row.get("alt_desc")
-            altitude = row.get("altitude")
-            altitude_2 = row.get("altitude_2")
-            flight_level = row.get("flight_level")
-            flight_level_2 = row.get("flight_level_2")
-            if altitude or flight_level or altitude_2 or flight_level_2:
-                altitude_data = AltitudeData(
-                    alt_desc, altitude, flight_level, altitude_2, flight_level_2
-                )
+            fl_1 = row.get("fl_1")
+            alt_1 = row.get("alt_1")
+            fl_2 = row.get("fl_2")
+            alt_2 = row.get("alt_2")
+            if alt_1 or fl_1 or alt_2 or fl_2:
+                altitude_data = AltitudeData(alt_desc, alt_1, fl_1, alt_2, fl_2)
                 altitudes = altitude_data.to_list()
                 for altitude in altitudes:
                     altitude_feature = _draw_line(
@@ -78,7 +76,7 @@ def get_text_features(
                     lines_used += 1
 
         if draw_speeds:
-            speed_desc = row.get("speed_limit_2")
+            speed_desc = row.get("speed_desc")
             speed_limit = row.get("speed_limit")
             if speed_limit:
                 speed_data = SpeedData(speed_desc, speed_limit)

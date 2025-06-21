@@ -6,9 +6,9 @@ from modules.db.record_helper import segment_records
 def select_controlled_points(airport_id: str) -> str:
     result = f"""
     SELECT * 
-    FROM controlled_airspace_points 
+    FROM controlled_points 
     WHERE center_id = {airport_id}
-    ORDER BY center_id, airspace_class, multiple_code, sequence_number;
+    ORDER BY center_id, airspace_class, mult_code, seq_no;
     """
     return result
 

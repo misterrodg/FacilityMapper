@@ -15,7 +15,7 @@ See [Manifest File Format](#manifest-file-format) for more details.
 ## Requirements
 
 - Python3.8 or Later (Tested with Python 3.10.12)
-- `cifparse`
+- `cifparse` v2.0.5 or later
 
 # Instructions for Use
 

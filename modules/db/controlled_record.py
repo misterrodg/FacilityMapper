@@ -2,20 +2,22 @@ from modules.db.airspace_record import AirspaceRecord
 
 
 class ControlledRecord(AirspaceRecord):
-    SEGMENT_FIELD = "multiple_code"
+    SEGMENT_FIELD = "mult_code"
 
     def __init__(self, db_record: dict):
+        self.st: str = db_record.get("st")
         self.area: str = db_record.get("area")
         self.sec_code: str = db_record.get("sec_code")
         self.sub_code: str = db_record.get("sub_code")
-        self.region: str = db_record.get("region")
+        self.center_region: str = db_record.get("center_region")
         self.airspace_type: str = db_record.get("airspace_type")
         self.center_id: str = db_record.get("center_id")
         self.center_sec_code: str = db_record.get("center_sec_code")
         self.center_sub_code: str = db_record.get("center_sub_code")
         self.airspace_class: str = db_record.get("airspace_class")
-        self.multiple_code: str = db_record.get("multiple_code")
-        self.sequence_number: int = db_record.get("sequence_number")
+        self.mult_code: str = db_record.get("mult_code")
+        self.seq_no: int = db_record.get("seq_no")
+        self.cont_rec_no: int = db_record.get("cont_rec_no")
         self.level: str = db_record.get("level")
         self.time_zone: str = db_record.get("time_zone")
         self.notam: str = db_record.get("notam")
@@ -36,7 +38,7 @@ class ControlledRecord(AirspaceRecord):
         self.cycle_data: str = db_record.get("cycle_data")
 
         super().__init__(
-            self.multiple_code,
+            self.mult_code,
             self.boundary_via,
             self.lat,
             self.lon,

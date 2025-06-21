@@ -1,58 +1,14 @@
 from modules.altitude import AltitudeData
 from modules.db import JoinedProcedureRecord, JoinedProcedureRecords
-from modules.definitions import SymbolProperties, TextProperties
 from modules.draw.draw_handler import draw_truncated_line
+from modules.eram_draw import get_symbol_feature, get_text_feature
 from modules.geo_json import (
     Coordinate,
     Feature,
     LineString,
     MultiLineString,
-    Point,
-    Properties,
 )
 from modules.speed import SpeedData
-from modules.v_nas import (
-    SYMBOL_STYLE_AIRWAY_INTERSECTION,
-    SYMBOL_STYLE_DME,
-    SYMBOL_STYLE_NDB,
-    SYMBOL_STYLE_OTHER_WAYPOINTS,
-    SYMBOL_STYLE_RNAV_ONLY,
-    SYMBOL_STYLE_TACAN,
-    SYMBOL_STYLE_VOR,
-)
-
-
-def _translate_to_ERAM_symbol(type: str) -> str:
-    if type == "W":
-        return SYMBOL_STYLE_RNAV_ONLY
-    if type in ["C", "R"]:
-        return SYMBOL_STYLE_AIRWAY_INTERSECTION
-    if type == "VORDME":
-        return SYMBOL_STYLE_TACAN
-    if type == "VOR":
-        return SYMBOL_STYLE_VOR
-    if type == "DME":
-        return SYMBOL_STYLE_DME
-    if type == "NDB":
-        return SYMBOL_STYLE_NDB
-    return SYMBOL_STYLE_OTHER_WAYPOINTS
-
-
-def _get_symbol_feature(joined_procedure_record: JoinedProcedureRecord) -> Feature:
-    result = Feature()
-    point = Point()
-    coordinate = Coordinate(joined_procedure_record.lat, joined_procedure_record.lon)
-    point.set_coordinate(coordinate)
-
-    symbol_style = _translate_to_ERAM_symbol(joined_procedure_record.type)
-    properties = Properties()
-    symbol_properties = SymbolProperties({"style": symbol_style})
-    properties.from_dict(symbol_properties.to_dict())
-
-    result.add_point(point)
-    result.add_properties(properties)
-
-    return result
 
 
 def get_symbol_features(
@@ -64,48 +20,35 @@ def get_symbol_features(
         for record in segment.get_records():
             if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
                 fix_ids.append(record.fix_id)
-                feature = _get_symbol_feature(record)
+                feature = get_symbol_feature(record.lat, record.lon, record.type)
                 result.append(feature)
     return result
 
 
-def _get_text_feature(
+def _generate_text(
     joined_procedure_record: JoinedProcedureRecord,
     draw_names: bool = False,
     draw_altitudes: bool = False,
     draw_speeds: bool = False,
-) -> Feature:
-    result = Feature()
-    point = Point()
-    coordinate = Coordinate(joined_procedure_record.lat, joined_procedure_record.lon)
-    point.set_coordinate(coordinate)
-
-    text_list = []
+) -> list[str]:
+    result = []
     if draw_names:
-        text_list.append(joined_procedure_record.fix_id)
+        result.append(joined_procedure_record.fix_id)
     if draw_altitudes:
         altitude_data = AltitudeData(
             joined_procedure_record.alt_desc,
-            joined_procedure_record.altitude,
-            joined_procedure_record.flight_level,
-            joined_procedure_record.altitude_2,
-            joined_procedure_record.flight_level_2,
+            joined_procedure_record.alt_1,
+            joined_procedure_record.fl_1,
+            joined_procedure_record.alt_2,
+            joined_procedure_record.fl_2,
         )
-        text_list.extend(altitude_data.to_list())
+        result.extend(altitude_data.to_list())
     if draw_speeds:
         speed_data = SpeedData(
-            joined_procedure_record.speed_limit_2,
+            joined_procedure_record.speed_desc,
             joined_procedure_record.speed_limit,
         )
-        text_list.extend(speed_data.to_list())
-
-    properties = Properties()
-    text_properties = TextProperties({"text": text_list})
-    properties.from_dict(text_properties.to_dict())
-
-    result.add_point(point)
-    result.add_properties(properties)
-
+        result.extend(speed_data.to_list())
     return result
 
 
@@ -121,9 +64,10 @@ def get_text_features(
         for record in segment.get_records():
             if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
                 fix_ids.append(record.fix_id)
-                feature = _get_text_feature(
-                    record, draw_names, draw_altitudes, draw_speeds
-                )
+                lines = _generate_text(record, draw_names, draw_altitudes, draw_speeds)
+                lat = record.lat
+                lon = record.lon
+                feature = get_text_feature(lat, lon, lines)
                 result.append(feature)
     return result
 

@@ -178,8 +178,8 @@ class CenterlineRunway:
 
             if self.selected_loc in [1, 2] and self.selected_iap is None:
                 selected_loc = None
-                if self.selected_loc == 1 and runway.ls_ident is not None:
-                    selected_loc = runway.ls_ident
+                if self.selected_loc == 1 and runway.ls_ident_1 is not None:
+                    selected_loc = runway.ls_ident_1
                 if self.selected_loc == 2 and runway.ls_ident_2 is not None:
                     selected_loc = runway.ls_ident_2
                 if selected_loc is not None:

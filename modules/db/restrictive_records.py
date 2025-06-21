@@ -7,8 +7,8 @@ def select_restrictive_points(restrictive_id: str) -> str:
     result = f"""
     SELECT *
     FROM restrictive_airspace_points
-    WHERE restrictive_designation = {restrictive_id}
-    ORDER BY restrictive_designation, multiple_code, sequence_number;
+    WHERE restrictive_id = {restrictive_id}
+    ORDER BY restrictive_id, mult_code, seq_no;
     """
     return result
 

@@ -8,17 +8,20 @@ def get_symbol_features(db_rows: list, symbol_scale: float) -> list[Feature]:
     filtered_rows = filter_query(db_rows, "fix_id")
     result = []
     for row in filtered_rows:
-        if row["type"] == "W":
+        row_type = row["type"]
+        if row_type and row_type not in ["NDB", "DME", "VOR", "VORDME"]:
+            row_type = row_type[:1]
+        if row_type == "W":
             symbol_draw = SymbolDraw(
                 "RNAV", row["lat"], row["lon"], symbol_scale=symbol_scale
             )
             result.append(symbol_draw.get_feature())
-        if row["type"] in ["C", "R"]:
+        if row_type in ["C", "R"]:
             symbol_draw = SymbolDraw(
                 "TRIANGLE", row["lat"], row["lon"], symbol_scale=symbol_scale
             )
             result.append(symbol_draw.get_feature())
-        if row["type"] == "VORDME":
+        if row_type == "VORDME":
             symbol_draw = SymbolDraw(
                 "DME_BOX", row["lat"], row["lon"], symbol_scale=symbol_scale
             )
@@ -27,17 +30,17 @@ def get_symbol_features(db_rows: list, symbol_scale: float) -> list[Feature]:
                 "HEXAGON", row["lat"], row["lon"], symbol_scale=symbol_scale
             )
             result.append(symbol_draw.get_feature())
-        if row["type"] == "VOR":
+        if row_type == "VOR":
             symbol_draw = SymbolDraw(
                 "HEXAGON", row["lat"], row["lon"], symbol_scale=symbol_scale
             )
             result.append(symbol_draw.get_feature())
-        if row["type"] == "DME":
+        if row_type == "DME":
             symbol_draw = SymbolDraw(
                 "DME_BOX", row["lat"], row["lon"], symbol_scale=symbol_scale
             )
             result.append(symbol_draw.get_feature())
-        if row["type"] == "NDB":
+        if row_type == "NDB":
             symbol_draw = SymbolDraw(
                 "CIRCLE_L", row["lat"], row["lon"], symbol_scale=symbol_scale
             )
@@ -46,10 +49,10 @@ def get_symbol_features(db_rows: list, symbol_scale: float) -> list[Feature]:
 
 
 def get_arrow_line_symbol_features(
-    db_rows: list, selected_route_types: list, symbol_scale: float
+    db_rows: list, selected_procedure_types: list, symbol_scale: float
 ) -> list[Feature]:
-    start_types = selected_route_types[:2]
-    end_types = selected_route_types[-2:]
+    start_types = selected_procedure_types[:2]
+    end_types = selected_procedure_types[-2:]
     segment_list = segment_query(db_rows, "transition_id")
     result = []
     for segment_item in segment_list:
@@ -79,7 +82,7 @@ def get_arrow_line_symbol_features(
                     symbol_scale,
                 )
                 result.append(arrow_tail.get_feature())
-                if index == 0 and from_point.get("route_type") in start_types:
+                if index == 0 and from_point.get("procedure_type") in start_types:
                     circle = SymbolDraw(
                         "CIRCLE_S",
                         from_point.get("lat"),
@@ -90,7 +93,7 @@ def get_arrow_line_symbol_features(
                     result.append(circle.get_feature())
                 if (
                     index == len(segment_item) - 2
-                    and to_point.get("route_type") in end_types
+                    and to_point.get("procedure_type") in end_types
                 ):
                     arrow_head = SymbolDraw(
                         "ARROW_HEAD_HOLLOW",

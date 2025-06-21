@@ -2,16 +2,16 @@ class AltitudeData:
     def __init__(
         self,
         alt_desc: str,
-        altitude: int,
-        flight_level: int,
-        altitude_2: int,
-        flight_level_2: int,
+        alt_1: int,
+        fl_1: int,
+        alt_2: int,
+        fl_2: int,
     ):
         self.alt_desc: str = alt_desc
-        self.altitude: int = altitude
-        self.flight_level: int = flight_level
-        self.altitude_2: int = altitude_2
-        self.flight_level_2: int = flight_level_2
+        self.alt_1: int = alt_1
+        self.fl_1: int = fl_1
+        self.alt_2: int = alt_2
+        self.fl_2: int = fl_2
 
     def to_list(self) -> list[str]:
         result = []
@@ -19,14 +19,12 @@ class AltitudeData:
         alt_desc = self.alt_desc
 
         value_1 = None
-        if self.altitude is not None or self.flight_level is not None:
-            value_1 = str(self.altitude) if self.altitude else f"FL{self.flight_level}"
+        if self.alt_1 is not None:
+            value_1 = f"FL{self.alt_1}" if self.fl_1 else str(self.alt_1)
 
         value_2 = None
-        if self.altitude_2 is not None or self.flight_level_2 is not None:
-            value_2 = (
-                str(self.altitude_2) if self.altitude_2 else f"FL{self.flight_level_2}"
-            )
+        if self.alt_2 is not None:
+            value_2 = f"FL{self.alt_2}" if self.fl_2 else str(self.alt_2)
 
         if alt_desc is None and value_1 is not None:
             # [Blank]: AT

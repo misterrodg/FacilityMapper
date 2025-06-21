@@ -114,9 +114,7 @@ class IAP:
         result = []
         missed_pattern = r"^.{3}M"
         for index, row in enumerate(db_rows):
-            if "description_code" in row and re.match(
-                missed_pattern, row["description_code"]
-            ):
+            if "desc_code" in row and re.match(missed_pattern, row["desc_code"]):
                 result = db_rows[: index + 1]
                 break
         return result

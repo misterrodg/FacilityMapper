@@ -138,7 +138,7 @@ if os.path.exists(DB_FILE_PATH):
                 map_id += 1
 
         if find_centerlines:
-            query = f"SELECT runway_id, ls_ident FROM runways WHERE airport_id = '{airport_id}';"
+            query = f"SELECT runway_id, ls_ident_1 FROM runways WHERE airport_id = '{airport_id}';"
             runway_list = query_db(cursor, query)
 
             map = Map(MapType.CENTERLINES)
@@ -151,9 +151,9 @@ if os.path.exists(DB_FILE_PATH):
                 trimmed_runway = f"{runway_id_dict["bearing_component"]}{runway_id_dict["side_component"]}"
                 centerline = Centerline(trimmed_runway)
 
-                if select_iap and runway["ls_ident"]:
+                if select_iap and runway["ls_ident_1"]:
                     procedure_wildcard = "_" + trimmed_runway + "%"
-                    rec_vhf = runway["ls_ident"]
+                    rec_vhf = runway["ls_ident_1"]
                     query = f"""
                     SELECT DISTINCT procedure_id 
                     FROM procedure_points 
@@ -231,16 +231,14 @@ if os.path.exists(DB_FILE_PATH):
         print(
             f"Finding Restrictive Airspace in box defined by {min_lat},{min_lon} {max_lat},{max_lon}"
         )
-        query = f"SELECT DISTINCT restrictive_designation, restrictive_type FROM restrictive_airspace_points WHERE (lat BETWEEN {min_lat} AND {max_lat} AND lon BETWEEN {min_lon} AND {max_lon}) OR (arc_lat BETWEEN {min_lat} AND {max_lat} AND arc_lon BETWEEN {min_lon} AND {max_lon});"
+        query = f"SELECT DISTINCT restrictive_id, restrictive_type FROM restrictive_airspace_points WHERE (lat BETWEEN {min_lat} AND {max_lat} AND lon BETWEEN {min_lon} AND {max_lon}) OR (arc_lat BETWEEN {min_lat} AND {max_lat} AND arc_lon BETWEEN {min_lon} AND {max_lon});"
         restrictive_list = query_db(cursor, query)
 
         file_names = []
 
         for rest in restrictive_list:
             map = Map(MapType.RESTRICTIVE_TYPE)
-            definition = Restrictive(
-                rest["restrictive_designation"], rest["restrictive_type"]
-            )
+            definition = Restrictive(rest["restrictive_id"], rest["restrictive_type"])
             file_name = definition.file_name
             file_names.append(file_name)
             map_name = file_name.replace("_", " ")

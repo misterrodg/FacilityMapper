@@ -123,7 +123,7 @@ class SIDSTAR:
             result = "'E'"
         return result
 
-    def _get_route_type_list(self, transition_name: str = "") -> list:
+    def _get_procedure_type_list(self, transition_name: str = "") -> list:
         if self.map_type == "SID":
             if transition_name == "runway":
                 return ["1", "4"]
@@ -136,7 +136,7 @@ class SIDSTAR:
                 return ["3", "6"]
         return ["2", "5"]
 
-    def _get_selected_route_types(self) -> list:
+    def _get_selected_procedure_types(self) -> list:
         result = ["2", "5"]
         if self.map_type == "SID":
             if self.draw_runway_transitions:
@@ -160,12 +160,12 @@ class SIDSTAR:
         fac_id = f"'{self.airport_id}'"
         fac_sub_code = self._map_type_to_fac_sub_code()
         procedure_id = f"'{translate_wildcard(self.procedure_id)}'"
-        route_type_list = self._get_route_type_list(segment)
-        route_type_string = ",".join(f"'{str(x)}'" for x in route_type_list)
+        procedure_type_list = self._get_procedure_type_list(segment)
+        procedure_type_string = ",".join(f"'{str(x)}'" for x in procedure_type_list)
         path_term_list = self._get_path_term_list()
         path_term_string = ",".join(f"'{str(x)}'" for x in path_term_list)
         result = select_procedure_points(
-            fac_id, fac_sub_code, procedure_id, route_type_string, path_term_string
+            fac_id, fac_sub_code, procedure_id, procedure_type_string, path_term_string
         )
         return result
 
@@ -173,10 +173,10 @@ class SIDSTAR:
         feature_collection = FeatureCollection()
 
         if self.line_style == "arrows":
-            selected_route_types = self._get_selected_route_types()
+            selected_procedure_types = self._get_selected_procedure_types()
             feature_list = get_arrow_line_symbol_features(
                 self.runway_transitions + self.core + self.enroute_transitions,
-                selected_route_types,
+                selected_procedure_types,
                 self.symbol_scale,
             )
             feature_collection.add_features(feature_list)
