@@ -1,5 +1,7 @@
 # FacilityMapper
 
+**Version 2 - See the [MIGRATION](./MIGRATION.md) guide to update**
+
 A VidMap draw tool for use with [vNAS](https://virtualnas.net). It is a spiritual successor to [VidMapper](https://github.com/misterrodg/VidMapper), but slightly more complex and aimed at managing maps and map sets.
 
 While VidMapper is aimed at drawing ad hoc maps for smaller TRACONs, FacilityMapper is designed to build maps on the AIRAC cycle for entire ARTCCs. It is based on a `manifest.json` file, which is effectively a list of "recipes" for your facility maps, making it easy to issue updates on the cycle no matter what changes.

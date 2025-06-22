@@ -14,20 +14,18 @@ The map object has the following properties:
 
 The types are relatively straightforward. To view the Definition for the Map Type, click on the Map Type name.
 
-| Map Type                              | Description                                                                       |
-| ------------------------------------- | --------------------------------------------------------------------------------- |
-| [CENTERLINES](./CENTERLINES.md)       | Creates a map of centerlines for a specific airport.                              |
-| [CONTROLLED](./CONTROLLED.md)         | Creates a map of controlled airspace for a specific airport.                      |
-| [ERAM PROCEDURE](./ERAM_PROCEDURE.md) | Creates a map of a specific Procedure (SID, STAR, or IAP) as an ERAM map.         |
-| [IAP](./IAP.md)                       | Creates a map of a specific Instrument Approach Procedure.                        |
-| [LABEL](./LABEL.md)                   | Creates a map with labels at specific locations. (DEPRECATED)                     |
-| [LABELS](./LABELS.md)                 | Creates a map with multiline labels at specific locations.                        |
-| [PLACEHOLDER](./PLACEHOLDER.md)       | A placeholder "map" for use with STARS Definitions.                               |
-| [RESTRICTIVE](./RESTRICTIVE.md)       | Creates a map of restrictive airspace (Restricted, MOA, Warning, etc.) by name.   |
-| [RUNWAYS](./RUNWAYS.md)               | Creates a map of runway lines for the specified airports.                         |
-| [SID](./SIDSTAR.md#sid)               | Creates a map of a specific (non-vector) Standard Instrument Departure procedure. |
-| [VECTORSID](./VECTORSID.md)           | Creates a map of a specific vector SID.                                           |
-| [STAR](./SIDSTAR.md#star)             | Creates a map of a specific Standard Terminal Arrival procedure.                  |
-| [COMPOSITE](./COMPOSITE.md)           | Creates a combined map of existing maps.                                          |
+| Map Type                                | Description                                                                     |
+| --------------------------------------- | ------------------------------------------------------------------------------- |
+| [CENTERLINES](./CENTERLINES.md)         | Creates a map of centerlines for a specific airport.                            |
+| [CONTROLLED](./CONTROLLED.md)           | Creates a map of controlled airspace for a specific airport.                    |
+| [ERAM PROCEDURE](./ERAM_PROCEDURE.md)   | Creates a map of a specific Procedure (SID, STAR, or IAP) as an ERAM map.       |
+| [STARS PROCEDURE](./STARS_PROCEDURE.md) | Creates a map of a specific Procedure (SID, STAR, or IAP) as a STARS map.       |
+| [LABEL](./LABEL.md)                     | Creates a map with labels at specific locations. (DEPRECATED)                   |
+| [LABELS](./LABELS.md)                   | Creates a map with multiline labels at specific locations.                      |
+| [PLACEHOLDER](./PLACEHOLDER.md)         | A placeholder "map" for use with STARS Definitions.                             |
+| [RESTRICTIVE](./RESTRICTIVE.md)         | Creates a map of restrictive airspace (Restricted, MOA, Warning, etc.) by name. |
+| [RUNWAYS](./RUNWAYS.md)                 | Creates a map of runway lines for the specified airports.                       |
+| [VECTORSID](./VECTORSID.md)             | Creates a map of a specific vector SID.                                         |
+| [COMPOSITE](./COMPOSITE.md)             | Creates a combined map of existing maps.                                        |
 
 [Back to README](../README.md)
