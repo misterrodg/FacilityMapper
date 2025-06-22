@@ -5,7 +5,7 @@ from modules.text_plots import (
     UNRECOGNIZED,
     get_plot_from_char,
 )
-from modules.draw_helper import ARC_MIN, correct_offsets, correction_factor
+from modules.draw import ARC_MIN, correct_offsets, correction_factor
 from modules.geo_json import Coordinate, Feature, LineString, MultiLineString
 
 

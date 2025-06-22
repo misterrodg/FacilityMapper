@@ -1,4 +1,4 @@
-from modules.draw_helper import lat_lon_from_pbd
+from modules.draw import lat_lon_from_pbd
 from modules.geo_json import LineString
 from modules.draw.draw_handler import draw_dashed_line
 

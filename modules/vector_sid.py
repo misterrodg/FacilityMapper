@@ -2,7 +2,7 @@ from modules.db.joined_procedure_records import (
     JoinedProcedureRecords,
     select_joined_procedure_points,
 )
-from modules.draw_helper import ARC_MIN
+from modules.draw import ARC_MIN
 from modules.error_helper import print_top_level
 from modules.geo_json import (
     Feature,

@@ -6,6 +6,16 @@ EARTH_RADIUS_NM = 3440.065
 FEET_IN_NM = 6076.12
 
 
+def normalize_bearing(bearing: float) -> float:
+    result = math.fmod(bearing + 360, 360)
+    return result
+
+
+def inverse_bearing(bearing: float) -> float:
+    result = math.fmod(bearing + 180, 360)
+    return result
+
+
 def correction_factor(latitude: float) -> float:
     latitude_radians = math.radians(latitude)
     result = math.cos(latitude_radians)
@@ -69,35 +79,6 @@ def lat_lon_from_pbd(lat: float, lon: float, bearing: float, distance: float) ->
     return result
 
 
-def haversine_great_circle_distance(
-    start_lat: float, start_lon: float, end_lat: float, end_lon: float
-) -> float:
-    start_lat_rad = math.radians(start_lat)
-    start_lon_rad = math.radians(start_lon)
-    end_lat_rad = math.radians(end_lat)
-    end_lon_rad = math.radians(end_lon)
-
-    delta_lon = end_lon_rad - start_lon_rad
-    cos_c = math.sin(start_lat_rad) * math.sin(end_lat_rad) + math.cos(
-        start_lat_rad
-    ) * math.cos(end_lat_rad) * math.cos(delta_lon)
-    cos_c = min(1.0, max(-1.0, cos_c))
-    angular_distance_rad = math.acos(cos_c)
-
-    distance_nm = angular_distance_rad * EARTH_RADIUS_NM
-    return distance_nm
-
-
-def normalize_bearing(bearing: float) -> float:
-    result = math.fmod(bearing + 360, 360)
-    return result
-
-
-def inverse_bearing(bearing: float) -> float:
-    result = math.fmod(bearing + 180, 360)
-    return result
-
-
 def haversine_great_circle_bearing(
     start_lat: float, start_lon: float, end_lat: float, end_lon: float
 ) -> float:
@@ -116,3 +97,22 @@ def haversine_great_circle_bearing(
     bearing_deg = math.degrees(bearing_rad)
     bearing_deg = normalize_bearing(bearing_deg)
     return bearing_deg
+
+
+def haversine_great_circle_distance(
+    start_lat: float, start_lon: float, end_lat: float, end_lon: float
+) -> float:
+    start_lat_rad = math.radians(start_lat)
+    start_lon_rad = math.radians(start_lon)
+    end_lat_rad = math.radians(end_lat)
+    end_lon_rad = math.radians(end_lon)
+
+    delta_lon = end_lon_rad - start_lon_rad
+    cos_c = math.sin(start_lat_rad) * math.sin(end_lat_rad) + math.cos(
+        start_lat_rad
+    ) * math.cos(end_lat_rad) * math.cos(delta_lon)
+    cos_c = min(1.0, max(-1.0, cos_c))
+    angular_distance_rad = math.acos(cos_c)
+
+    distance_nm = angular_distance_rad * EARTH_RADIUS_NM
+    return distance_nm

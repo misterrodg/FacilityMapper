@@ -1,5 +1,5 @@
 from modules.db import JoinedProcedureRecord
-from modules.draw_helper import ARC_MIN
+from modules.draw import ARC_MIN
 from modules.geo_json import Feature
 from modules.symbol_draw import SymbolDraw
 from modules.text_data import TextData

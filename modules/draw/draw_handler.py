@@ -1,4 +1,4 @@
-from modules.draw_helper import (
+from .draw_helper import (
     haversine_great_circle_bearing,
     haversine_great_circle_distance,
     inverse_bearing,

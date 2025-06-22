@@ -1,4 +1,4 @@
-from modules.draw_helper import ARC_MIN
+from modules.draw import ARC_MIN
 from modules.error_helper import print_top_level
 from modules.geo_json import Feature, FeatureCollection, GeoJSON
 from modules.text_data import TextData
