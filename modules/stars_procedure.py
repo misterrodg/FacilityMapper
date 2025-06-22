@@ -128,6 +128,7 @@ class STARSProcedure:
         self.draw_altitudes = draw_altitudes
         self.draw_speeds = draw_speeds
         self.draw_names = draw_names
+        self.append_name = append_name
         self.x_offset = x_offset
         self.y_offset = y_offset
         self.symbol_scale = symbol_scale
