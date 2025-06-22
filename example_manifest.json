@@ -1,9 +1,10 @@
 {
   "maps": [
     {
-      "map_type": "SID",
+      "map_type": "STARS PROCEDURE",
       "definition": {
         "airport_id": "KIAD",
+        "procedure_type": "SID",
         "procedure_id": "BUNZZ#",
         "line_type": "longDashed",
         "draw_symbols": true,
@@ -16,9 +17,10 @@
       }
     },
     {
-      "map_type": "SID",
+      "map_type": "STARS PROCEDURE",
       "definition": {
         "airport_id": "KIAD",
+        "procedure_type": "SID",
         "procedure_id": "RNLDI#",
         "line_type": "longDashed",
         "draw_symbols": true,
@@ -41,9 +43,10 @@
       }
     },
     {
-      "map_type": "IAP",
+      "map_type": "STARS PROCEDURE",
       "definition": {
         "airport_id": "KBWI",
+        "procedure_type": "IAP",
         "procedure_id": "I10",
         "line_type": "solid",
         "draw_symbols": true,
