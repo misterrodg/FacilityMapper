@@ -23,6 +23,7 @@ ERAM_PROCEDURE = "ERAM PROCEDURE"
 IAP_TYPE = "IAP"
 LABEL_TYPE = "LABEL"
 LABELS_TYPE = "LABELS"
+PLACEHOLDER_TYPE = "PLACEHOLDER"
 RESTRICTIVE_TYPE = "RESTRICTIVE"
 RUNWAYS_TYPE = "RUNWAYS"
 SID_TYPE = "SID"
@@ -36,6 +37,7 @@ SUPPORTED_TYPES = [
     IAP_TYPE,
     LABEL_TYPE,
     LABELS_TYPE,
+    PLACEHOLDER_TYPE,
     RESTRICTIVE_TYPE,
     RUNWAYS_TYPE,
     SID_TYPE,
@@ -109,6 +111,8 @@ class Map:
             Controlled(self.db_cursor, self.definition)
         if self.map_type == RESTRICTIVE_TYPE:
             Restrictive(self.db_cursor, self.definition)
+        if self.map_type == PLACEHOLDER_TYPE:
+            pass
 
         if self.map_list is not None and self.stars_definition is not None:
             stars_definition = STARSDefinition(self.stars_definition)

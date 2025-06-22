@@ -1,13 +1,14 @@
 from modules.dir_paths import VIDMAP_DIR
-from modules.stars_definition import STARSDefinition, DEFINITION_HEADER
+from modules.stars_definition import STARSDefinition
 
-MAP_LIST_NAME = "map_list.txt"
+import json
 
 
 class MapList:
-    def __init__(self):
+    def __init__(self, facility_id: str):
         self.map_id: int = 0
         self.stars_definitions: list[STARSDefinition] = []
+        self.file_name = f"map_list_{facility_id}.json"
 
     def write_line(self, stars_definition: STARSDefinition) -> None:
         map_id = self.map_id
@@ -19,14 +20,13 @@ class MapList:
         self.map_id += 1
 
     def write(self) -> None:
-        map_list_file = f"{VIDMAP_DIR}/{MAP_LIST_NAME}"
-        with open(map_list_file, "w") as list_file:
+        map_list_file = f"{VIDMAP_DIR}/{self.file_name}"
+        with open(map_list_file, "w") as ml:
             result = []
-            result.append(DEFINITION_HEADER)
 
             self.stars_definitions.sort(key=lambda definition: definition.map_id)
 
             for definition in self.stars_definitions:
-                result.append(definition.to_line())
+                result.append(definition.to_dict())
 
-            list_file.writelines(result)
+            json.dump(result, ml, indent=2)

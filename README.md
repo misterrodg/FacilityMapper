@@ -83,7 +83,7 @@ python3 main.py --refresh
 python3 main.py --manifest manifest_name.json
 ```
 
-`--list` is available to print a map list text file in the `./vidmaps` directory based on the [STARS Definition Objects](./readme/STARS_DEFINITION_OBJECT.md) in the manifest.
+`--list` is available to print a map list `json` file in the `./vidmaps` directory based on the [STARS Definition Objects](./readme/STARS_DEFINITION_OBJECT.md) in the manifest. Its name will be based on the name of the manifest used to create it. For example `kiad.json` will create `map_list_kiad.json`.
 
 Note: The map list will only contain a list of those maps with STARS Definitions.
 

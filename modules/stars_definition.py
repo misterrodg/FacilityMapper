@@ -1,5 +1,4 @@
 from modules.error_helper import print_top_level
-from typing import TextIO
 
 ERROR_HEADER = "STARS DEFINITION: "
 DEFINITION_HEADER = (
@@ -60,8 +59,22 @@ class STARSDefinition:
         self.is_valid = True
         return
 
-    def to_line(self) -> str:
+    def to_dict(self) -> dict:
         result = None
         if self.is_valid:
-            result = f"{self.map_id},{self.short_name},{self.name},{self.brightness_category},{self.is_tdm_only},{self.is_always_visible},{self.note}\n"
+            result = self._generate_dict()
+        return result
+
+    def _generate_dict(self) -> dict:
+        result = {}
+        result["number"] = self.map_id
+        result["shortName"] = self.short_name
+        result["longName"] = self.name
+        result["briteGroup"] = self.brightness_category
+        if self.is_tdm_only:
+            result["isTdmOnly"] = self.is_tdm_only
+        if self.is_always_visible:
+            result["isAlwaysVisible"] = self.is_always_visible
+        if self.note != "":
+            result["note"] = self.note
         return result

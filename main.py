@@ -21,7 +21,7 @@ def purge_vidmaps() -> None:
 
 def purge_maplist() -> None:
     if check_path(VIDMAP_DIR):
-        delete_all_in_subdir(".txt", VIDMAP_DIR)
+        delete_all_in_subdir(".json", VIDMAP_DIR)
 
 
 def refresh_database() -> None:
@@ -69,7 +69,9 @@ def main():
 
         map_list = None
         if should_create_map_list:
-            map_list = MapList()
+            facility_file = os.path.basename(manifest_file)
+            facility_id = os.path.splitext(facility_file)[0]
+            map_list = MapList(facility_id)
 
         Manifest(cursor, manifest_file, map_list)
 
