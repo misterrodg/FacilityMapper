@@ -1,9 +1,6 @@
 from modules.error_helper import print_top_level
 
 ERROR_HEADER = "STARS DEFINITION: "
-DEFINITION_HEADER = (
-    "map_id,short_name,name,brightness_category,is_tdm_only,is_always_visible,note\n"
-)
 
 
 class STARSDefinition:
