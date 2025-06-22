@@ -1,7 +1,14 @@
 from modules.altitude import AltitudeData
 from modules.db import JoinedProcedureRecord, JoinedProcedureRecords
 from modules.draw.draw_handler import draw_truncated_line
-from modules.eram_draw import get_symbol_feature, get_text_feature
+from modules.eram_draw import (
+    get_symbol_feature as eram_symbol_feature,
+    get_text_feature as eram_text_feature,
+)
+from modules.stars_draw import (
+    get_symbol_features as stars_symbol_features,
+    get_text_features as stars_text_features,
+)
 from modules.geo_json import (
     Coordinate,
     Feature,
@@ -13,6 +20,8 @@ from modules.speed import SpeedData
 
 def get_symbol_features(
     joined_procedure_records_list: list[JoinedProcedureRecords],
+    as_lines: bool = False,
+    symbol_scale: float = 1.0,
 ) -> list[Feature]:
     result: list[Feature] = []
     fix_ids: list[str] = []
@@ -20,8 +29,12 @@ def get_symbol_features(
         for record in segment.get_records():
             if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
                 fix_ids.append(record.fix_id)
-                feature = get_symbol_feature(record.lat, record.lon, record.type)
-                result.append(feature)
+                if as_lines:
+                    features = stars_symbol_features(record, symbol_scale)
+                    result.extend(features)
+                else:
+                    feature = eram_symbol_feature(record.lat, record.lon, record.type)
+                    result.append(feature)
     return result
 
 
@@ -57,6 +70,11 @@ def get_text_features(
     draw_names: bool = False,
     draw_altitudes: bool = False,
     draw_speeds: bool = False,
+    as_lines: bool = False,
+    x_offset: float = 0.0,
+    y_offset: float = 0.0,
+    text_scale: float = 1.0,
+    line_height: float = 1.0,
 ) -> list[Feature]:
     result: list[Feature] = []
     fix_ids: list[str] = []
@@ -64,11 +82,17 @@ def get_text_features(
         for record in segment.get_records():
             if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
                 fix_ids.append(record.fix_id)
-                lines = _generate_text(record, draw_names, draw_altitudes, draw_speeds)
                 lat = record.lat
                 lon = record.lon
-                feature = get_text_feature(lat, lon, lines)
-                result.append(feature)
+                lines = _generate_text(record, draw_names, draw_altitudes, draw_speeds)
+                if as_lines:
+                    features = stars_text_features(
+                        lat, lon, lines, x_offset, y_offset, text_scale, line_height
+                    )
+                    result.extend(features)
+                else:
+                    feature = eram_text_feature(lat, lon, lines)
+                    result.append(feature)
     return result
 
 

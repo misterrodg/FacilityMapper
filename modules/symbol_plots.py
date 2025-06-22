@@ -138,6 +138,22 @@ RNAV = [
     {"lat_offset": 3, "lon_offset": -3},
 ]
 
+FAF = [
+    {"lat_offset": 0, "lon_offset": 0},
+    {"lat_offset": 10, "lon_offset": 4},
+    {"lat_offset": 4, "lon_offset": 10},
+    {"lat_offset": 0, "lon_offset": 0},
+    {"lat_offset": -4, "lon_offset": 10},
+    {"lat_offset": -10, "lon_offset": 4},
+    {"lat_offset": 0, "lon_offset": 0},
+    {"lat_offset": -10, "lon_offset": -4},
+    {"lat_offset": -4, "lon_offset": -10},
+    {"lat_offset": 0, "lon_offset": 0},
+    {"lat_offset": 4, "lon_offset": -10},
+    {"lat_offset": 10, "lon_offset": -4},
+    {"lat_offset": 0, "lon_offset": 0},
+]
+
 
 def get_plot_from_string(textValue: str) -> list[dict]:
     upperValue = textValue.upper()
@@ -163,4 +179,6 @@ def get_plot_from_string(textValue: str) -> list[dict]:
         return DME_BOX
     if upperValue == "RNAV":
         return RNAV
+    if upperValue == "FAF":
+        return FAF
     return UNRECOGNIZED

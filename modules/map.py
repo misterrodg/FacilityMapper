@@ -3,14 +3,13 @@ from modules.composite import Composite
 from modules.controlled import Controlled
 from modules.eram_procedure import ERAMProcedure
 from modules.error_helper import print_top_level
-from modules.iap import IAP
 from modules.label import Label
 from modules.labels import Labels
 from modules.map_list import MapList
 from modules.restrictive import Restrictive
 from modules.runways import Runways
-from modules.sidstar import SIDSTAR
 from modules.stars_definition import STARSDefinition
+from modules.stars_procedure import STARSProcedure
 from modules.vector_sid import VectorSID
 
 from sqlite3 import Cursor
@@ -20,28 +19,24 @@ CENTERLINES = "CENTERLINES"
 COMPOSITE_TYPE = "COMPOSITE"
 CONTROLLED_TYPE = "CONTROLLED"
 ERAM_PROCEDURE = "ERAM PROCEDURE"
-IAP_TYPE = "IAP"
 LABEL_TYPE = "LABEL"
 LABELS_TYPE = "LABELS"
 PLACEHOLDER_TYPE = "PLACEHOLDER"
 RESTRICTIVE_TYPE = "RESTRICTIVE"
 RUNWAYS_TYPE = "RUNWAYS"
-SID_TYPE = "SID"
-STAR_TYPE = "STAR"
-VECTOR_SID_TYPE = "VECTOR" + SID_TYPE
+STARS_PROCEDURE_TYPE = "STARS PROCEDURE"
+VECTOR_SID_TYPE = "VECTORSID"
 SUPPORTED_TYPES = [
     CENTERLINES,
     CONTROLLED_TYPE,
     COMPOSITE_TYPE,
     ERAM_PROCEDURE,
-    IAP_TYPE,
     LABEL_TYPE,
     LABELS_TYPE,
     PLACEHOLDER_TYPE,
     RESTRICTIVE_TYPE,
     RUNWAYS_TYPE,
-    SID_TYPE,
-    STAR_TYPE,
+    STARS_PROCEDURE_TYPE,
     VECTOR_SID_TYPE,
 ]
 
@@ -93,10 +88,8 @@ class Map:
             Centerlines(self.db_cursor, self.definition)
         if self.map_type == ERAM_PROCEDURE:
             ERAMProcedure(self.db_cursor, self.definition)
-        if self.map_type == IAP_TYPE:
-            IAP(self.db_cursor, self.definition)
-        if self.map_type == SID_TYPE or self.map_type == STAR_TYPE:
-            SIDSTAR(self.db_cursor, self.map_type, self.definition)
+        if self.map_type == STARS_PROCEDURE_TYPE:
+            STARSProcedure(self.db_cursor, self.definition)
         if self.map_type == VECTOR_SID_TYPE:
             VectorSID(self.db_cursor, self.definition)
         if self.map_type == RUNWAYS_TYPE:
