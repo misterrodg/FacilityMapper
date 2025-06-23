@@ -3,7 +3,7 @@ from modules.db.joined_procedure_records import (
     select_joined_procedure_points,
 )
 from modules.error_helper import print_top_level
-from modules.geo_json import Feature, FeatureCollection, GeoJSON
+from modules.geo_json import Feature
 from modules.procedure import (
     DE_LEADING_PROCEDURE_TYPES,
     DE_CORE_PROCEDURE_TYPES,
