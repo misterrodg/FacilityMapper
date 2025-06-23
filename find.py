@@ -3,14 +3,13 @@ from modules.definitions import (
     Centerlines,
     Composite,
     Controlled,
-    IAP,
     Manifest,
     Map,
     MapType,
     Restrictive,
     Runways,
-    SID,
-    STAR,
+    ERAMProcedure,
+    STARSProcedure,
     STARSDefinition,
 )
 from modules.dir_paths import NAVDATA_DIR
@@ -30,6 +29,11 @@ if os.path.exists(DB_FILE_PATH):
     cursor = connection.cursor()
 
     parser = argparse.ArgumentParser(description="FacilityMapper Finder")
+    parser.add_argument(
+        "--eram",
+        action="store_true",
+        help="generate definitions based on ERAM instead of STARS",
+    )
     parser.add_argument(
         "--runways",
         type=lambda s: s.split(","),
@@ -76,6 +80,7 @@ if os.path.exists(DB_FILE_PATH):
     )
 
     args = parser.parse_args()
+    is_eram_mode = args.eram
     airport_id = args.airport
     find_iap = args.iap
     find_sid = args.sid
@@ -98,12 +103,21 @@ if os.path.exists(DB_FILE_PATH):
             procedure_list = query_db(cursor, query)
 
             for procedure in procedure_list:
-                map = Map(MapType.SID_TYPE)
-                definition = SID(airport_id, procedure["procedure_id"])
-                map_name = definition.file_name.replace("_", " ")
-                stars_definition = STARSDefinition(map_name, map_id)
-                map.add_definition(definition)
-                map.add_stars_definition(stars_definition)
+                if not is_eram_mode:
+                    map = Map(MapType.STARS_PROCEDURE_TYPE)
+                    definition = STARSProcedure(
+                        airport_id, "SID", procedure["procedure_id"]
+                    )
+                    map_name = definition.file_name.replace("_", " ")
+                    stars_definition = STARSDefinition(map_name, map_id)
+                    map.add_definition(definition)
+                    map.add_stars_definition(stars_definition)
+                if is_eram_mode:
+                    map = Map(MapType.ERAM_PROCEDURE_TYPE)
+                    definition = ERAMProcedure(
+                        airport_id, "SID", procedure["procedure_id"]
+                    )
+                    map.add_definition(definition)
                 manifest.add_map(map)
                 map_id += 1
 
@@ -113,12 +127,21 @@ if os.path.exists(DB_FILE_PATH):
             procedure_list = query_db(cursor, query)
 
             for procedure in procedure_list:
-                map = Map(MapType.STAR_TYPE)
-                definition = STAR(airport_id, procedure["procedure_id"])
-                map_name = definition.file_name.replace("_", " ")
-                stars_definition = STARSDefinition(map_name, map_id)
-                map.add_definition(definition)
-                map.add_stars_definition(stars_definition)
+                if not is_eram_mode:
+                    map = Map(MapType.STARS_PROCEDURE_TYPE)
+                    definition = STARSProcedure(
+                        airport_id, "STAR", procedure["procedure_id"]
+                    )
+                    map_name = definition.file_name.replace("_", " ")
+                    stars_definition = STARSDefinition(map_name, map_id)
+                    map.add_definition(definition)
+                    map.add_stars_definition(stars_definition)
+                if is_eram_mode:
+                    map = Map(MapType.ERAM_PROCEDURE_TYPE)
+                    definition = ERAMProcedure(
+                        airport_id, "STAR", procedure["procedure_id"]
+                    )
+                    map.add_definition(definition)
                 manifest.add_map(map)
                 map_id += 1
 
@@ -128,12 +151,21 @@ if os.path.exists(DB_FILE_PATH):
             procedure_list = query_db(cursor, query)
 
             for procedure in procedure_list:
-                map = Map(MapType.IAP_TYPE)
-                definition = IAP(airport_id, procedure["procedure_id"])
-                map_name = definition.file_name.replace("_", " ")
-                stars_definition = STARSDefinition(map_name, map_id)
-                map.add_definition(definition)
-                map.add_stars_definition(stars_definition)
+                if not is_eram_mode:
+                    map = Map(MapType.STARS_PROCEDURE_TYPE)
+                    definition = STARSProcedure(
+                        airport_id, "IAP", procedure["procedure_id"]
+                    )
+                    map_name = definition.file_name.replace("_", " ")
+                    stars_definition = STARSDefinition(map_name, map_id)
+                    map.add_definition(definition)
+                    map.add_stars_definition(stars_definition)
+                if is_eram_mode:
+                    map = Map(MapType.ERAM_PROCEDURE_TYPE)
+                    definition = ERAMProcedure(
+                        airport_id, "IAP", procedure["procedure_id"]
+                    )
+                    map.add_definition(definition)
                 manifest.add_map(map)
                 map_id += 1
 
@@ -179,7 +211,7 @@ if os.path.exists(DB_FILE_PATH):
             map.add_stars_definition(stars_definition)
             manifest.add_map(map)
 
-        manifest.to_file(f"{GENERATED_PREFIX}_{airport_id}")
+        manifest.to_file(f"{GENERATED_PREFIX}_{airport_id}", is_eram_mode)
 
     if controlled:
         manifest = Manifest()

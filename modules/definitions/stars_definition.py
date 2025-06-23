@@ -6,8 +6,8 @@ class STARSDefinition(Serializable):
     def __init__(self, map_name: str, map_id: int):
         self.name: str = map_name
         self.map_id: int = map_id
-        self.short_name: str = None
-        self.brightness_category: Optional[Literal["A", "B"]] = None
+        self.short_name: str = map_name.split(" ")[-1]
+        self.brightness_category: Optional[Literal["A", "B"]] = "A"
         self.tdm_only: bool = False
         self.always_visible: bool = False
         self.note: str = None

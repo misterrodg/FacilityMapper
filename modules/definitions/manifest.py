@@ -11,10 +11,10 @@ class Manifest:
     def add_map(self, map) -> None:
         self.maps.append(map)
 
-    def to_file(self, file_name: str) -> None:
+    def to_file(self, file_name: str, is_eram_mode: bool = False) -> None:
         map_dicts = []
         for map in self.maps:
-            map_dicts.append(map.to_dict())
+            map_dicts.append(map.to_dict(is_eram_mode))
 
         result = {"maps": map_dicts}
 

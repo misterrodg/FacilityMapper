@@ -1,5 +1,4 @@
 from modules.definitions.serializable import Serializable
-from modules.definitions.stars_definition import STARSDefinition
 
 from enum import Enum
 
@@ -8,14 +7,13 @@ class MapType(Enum):
     CENTERLINES = "CENTERLINES"
     COMPOSITE_TYPE = "COMPOSITE"
     CONTROLLED_TYPE = "CONTROLLED"
-    IAP_TYPE = "IAP"
+    ERAM_PROCEDURE_TYPE = "ERAM PROCEDURE"
     LABEL_TYPE = "LABEL"
     LABELS_TYPE = "LABELS"
     RESTRICTIVE_TYPE = "RESTRICTIVE"
     RUNWAYS_TYPE = "RUNWAYS"
-    SID_TYPE = "SID"
-    STAR_TYPE = "STAR"
-    VECTOR_SID_TYPE = "VECTOR" + SID_TYPE
+    STARS_PROCEDURE_TYPE = "STARS PROCEDURE"
+    VECTOR_SID_TYPE = "VECTORSID"
 
 
 class Map(Serializable):
@@ -30,11 +28,17 @@ class Map(Serializable):
     def add_stars_definition(self, stars_definition_object: Serializable) -> None:
         self.stars_definition = stars_definition_object
 
-    def to_dict(self) -> dict:
+    def to_dict(self, is_eram_mode: bool = False) -> dict:
         definition_dict = self.definition.to_dict() if self.definition else {}
         stars_definition_dict = (
             self.stars_definition.to_dict() if self.stars_definition else {}
         )
+
+        if is_eram_mode:
+            return {
+                "map_type": self.map_type.value,
+                "definition": definition_dict,
+            }
 
         return {
             "map_type": self.map_type.value,
