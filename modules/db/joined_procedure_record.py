@@ -8,3 +8,4 @@ class JoinedProcedureRecord(ProcedureRecord):
         self.lat = db_record.get("lat")
         self.lon = db_record.get("lon")
         self.type = db_record.get("type")
+        self.mag_var = db_record.get("mag_var")

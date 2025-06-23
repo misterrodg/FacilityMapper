@@ -135,9 +135,18 @@ def draw_vector_lines(
     from_lon: float,
     course: float,
     vector_length: float,
+    buffer_length: float = 0.0,
 ) -> LineString:
     result = LineString()
     coordinate = Coordinate(from_lat, from_lon)
+
+    if buffer_length > 0.0:
+        shifted_coordinate = lat_lon_from_pbd(from_lat, from_lon, course, buffer_length)
+        from_lat = shifted_coordinate.get("lat")
+        from_lon = shifted_coordinate.get("lon")
+        vector_length = vector_length - buffer_length
+        coordinate = Coordinate(from_lat, from_lon)
+
     result.add_coordinate(coordinate)
 
     end_point = lat_lon_from_pbd(from_lat, from_lon, course, vector_length)
