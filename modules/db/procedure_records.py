@@ -18,8 +18,13 @@ def handle_transitions(transition_ids: list) -> str:
 def handle_procedure_type(procedure_types: list) -> str:
     result = ""
     if procedure_types:
-        procedure_types_as_string = list_to_sql_string(procedure_types)
-        result = f"AND p.procedure_type IN {procedure_types_as_string}"
+        if procedure_types[0] == "NOT":
+            procedure_types = procedure_types[1:]
+            procedure_types_as_string = list_to_sql_string(procedure_types)
+            result = f"AND p.procedure_type NOT IN {procedure_types_as_string}"
+        else:
+            procedure_types_as_string = list_to_sql_string(procedure_types)
+            result = f"AND p.procedure_type IN {procedure_types_as_string}"
     return result
 
 

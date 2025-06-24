@@ -134,8 +134,11 @@ class ProcedureBase:
 
     def _process_iap(self) -> None:
         if not self.suppress_core:
-            core_procedure_type = [self.procedure_id[:1]]
-            self.core = self._retrieve_records(procedure_types_list=core_procedure_type)
+            core_procedure_types = ["NOT"]
+            core_procedure_types.extend(F_LEADING_PROCEDURE_TYPES)
+            self.core = self._retrieve_records(
+                procedure_types_list=core_procedure_types
+            )
             self.core.trim_missed(True)
 
         if self.leading_transitions:
