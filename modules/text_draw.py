@@ -10,14 +10,20 @@ from modules.geo_json import Coordinate, Feature, LineString, MultiLineString
 
 
 class TextDraw:
+    display_text: str
+    lat: float
+    lon: float
+    text_scale: float
+    feature: Feature
+
     def __init__(
         self, display_text: str, lat: float, lon: float, text_scale: float = 1.0
     ):
-        self.display_text: str = display_text
-        self.lat: float = lat
-        self.lon: float = lon
-        self.text_scale: float = text_scale
-        self.feature: Feature = Feature()
+        self.display_text = display_text
+        self.lat = lat
+        self.lon = lon
+        self.text_scale = text_scale
+        self.feature = Feature()
 
         self._to_point_array()
 

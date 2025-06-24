@@ -9,6 +9,13 @@ from modules.symbol_plots import (
 
 
 class SymbolDraw:
+    symbol_type: str
+    lat: float
+    lon: float
+    rotation_deg: float
+    symbol_scale: float
+    line_strings: list[LineString]
+
     def __init__(
         self,
         symbol_type: str,
@@ -17,12 +24,12 @@ class SymbolDraw:
         rotation_deg: float = 0.0,
         symbol_scale: float = 1.0,
     ):
-        self.symbol_type: str = symbol_type
-        self.lat: float = lat
-        self.lon: float = lon
-        self.rotation_deg: float = rotation_deg
-        self.symbol_scale: float = symbol_scale
-        self.line_strings: list[LineString] = []
+        self.symbol_type = symbol_type
+        self.lat = lat
+        self.lon = lon
+        self.rotation_deg = rotation_deg
+        self.symbol_scale = symbol_scale
+        self.line_strings = []
 
         self._to_point_array()
 

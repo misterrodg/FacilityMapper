@@ -7,6 +7,23 @@ from modules.draw import (
 
 
 class RunwayPair:
+    airport_id: str
+    base_id: str
+    base_lat: float | None
+    base_lon: float | None
+    base_displaced: int
+    base_bearing: float | None
+    base_displaced_lat: float
+    base_displaced_lon: float
+    reciprocal_id: str
+    reciprocal_lat: float | None
+    reciprocal_lon: float | None
+    reciprocal_displaced: int
+    reciprocal_bearing: float | None
+    reciprocal_displaced_lat: float
+    reciprocal_displaced_lon: float
+    is_valid: bool
+
     def __init__(
         self,
         airport_id: str,
@@ -19,22 +36,22 @@ class RunwayPair:
         reciprocal_lon: float,
         reciprocal_displaced: int,
     ):
-        self.airport_id: str = airport_id
-        self.base_id: str = base_id
-        self.base_lat: float = None
-        self.base_lon: float = None
-        self.base_displaced: int = base_displaced
-        self.base_bearing: float = None
-        self.base_displaced_lat: float = base_lat
-        self.base_displaced_lon: float = base_lon
-        self.reciprocal_id: str = reciprocal_id
-        self.reciprocal_lat: float = None
-        self.reciprocal_lon: float = None
-        self.reciprocal_displaced: int = reciprocal_displaced
-        self.reciprocal_bearing: float = None
-        self.reciprocal_displaced_lat: float = reciprocal_lat
-        self.reciprocal_displaced_lon: float = reciprocal_lon
-        self.is_valid: bool = False
+        self.airport_id = airport_id
+        self.base_id = base_id
+        self.base_lat = None
+        self.base_lon = None
+        self.base_displaced = base_displaced
+        self.base_bearing = None
+        self.base_displaced_lat = base_lat
+        self.base_displaced_lon = base_lon
+        self.reciprocal_id = reciprocal_id
+        self.reciprocal_lat = None
+        self.reciprocal_lon = None
+        self.reciprocal_displaced = reciprocal_displaced
+        self.reciprocal_bearing = None
+        self.reciprocal_displaced_lat = reciprocal_lat
+        self.reciprocal_displaced_lon = reciprocal_lon
+        self.is_valid = False
 
         self._validate()
 

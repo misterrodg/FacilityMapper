@@ -10,13 +10,20 @@ ERROR_HEADER = "RUNWAYS: "
 
 
 class Runways:
+    map_type: str
+    airport_ids: list
+    airport_runways: list[list[RunwayPair]]
+    file_name: str | None
+    db_cursor: Cursor
+    is_valid: bool
+
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
-        self.map_type: str = "RUNWAYS"
-        self.airport_ids: list = []
-        self.airport_runways: list[list[RunwayPair]] = []
-        self.file_name: str = None
-        self.db_cursor: Cursor = db_cursor
-        self.is_valid: bool = False
+        self.map_type = "RUNWAYS"
+        self.airport_ids = []
+        self.airport_runways = []
+        self.file_name = None
+        self.db_cursor = db_cursor
+        self.is_valid = False
 
         self._validate(definition_dict)
 

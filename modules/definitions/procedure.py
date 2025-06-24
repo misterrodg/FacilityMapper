@@ -4,18 +4,30 @@ import re
 
 
 class Procedure(Serializable):
+    airport_id: str
+    procedure_type: str
+    procedure_id: str
+    draw_names: bool
+    draw_altitudes: bool
+    draw_speeds: bool
+    draw_symbols: bool
+    append_name: str | None
+    leading_transitions: list[str]
+    suppress_core: bool
+    trailing_transitions: list[str]
+
     def __init__(self, airport_id: str, procedure_type: str, procedure_id: str):
-        self.airport_id: str = airport_id
-        self.procedure_type: str = procedure_type
-        self.procedure_id: str = procedure_id
-        self.draw_names: bool = False
-        self.draw_altitudes: bool = False
-        self.draw_speeds: bool = False
-        self.draw_symbols: bool = False
-        self.append_name: str = None
-        self.leading_transitions: list[str] = []
-        self.suppress_core: bool = False
-        self.trailing_transitions: list[str] = []
+        self.airport_id = airport_id
+        self.procedure_type = procedure_type
+        self.procedure_id = procedure_id
+        self.draw_names = False
+        self.draw_altitudes = False
+        self.draw_speeds = False
+        self.draw_symbols = False
+        self.append_name = None
+        self.leading_transitions = []
+        self.suppress_core = False
+        self.trailing_transitions = []
 
         self._replace_trailing_number()
 

@@ -21,20 +21,34 @@ ERROR_HEADER = "VECTORSID: "
 
 
 class VectorSID:
+    map_type: str
+    airport_id: str | None
+    procedure_id: str | None
+    draw_names: bool
+    draw_symbols: bool
+    x_offset: float | None
+    y_offset: float | None
+    symbol_scale: float | None
+    text_scale: float | None
+    line_height: float | None
+    file_name: str | None
+    db_cursor: Cursor
+    is_valid: bool
+
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
-        self.map_type: str = "VECTORSID"
-        self.airport_id: str = None
-        self.procedure_id: str = None
-        self.draw_names: bool = False
-        self.draw_symbols: bool = False
-        self.x_offset: float = None
-        self.y_offset: float = None
-        self.symbol_scale: float = None
-        self.text_scale: float = None
-        self.line_height: float = None
-        self.file_name: str = None
-        self.db_cursor: Cursor = db_cursor
-        self.is_valid: bool = False
+        self.map_type = "VECTORSID"
+        self.airport_id = None
+        self.procedure_id = None
+        self.draw_names = False
+        self.draw_symbols = False
+        self.x_offset = None
+        self.y_offset = None
+        self.symbol_scale = None
+        self.text_scale = None
+        self.line_height = None
+        self.file_name = None
+        self.db_cursor = db_cursor
+        self.is_valid = False
 
         self.leading: JoinedProcedureRecords = None
         self.trailing: JoinedProcedureRecords = None

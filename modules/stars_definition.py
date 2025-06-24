@@ -4,15 +4,24 @@ ERROR_HEADER = "STARS DEFINITION: "
 
 
 class STARSDefinition:
+    map_id: int | None
+    short_name: str | None
+    name: str | None
+    brightness_category: str | None
+    is_tdm_only: bool | None
+    is_always_visible: bool | None
+    note: str | None
+    is_valid: bool | False
+
     def __init__(self, stars_definition_dict: dict):
-        self.map_id: int = None
-        self.short_name: str = None
-        self.name: str = None
-        self.brightness_category: str = None
-        self.is_tdm_only: bool = None
-        self.is_always_visible: bool = None
-        self.note: str = None
-        self.is_valid: bool = False
+        self.map_id = None
+        self.short_name = None
+        self.name = None
+        self.brightness_category = None
+        self.is_tdm_only = None
+        self.is_always_visible = None
+        self.note = None
+        self.is_valid = False
 
         self._validate(stars_definition_dict)
 

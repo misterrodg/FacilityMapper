@@ -5,8 +5,10 @@ import json
 
 
 class Manifest:
+    maps: list[Map]
+
     def __init__(self):
-        self.maps: list[Map] = []
+        self.maps = []
 
     def add_map(self, map) -> None:
         self.maps.append(map)

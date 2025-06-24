@@ -5,14 +5,21 @@ from modules.definitions.text_properties import TextProperties
 
 
 class ERAMProcedure(Procedure):
+    draw_lines: bool
+    suppress_core: bool
+    truncation: float
+    line_defaults: LineProperties | object
+    symbol_defaults: SymbolProperties | object
+    text_defaults: TextProperties | object
+
     def __init__(self, airport_id: str, procedure_type: str, procedure_id: str):
         super().__init__(airport_id, procedure_type, procedure_id)
-        self.draw_lines: bool = True
-        self.suppress_core: bool = False
-        self.truncation: float = 0.0
-        self.line_defaults: LineProperties = {}
-        self.symbol_defaults: SymbolProperties = {}
-        self.text_defaults: TextProperties = {}
+        self.draw_lines = True
+        self.suppress_core = False
+        self.truncation = 0.0
+        self.line_defaults = {}
+        self.symbol_defaults = {}
+        self.text_defaults = {}
 
     def to_dict(self) -> dict:
         base_dict = super().to_dict()

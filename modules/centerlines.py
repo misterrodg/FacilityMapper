@@ -8,14 +8,22 @@ ERROR_HEADER = "CENTERLINES: "
 
 
 class Centerlines:
+    map_type: str
+    airport_id: str | None
+    centerline_list: list[str]
+    multi_line_strings: list[MultiLineString]
+    file_name: str | None
+    db_cursor: Cursor
+    is_valid: bool
+
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
-        self.map_type: str = "CENTERLINES"
-        self.airport_id: str = None
-        self.centerline_list: list[str] = []
-        self.multi_line_strings: list[MultiLineString] = []
-        self.file_name: str = None
-        self.db_cursor: Cursor = db_cursor
-        self.is_valid: bool = False
+        self.map_type = "CENTERLINES"
+        self.airport_id = None
+        self.centerline_list = []
+        self.multi_line_strings = []
+        self.file_name = None
+        self.db_cursor = db_cursor
+        self.is_valid = False
 
         self._validate(definition_dict)
 

@@ -1,7 +1,10 @@
 class SpeedData:
+    speed_desc: str
+    speed_limit: int
+
     def __init__(self, speed_desc: str, speed_limit: int):
-        self.speed_desc: str = speed_desc
-        self.speed_limit: int = speed_limit
+        self.speed_desc = speed_desc
+        self.speed_limit = speed_limit
 
     def to_list(self) -> list[str]:
         result = []

@@ -8,18 +8,26 @@ ERROR_HEADER = "TEXT PROPERTIES: "
 
 
 class TextProperties(vNASProperties):
+    text: list[str]
+    size: int
+    underline: bool
+    x_offset: int
+    y_offset: int
+    opaque: bool
+    is_defaults: bool
+
     def __init__(self, properties_dict: dict, is_defaults: bool = False):
         bcg: int = properties_dict.get("bcg")
         filters: list[int] = properties_dict.get("filters")
         super().__init__(bcg, filters)
 
-        self.text: list[str] = self._verify_text(properties_dict.get("text"))
-        self.size: int = self._verify_size(properties_dict.get("size"))
-        self.underline: bool = self._verify_underline(properties_dict.get("underline"))
-        self.x_offset: int = self._verify_offset(properties_dict.get("x_offset"))
-        self.y_offset: int = self._verify_offset(properties_dict.get("y_offset"))
-        self.opaque: bool = self._verify_opaque(properties_dict.get("opaque"))
-        self.is_defaults: bool = is_defaults
+        self.text = self._verify_text(properties_dict.get("text"))
+        self.size = self._verify_size(properties_dict.get("size"))
+        self.underline = self._verify_underline(properties_dict.get("underline"))
+        self.x_offset = self._verify_offset(properties_dict.get("x_offset"))
+        self.y_offset = self._verify_offset(properties_dict.get("y_offset"))
+        self.opaque = self._verify_opaque(properties_dict.get("opaque"))
+        self.is_defaults = is_defaults
 
     def _verify_text(self, text_list: list[str]) -> list[str]:
         if text_list is not None and (

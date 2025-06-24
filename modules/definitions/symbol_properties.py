@@ -7,6 +7,10 @@ from modules.v_nas import (
 
 
 class SymbolProperties(vNASProperties):
+    size: int
+    style: str
+    is_defaults: bool
+
     def __init__(self, properties_dict: dict, is_defaults: bool = False):
         bcg: int = properties_dict.get("bcg")
         filters: list[int] = properties_dict.get("filters")

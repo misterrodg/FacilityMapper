@@ -7,6 +7,10 @@ from modules.v_nas import (
 
 
 class LineProperties(vNASProperties):
+    style: str
+    thickness: int
+    is_defaults: bool
+
     def __init__(self, properties_dict: dict, is_defaults: bool = False):
         bcg = properties_dict.get("bcg")
         filters = properties_dict.get("filters")

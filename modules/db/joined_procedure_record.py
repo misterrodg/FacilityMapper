@@ -2,6 +2,12 @@ from modules.db.procedure_record import ProcedureRecord
 
 
 class JoinedProcedureRecord(ProcedureRecord):
+    id: str | None
+    lat: float | None
+    lon: float | None
+    type: str | None
+    mag_var: float | None
+
     def __init__(self, db_record: dict):
         super().__init__(db_record)
         self.id = db_record.get("id")

@@ -11,13 +11,18 @@ ERROR_HEADER = "MANIFEST: "
 
 
 class Manifest:
+    maps: list[dict]
+    db_cursor: Cursor
+    map_list: MapList
+    is_valid: bool
+
     def __init__(
         self, db_cursor: Cursor, manifest_path: str, map_list: MapList = None
     ) -> None:
-        self.maps: list[dict] = None
-        self.db_cursor: Cursor = db_cursor
-        self.map_list: MapList = map_list
-        self.is_valid: bool = False
+        self.maps = []
+        self.db_cursor = db_cursor
+        self.map_list = map_list
+        self.is_valid = False
 
         manifest_dict = self._get_manifest(manifest_path)
         self._validate(manifest_dict)

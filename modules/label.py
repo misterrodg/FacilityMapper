@@ -6,11 +6,16 @@ ERROR_HEADER = "LABEL: "
 
 
 class Label:
+    map_type: str
+    lines: list[dict]
+    file_name: str | None
+    is_valid: bool
+
     def __init__(self, definition_dict: dict):
-        self.map_type: str = "LABEL"
-        self.lines: list[dict] = []
-        self.file_name: str = None
-        self.is_valid: bool = False
+        self.map_type = "LABEL"
+        self.lines = []
+        self.file_name = None
+        self.is_valid = False
 
         self._validate(definition_dict)
 

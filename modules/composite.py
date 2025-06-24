@@ -5,12 +5,18 @@ ERROR_HEADER = "COMPOSITE: "
 
 
 class Composite:
+    map_type: str
+    file_names: list[dict]
+    file_name: str | None
+    delete_originals: bool
+    is_valid: bool
+
     def __init__(self, definition_dict: dict):
-        self.map_type: str = "COMPOSITE"
-        self.file_names: list[dict] = []
-        self.file_name: str = None
-        self.delete_originals: bool = False
-        self.is_valid: bool = False
+        self.map_type = "COMPOSITE"
+        self.file_names = []
+        self.file_name = None
+        self.delete_originals = False
+        self.is_valid = False
 
         self._validate(definition_dict)
 

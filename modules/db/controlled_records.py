@@ -14,8 +14,10 @@ def select_controlled_points(airport_id: str) -> str:
 
 
 class ControlledRecords:
+    records: list[ControlledRecord]
+
     def __init__(self):
-        self.records: list[ControlledRecord] = []
+        self.records = []
 
     def from_list(self, controlled_record_list: list[ControlledRecord]) -> None:
         self.records.extend(controlled_record_list)

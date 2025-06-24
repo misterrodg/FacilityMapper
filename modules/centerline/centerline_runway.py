@@ -30,25 +30,44 @@ IAP_SUB_CODE = "F"
 
 
 class CenterlineRunway:
+    airport_id: str
+    runway_id: str | None
+    inverse_runway_id: str | None
+    length: float | None
+    crossbar_scale: float | None
+    base_lat: float | None
+    base_lon: float | None
+    bearing: float | None
+    selected_loc: int | None
+    selected_transition: str | None
+    selected_iap: str | None
+    selected_distances: list[float] | None
+    runway_record: RunwayRecord | None
+    iap_records: JoinedProcedureRecords | None
+    centerline_multi_line: list[LineString]
+    crossbar_line_strings: list[LineString]
+    db_cursor: Cursor
+    is_valid: bool
+
     def __init__(self, db_cursor: Cursor, airport_id: str, definition_dict: dict):
-        self.airport_id: str = airport_id
-        self.runway_id: str = None
-        self.inverse_runway_id: str = None
-        self.length: float = None
-        self.crossbar_scale: float = None
-        self.base_lat: float = None
-        self.base_lon: float = None
-        self.bearing: float = None
-        self.selected_loc: int = None
-        self.selected_transition: str = None
-        self.selected_iap: str = None
-        self.selected_distances: list[float] = None
-        self.runway_record: RunwayRecord = None
-        self.iap_records: JoinedProcedureRecords = None
-        self.centerline_multi_line: list[LineString] = []
-        self.crossbar_line_strings: list[LineString] = []
-        self.db_cursor: Cursor = db_cursor
-        self.is_valid: bool = False
+        self.airport_id = airport_id
+        self.runway_id = None
+        self.inverse_runway_id = None
+        self.length = None
+        self.crossbar_scale = None
+        self.base_lat = None
+        self.base_lon = None
+        self.bearing = None
+        self.selected_loc = None
+        self.selected_transition = None
+        self.selected_iap = None
+        self.selected_distances = None
+        self.runway_record = None
+        self.iap_records = None
+        self.centerline_multi_line = []
+        self.crossbar_line_strings = []
+        self.db_cursor = db_cursor
+        self.is_valid = False
 
         self._validate(definition_dict)
         self._process()
@@ -99,8 +118,10 @@ class CenterlineRunway:
         return
 
     def _process(self) -> None:
-        runway_query = self._build_query_string(self.runway_id)
-        query_result = query_db_one(self.db_cursor, runway_query)
+        query_result = None
+        if self.runway_id is not None:
+            runway_query = self._build_query_string(self.runway_id)
+            query_result = query_db_one(self.db_cursor, runway_query)
 
         if query_result is None:
             print(

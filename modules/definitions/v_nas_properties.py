@@ -8,7 +8,10 @@ from modules.v_nas import (
 
 
 class vNASProperties(Serializable):
-    def __init__(self, bcg: int, filters: list):
+    bcg: int
+    filters: list[int]
+
+    def __init__(self, bcg: int, filters: list[int]):
         self.bcg = bcg
         self.filters = filters
 

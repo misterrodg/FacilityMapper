@@ -1,4 +1,10 @@
 class AltitudeData:
+    alt_desc: str
+    alt_1: int
+    fl_1: int
+    alt_2: int
+    fl_2: int
+
     def __init__(
         self,
         alt_desc: str,
@@ -7,11 +13,11 @@ class AltitudeData:
         alt_2: int,
         fl_2: int,
     ):
-        self.alt_desc: str = alt_desc
-        self.alt_1: int = alt_1
-        self.fl_1: int = fl_1
-        self.alt_2: int = alt_2
-        self.fl_2: int = fl_2
+        self.alt_desc = alt_desc
+        self.alt_1 = alt_1
+        self.fl_1 = fl_1
+        self.alt_2 = alt_2
+        self.fl_2 = fl_2
 
     def to_list(self) -> list[str]:
         result = []

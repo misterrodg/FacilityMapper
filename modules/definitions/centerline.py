@@ -1,16 +1,24 @@
 from modules.definitions.serializable import Serializable
-from typing import Optional, Literal
+from typing import Literal
 
 
 class Centerline(Serializable):
+    runway_id: str
+    length: float
+    crossbar_scale: float
+    selected_iap: str | None
+    selected_transition: str | None
+    selected_loc: Literal[1, 2] | None
+    selected_distances: list
+
     def __init__(self, runway_id: str):
-        self.runway_id: str = runway_id
-        self.length: float = 10.0
-        self.crossbar_scale: float = 0.5
-        self.selected_iap: str = None
-        self.selected_transition: str = None
-        self.selected_loc: Optional[Literal[1, 2]] = None
-        self.selected_distances: list = []
+        self.runway_id = runway_id
+        self.length = 10.0
+        self.crossbar_scale = 0.5
+        self.selected_iap = None
+        self.selected_transition = None
+        self.selected_loc = None
+        self.selected_distances = []
 
     def to_dict(self) -> dict:
         return {

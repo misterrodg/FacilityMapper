@@ -56,8 +56,10 @@ def select_joined_procedure_points(
 
 
 class JoinedProcedureRecords:
+    records: list[JoinedProcedureRecord]
+
     def __init__(self, db_records: list[dict]):
-        self.records: list[JoinedProcedureRecord] = []
+        self.records = []
 
         for record in db_records:
             joined_procedure_record = JoinedProcedureRecord(record)

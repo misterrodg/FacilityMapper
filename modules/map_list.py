@@ -5,9 +5,13 @@ import json
 
 
 class MapList:
+    map_id: int
+    stars_definitions: list[STARSDefinition]
+    file_name: str
+
     def __init__(self, facility_id: str):
-        self.map_id: int = 0
-        self.stars_definitions: list[STARSDefinition] = []
+        self.map_id = 0
+        self.stars_definitions = []
         self.file_name = f"map_list_{facility_id}.json"
 
     def write_line(self, stars_definition: STARSDefinition) -> None:

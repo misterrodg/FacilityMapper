@@ -60,8 +60,10 @@ def select_procedure_points(
 
 
 class ProcedureRecords:
+    records: list[ProcedureRecord]
+
     def __init__(self, db_records: list[dict]):
-        self.records = list[ProcedureRecord] = []
+        self.records = []
 
         for record in db_records:
             procedure_record = ProcedureRecord(record)

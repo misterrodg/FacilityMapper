@@ -3,8 +3,10 @@ from modules.db.runway_records import RunwayRecords
 
 
 class RunwayPairs:
+    runway_pairs: list[RunwayPair]
+
     def __init__(self, runway_records: RunwayRecords):
-        self.runway_pairs: list[RunwayPair] = []
+        self.runway_pairs = []
 
         self._pair_runways(runway_records)
 

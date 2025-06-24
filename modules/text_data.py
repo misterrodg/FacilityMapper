@@ -3,6 +3,13 @@ from modules.text_draw import TextDraw
 
 
 class TextData:
+    text: str
+    offset_lat: float
+    offset_lon: float
+    scaled_line_height: float
+    text_scale: float
+    start_line: int
+
     def __init__(
         self,
         text: str,
@@ -12,12 +19,12 @@ class TextData:
         text_scale: float,
         start_line: int,
     ):
-        self.text: str = text
-        self.offset_lat: float = offset_lat
-        self.offset_lon: float = offset_lon
-        self.scaled_line_height: float = scaled_line_height
-        self.text_scale: float = text_scale
-        self.start_line: int = start_line
+        self.text = text
+        self.offset_lat = offset_lat
+        self.offset_lon = offset_lon
+        self.scaled_line_height = scaled_line_height
+        self.text_scale = text_scale
+        self.start_line = start_line
 
     def to_text_feature(self) -> Feature:
         return self._draw_line()

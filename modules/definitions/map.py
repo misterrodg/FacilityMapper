@@ -17,10 +17,14 @@ class MapType(Enum):
 
 
 class Map(Serializable):
+    map_type: MapType
+    definition: Serializable | None
+    stars_definition: Serializable | None
+
     def __init__(self, map_type: MapType):
-        self.map_type: MapType = map_type
-        self.definition: Serializable = None
-        self.stars_definition: Serializable = None
+        self.map_type = map_type
+        self.definition = None
+        self.stars_definition = None
 
     def add_definition(self, definition_object: Serializable) -> None:
         self.definition = definition_object

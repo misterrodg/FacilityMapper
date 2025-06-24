@@ -15,6 +15,9 @@ FEATURE_COLLECTION_TYPE = "FeatureCollection"
 
 
 class Coordinate:
+    lat: float | None
+    lon: float | None
+
     def __init__(self, lat: float, lon: float):
         self.lat = None
         self.lon = None
@@ -33,8 +36,10 @@ class Coordinate:
 
 
 class Properties:
+    properties: dict | None
+
     def __init__(self):
-        self.properties: dict = None
+        self.properties = None
 
     def to_dict(self) -> dict:
         result = {
@@ -47,6 +52,9 @@ class Properties:
 
 
 class Point:
+    type: str
+    coordinates: Coordinate | None
+
     def __init__(self):
         self.type = POINT_TYPE
         self.coordinates = None
@@ -72,9 +80,12 @@ class Point:
 
 
 class LineString:
+    type: str
+    coordinates: list[Coordinate]
+
     def __init__(self):
         self.type = LINE_STRING_TYPE
-        self.coordinates: list[Coordinate] = []
+        self.coordinates = []
 
     def add_coordinate(self, coordinate: Coordinate) -> None:
         self.coordinates.append(coordinate)
@@ -118,9 +129,12 @@ class LineString:
 
 
 class MultiLineString:
+    type: str
+    coordinates: list[LineString]
+
     def __init__(self):
         self.type = MULTI_LINE_STRING_TYPE
-        self.coordinates: list[LineString] = []
+        self.coordinates = []
 
     def add_line_string(self, line_string: LineString) -> None:
         if not line_string.is_empty():
@@ -153,6 +167,10 @@ class MultiLineString:
 
 
 class Feature:
+    type: str
+    geometry: LineString | MultiLineString | Point | None
+    properties: Properties | None
+
     def __init__(self):
         self.type = FEATURE_TYPE
         self.geometry = None
@@ -223,9 +241,12 @@ class Feature:
 
 
 class FeatureCollection:
+    type: str
+    features: list[Feature]
+
     def __init__(self):
         self.type = FEATURE_COLLECTION_TYPE
-        self.features: list[Feature] = []
+        self.features = []
 
     def add_feature(self, feature: Feature) -> None:
         self.features.append(feature)
@@ -276,6 +297,10 @@ class FeatureCollection:
 
 
 class GeoJSON:
+    file_name: str
+    file_path: str
+    feature_collection: FeatureCollection | None
+
     def __init__(self, file_name: str) -> None:
         self.file_name = file_name
         self.file_path = f"{VIDMAP_DIR}/{file_name}.geojson"

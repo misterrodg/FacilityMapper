@@ -25,8 +25,10 @@ def translate_runway_b(runway_id: str) -> list:
 
 
 class RunwayRecords:
+    records: list[RunwayRecord]
+
     def __init__(self, db_records: list[dict]):
-        self.records: list[RunwayRecord] = []
+        self.records = []
 
         for record in db_records:
             runway_record = RunwayRecord(record)

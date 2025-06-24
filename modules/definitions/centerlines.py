@@ -3,10 +3,14 @@ from modules.definitions.centerline import Centerline
 
 
 class Centerlines(Serializable):
+    airport_id: str
+    file_name: str
+    centerlines: list[Centerline]
+
     def __init__(self, airport_id: str):
-        self.airport_id: str = airport_id
-        self.file_name: str = f"{airport_id}_CENTERLINES"
-        self.centerlines: list[Centerline] = []
+        self.airport_id = airport_id
+        self.file_name = f"{airport_id}_CENTERLINES"
+        self.centerlines = []
 
     def add_centerline(self, centerline: Centerline) -> None:
         self.centerlines.append(centerline)

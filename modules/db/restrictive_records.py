@@ -14,8 +14,10 @@ def select_restrictive_points(restrictive_id: str) -> str:
 
 
 class RestrictiveRecords:
+    records: list[RestrictiveRecord]
+
     def __init__(self, db_records: list[dict]):
-        self.records: list[RestrictiveRecord] = []
+        self.records = []
 
         for record in db_records:
             restrictive_record = RestrictiveRecord(record)
