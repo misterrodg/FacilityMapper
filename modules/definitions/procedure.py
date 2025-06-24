@@ -32,7 +32,7 @@ class Procedure(Serializable):
         self._replace_trailing_number()
 
         self.file_name: str = (
-            f"{airport_id}_{procedure_type}_{self.procedure_id.replace("#","")}"
+            f"{procedure_type}_{airport_id}_{self.procedure_id.replace("#","")}"
         )
 
     def _replace_trailing_number(self) -> str:
