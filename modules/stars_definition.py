@@ -11,7 +11,7 @@ class STARSDefinition:
     is_tdm_only: bool | None
     is_always_visible: bool | None
     note: str | None
-    is_valid: bool | False
+    is_valid: bool
 
     def __init__(self, stars_definition_dict: dict):
         self.map_id = None
