@@ -10,9 +10,10 @@ This manifest calls for a map of the `GIBBZ` STAR to KIAD. It has no line draw, 
 
 ```json
 {
-  "map_type": "STAR",
+  "map_type": "STARS PROCEDURE",
   "definition": {
     "airport_id": "KIAD",
+    "procedure_type": "STAR",
     "procedure_id": "GIBBZ#",
     "line_type": "none",
     "draw_symbols": true,
@@ -36,9 +37,10 @@ This manifest calls for a map of the `BUNZZ` SID from KIAD. It has a `"solid"` l
 
 ```json
 {
-  "map_type": "SID",
+  "map_type": "STARS PROCEDURE",
   "definition": {
     "airport_id": "KIAD",
+    "procedure_type": "SID",
     "procedure_id": "BUNZZ#",
     "line_type": "solid",
     "draw_symbols": true,
