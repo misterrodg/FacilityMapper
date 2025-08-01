@@ -6,7 +6,7 @@ from modules.db.restrictive_record import RestrictiveRecord
 def select_restrictive_points(restrictive_id: str) -> str:
     result = f"""
     SELECT *
-    FROM restrictive_airspace_points
+    FROM restrictive_points
     WHERE restrictive_id = {restrictive_id}
     ORDER BY restrictive_id, mult_code, seq_no;
     """

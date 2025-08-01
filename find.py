@@ -263,7 +263,7 @@ if os.path.exists(DB_FILE_PATH):
         print(
             f"Finding Restrictive Airspace in box defined by {min_lat},{min_lon} {max_lat},{max_lon}"
         )
-        query = f"SELECT DISTINCT restrictive_id, restrictive_type FROM restrictive_airspace_points WHERE (lat BETWEEN {min_lat} AND {max_lat} AND lon BETWEEN {min_lon} AND {max_lon}) OR (arc_lat BETWEEN {min_lat} AND {max_lat} AND arc_lon BETWEEN {min_lon} AND {max_lon});"
+        query = f"SELECT DISTINCT restrictive_id, restrictive_type FROM restrictive_points WHERE (lat BETWEEN {min_lat} AND {max_lat} AND lon BETWEEN {min_lon} AND {max_lon}) OR (arc_lat BETWEEN {min_lat} AND {max_lat} AND arc_lon BETWEEN {min_lon} AND {max_lon});"
         restrictive_list = query_db(cursor, query)
 
         file_names = []
