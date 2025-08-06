@@ -192,6 +192,25 @@
         "file_name": "003_IAD_SIDS",
         "delete_originals": true
       }
+    },
+    {
+      "map_type": "ERAM VOR",
+      "definition": {
+        "vor_ids": ["ACY", "ADW", "AML"],
+        "symbol_defaults": {
+          "style": "tacan",
+          "bcg": 4,
+          "filters": [4]
+        },
+        "draw_text": true,
+        "text_defaults": {
+          "bcg": 14,
+          "filters": [14],
+          "x_offset": 1,
+          "y_offset": -1
+        },
+        "file_name": "ZDC_VOR_ERAM"
+      }
     }
   ]
 }

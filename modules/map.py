@@ -2,6 +2,7 @@ from modules.centerlines import Centerlines
 from modules.composite import Composite
 from modules.controlled import Controlled
 from modules.eram_procedure import ERAMProcedure
+from modules.eram_vors import ERAMVOR
 from modules.error_helper import print_top_level
 from modules.label import Label
 from modules.labels import Labels
@@ -19,6 +20,7 @@ CENTERLINES = "CENTERLINES"
 COMPOSITE_TYPE = "COMPOSITE"
 CONTROLLED_TYPE = "CONTROLLED"
 ERAM_PROCEDURE = "ERAM PROCEDURE"
+ERAM_VOR = "ERAM VOR"
 LABEL_TYPE = "LABEL"
 LABELS_TYPE = "LABELS"
 PLACEHOLDER_TYPE = "PLACEHOLDER"
@@ -31,6 +33,7 @@ SUPPORTED_TYPES = [
     CONTROLLED_TYPE,
     COMPOSITE_TYPE,
     ERAM_PROCEDURE,
+    ERAM_VOR,
     LABEL_TYPE,
     LABELS_TYPE,
     PLACEHOLDER_TYPE,
@@ -88,6 +91,8 @@ class Map:
             Centerlines(self.db_cursor, self.definition)
         if self.map_type == ERAM_PROCEDURE:
             ERAMProcedure(self.db_cursor, self.definition)
+        if self.map_type == ERAM_VOR:
+            ERAMVOR(self.db_cursor, self.definition)
         if self.map_type == STARS_PROCEDURE_TYPE:
             STARSProcedure(self.db_cursor, self.definition)
         if self.map_type == VECTOR_SID_TYPE:
