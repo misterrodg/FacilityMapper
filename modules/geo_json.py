@@ -36,10 +36,10 @@ class Coordinate:
 
 
 class Properties:
-    properties: dict | None
+    properties: dict
 
     def __init__(self):
-        self.properties = None
+        self.properties = {}
 
     def to_dict(self) -> dict:
         result = {
