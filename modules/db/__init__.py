@@ -28,6 +28,8 @@ from .runway_records import (
     select_runways_by_airport_id,
     select_runway_by_airport_id_and_runway_id,
 )
+from .vor_record import VORRecord
+from .vor_records import VORRecords, select_vor_by_id, select_vors_by_ids
 
 __all__ = [
     "ControlledRecord",
@@ -58,4 +60,8 @@ __all__ = [
     "RunwayRecords",
     "select_runways_by_airport_id",
     "select_runway_by_airport_id_and_runway_id",
+    "VORRecord",
+    "VORRecords",
+    "select_vor_by_id",
+    "select_vors_by_ids",
 ]
