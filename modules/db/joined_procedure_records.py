@@ -32,21 +32,17 @@ def select_joined_procedure_points(
     path_term_string = handle_path_term(path_terms)
     result = f"""
     WITH unified_table AS (
-        SELECT waypoint_id AS id,lat,lon,type,mag_var FROM waypoints
+        SELECT waypoint_id AS id,lat,lon,"ENR" AS source,type,mag_var FROM waypoints
         UNION
-        SELECT waypoint_id AS id,lat,lon,type,mag_var FROM terminal_waypoints WHERE environment_id = {fac_id_string}
+        SELECT waypoint_id AS id,lat,lon,"TRM" AS source,type,mag_var FROM terminal_waypoints WHERE environment_id = {fac_id_string}
         UNION
-        SELECT vhf_id AS id,lat,lon,"VORDME" AS type,mag_var FROM vhf_navaids WHERE nav_class LIKE 'VD___' OR nav_class LIKE 'VT___'
+        SELECT vhf_id AS id,lat,lon,"VHF" AS source,nav_class AS type,mag_var FROM vhf_navaids WHERE nav_class LIKE '_D___' OR nav_class LIKE '_T___'
         UNION
-        SELECT vhf_id AS id,lat,lon,"VOR" AS type,mag_var FROM vhf_navaids WHERE nav_class LIKE 'V ___'
+        SELECT ndb_id AS id,lat,lon,"NDB" AS source,nav_class AS type,mag_var FROM ndb_navaids
         UNION
-        SELECT vhf_id AS id,lat,lon,"DME" AS type,mag_var FROM vhf_navaids WHERE nav_class LIKE ' D___' OR nav_class LIKE ' T___'
-        UNION
-        SELECT ndb_id AS id,lat,lon,"NDB" AS type,mag_var FROM ndb_navaids
-        UNION
-        SELECT runway_id AS id,lat,lon,"RUNWAY" AS type,0.0 AS mag_var FROM runways WHERE airport_id = {fac_id_string}
+        SELECT runway_id AS id,lat,lon,"RWY" AS source,"RUNWAY" AS type,0.0 AS mag_var FROM runways WHERE airport_id = {fac_id_string}
     )
-    SELECT p.*,id,lat,lon,type,mag_var
+    SELECT p.*,id,lat,lon,source,type,mag_var
     FROM procedure_points AS p
     LEFT JOIN unified_table AS u ON p.fix_id = u.id
     WHERE fac_id = {fac_id_string} AND fac_sub_code = {fac_sub_code_string} AND {procedure_id_string} {procedure_type_string} {transition_string} {path_term_string}

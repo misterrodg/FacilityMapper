@@ -17,43 +17,54 @@ def get_symbol_features(
         result.append(symbol_draw.get_feature())
         return result
 
+    source = record.source
     row_type = record.type
-    if row_type and row_type not in ["NDB", "DME", "VOR", "VORDME"]:
-        row_type = row_type[:1]
-    if row_type == "W":
-        symbol_draw = SymbolDraw(
-            "RNAV", record.lat, record.lon, symbol_scale=symbol_scale
-        )
-        result.append(symbol_draw.get_feature())
-    if row_type in ["C", "R"]:
-        symbol_draw = SymbolDraw(
-            "TRIANGLE", record.lat, record.lon, symbol_scale=symbol_scale
-        )
-        result.append(symbol_draw.get_feature())
-    if row_type == "VORDME":
-        symbol_draw = SymbolDraw(
-            "DME_BOX", record.lat, record.lon, symbol_scale=symbol_scale
-        )
-        result.append(symbol_draw.get_feature())
-        symbol_draw = SymbolDraw(
-            "HEXAGON", record.lat, record.lon, symbol_scale=symbol_scale
-        )
-        result.append(symbol_draw.get_feature())
-    if row_type == "VOR":
-        symbol_draw = SymbolDraw(
-            "HEXAGON", record.lat, record.lon, symbol_scale=symbol_scale
-        )
-        result.append(symbol_draw.get_feature())
-    if row_type == "DME":
-        symbol_draw = SymbolDraw(
-            "DME_BOX", record.lat, record.lon, symbol_scale=symbol_scale
-        )
-        result.append(symbol_draw.get_feature())
-    if row_type == "NDB":
-        symbol_draw = SymbolDraw(
-            "CIRCLE_L", record.lat, record.lon, symbol_scale=symbol_scale
-        )
-        result.append(symbol_draw.get_feature())
+
+    if source and source in ["ENR", "TRM"]:
+        row_type = row_type[0:1]
+
+        if row_type == "W":
+            symbol_draw = SymbolDraw(
+                "RNAV", record.lat, record.lon, symbol_scale=symbol_scale
+            )
+            result.append(symbol_draw.get_feature())
+        if row_type in ["C", "R"]:
+            symbol_draw = SymbolDraw(
+                "TRIANGLE", record.lat, record.lon, symbol_scale=symbol_scale
+            )
+            result.append(symbol_draw.get_feature())
+
+    if source and source == "VHF":
+        row_type = row_type[0:2]
+
+        if row_type in ["VD", "VT"]:
+            symbol_draw = SymbolDraw(
+                "DME_BOX", record.lat, record.lon, symbol_scale=symbol_scale
+            )
+            result.append(symbol_draw.get_feature())
+            symbol_draw = SymbolDraw(
+                "HEXAGON", record.lat, record.lon, symbol_scale=symbol_scale
+            )
+            result.append(symbol_draw.get_feature())
+        if row_type == "V ":
+            symbol_draw = SymbolDraw(
+                "HEXAGON", record.lat, record.lon, symbol_scale=symbol_scale
+            )
+            result.append(symbol_draw.get_feature())
+        if row_type == " D":
+            symbol_draw = SymbolDraw(
+                "DME_BOX", record.lat, record.lon, symbol_scale=symbol_scale
+            )
+            result.append(symbol_draw.get_feature())
+
+    if source and source == "NDB":
+        row_type = row_type[0:1]
+
+        if row_type == "H":
+            symbol_draw = SymbolDraw(
+                "CIRCLE_L", record.lat, record.lon, symbol_scale=symbol_scale
+            )
+            result.append(symbol_draw.get_feature())
     return result
 
 

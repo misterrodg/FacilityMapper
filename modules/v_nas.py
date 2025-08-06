@@ -1,3 +1,5 @@
+from enum import StrEnum
+
 ASDEX_STYLES = ["runway", "taxiway", "apron", "structure"]
 BCG_MIN = 1
 BCG_MAX = 40
@@ -67,3 +69,44 @@ SYMBOL_SIZE_MIN = 1
 SYMBOL_SIZE_MAX = 4
 TEXT_SIZE_MIN = 0
 TEXT_SIZE_MAX = 5
+
+
+class SymbolStyle(StrEnum):
+    OBSTRUCTION1 = SYMBOL_STYLE_OBSTRUCTION1
+    OBSTRUCTION2 = SYMBOL_STYLE_OBSTRUCTION2
+    HELIPORT = SYMBOL_STYLE_HELIPORT
+    NUCLEAR = SYMBOL_STYLE_NUCLEAR
+    EMERGENCY_AIRPORT = SYMBOL_STYLE_EMERGENCY_AIRPORT
+    RADAR = SYMBOL_STYLE_RADAR
+    IAF = SYMBOL_STYLE_IAF
+    RNAV_ONLY = SYMBOL_STYLE_RNAV_ONLY
+    RNAV = SYMBOL_STYLE_RNAV
+    AIRWAY_INTERSECTION = SYMBOL_STYLE_AIRWAY_INTERSECTION
+    NDB = SYMBOL_STYLE_NDB
+    VOR = SYMBOL_STYLE_VOR
+    OTHER_WAYPOINTS = SYMBOL_STYLE_OTHER_WAYPOINTS
+    AIRPORT = SYMBOL_STYLE_AIRPORT
+    SATELLITE_AIRPORT = SYMBOL_STYLE_SATELLITE_AIRPORT
+    TACAN = SYMBOL_STYLE_TACAN
+    DME = SYMBOL_STYLE_DME
+
+    def from_type(table: str, type: str) -> "SymbolStyle":
+        if table == "VHF":
+            if type[0:2] == "V ":
+                return SymbolStyle.VOR
+            if type[0:2] == " D":
+                return SymbolStyle.DME
+            if type[1:2] == "D" or type[1:2] == "T":
+                return SymbolStyle.TACAN
+        if table == "NDB":
+            if type[0:1] == "H":
+                return SymbolStyle.NDB
+        else:
+            if type[1:2] == "I":
+                return SymbolStyle.IAF
+            if type[0:1] == "C":
+                return SymbolStyle.AIRWAY_INTERSECTION
+            if type[0:1] == "W":
+                return SymbolStyle.RNAV_ONLY
+            return SymbolStyle.OTHER_WAYPOINTS
+        return None

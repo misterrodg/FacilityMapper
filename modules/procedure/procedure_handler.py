@@ -25,6 +25,7 @@ from modules.v_nas import (
     LINE_STYLE_LONG_SHORT_DASHED,
     LINE_STYLE_SHORT_DASHED,
     LINE_STYLE_SOLID,
+    SymbolStyle,
 )
 
 
@@ -51,7 +52,8 @@ def get_symbol_features(
                     features = stars_symbol_features(record, symbol_options.scale)
                     result.extend(features)
                 else:
-                    feature = eram_symbol_feature(record.lat, record.lon, record.type)
+                    symbol_style = SymbolStyle.from_type(record.source, record.type)
+                    feature = eram_symbol_feature(record.lat, record.lon, symbol_style)
                     result.append(feature)
     return result
 
