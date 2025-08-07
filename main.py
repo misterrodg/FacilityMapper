@@ -1,5 +1,6 @@
 from modules.dir_paths import MANIFEST_DIR, NAVDATA_DIR, VIDMAP_DIR
 from modules.file_handler import check_path, delete_all_in_subdir
+from modules.query_handler import query_db_one
 from modules.manifest import Manifest
 from modules.map_list import MapList
 
@@ -30,11 +31,23 @@ def refresh_database() -> None:
     c.to_db(DB_FILE_PATH)
 
 
+def show_currency() -> None:
+    connection = sqlite3.connect(DB_FILE_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    result = query_db_one(cursor, "SELECT * FROM validity;")
+    print(f"\nCurrent DB data valid\n{result["valid_from"]} - {result["valid_to"]}")
+    connection.close()
+
+
 def main():
     if os.path.exists(CIFP_FILE_PATH) and not os.path.exists(DB_FILE_PATH):
         refresh_database()
 
     parser = argparse.ArgumentParser(description="FacilityMapper")
+    parser.add_argument(
+        "-c", "--currency", action="store_true", help="show database currency"
+    )
     parser.add_argument(
         "-p", "--purge", action="store_true", help="purge files from vidmaps dir"
     )
@@ -47,11 +60,15 @@ def main():
     )
     parser.add_argument("-n", "--nodraw", action="store_true", help="skip draw")
     args = parser.parse_args()
+    should_show_currency = args.currency
     should_purge = args.purge
     should_refresh = args.refresh
     should_skip_draw = args.nodraw
     should_create_map_list = args.list
     alternate_manifest_file = args.manifest
+    if should_show_currency:
+        show_currency()
+        return
     if should_purge:
         purge_vidmaps()
         purge_maplist()
