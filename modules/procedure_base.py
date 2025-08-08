@@ -190,7 +190,7 @@ class ProcedureBase:
         result = JoinedProcedureRecords(query_result)
         return result
 
-    def _draw_lines(self, line_options: LineOptions = None) -> Feature:
+    def _draw_lines(self, line_options: LineOptions = LineOptions()) -> Feature:
         if not self.draw_symbols:
             line_options.buffer_length = 0.0
 
@@ -212,7 +212,9 @@ class ProcedureBase:
 
         return result
 
-    def _draw_symbols(self, symbol_options: SymbolOptions = None) -> list[Feature]:
+    def _draw_symbols(
+        self, symbol_options: SymbolOptions = SymbolOptions()
+    ) -> list[Feature]:
         result = []
         joined_procedure_records_list = []
         if self.core:
@@ -232,7 +234,7 @@ class ProcedureBase:
 
         return result
 
-    def _draw_text(self, text_options: TextOptions = None) -> list[Feature]:
+    def _draw_text(self, text_options: TextOptions = TextOptions()) -> list[Feature]:
         result = []
         joined_procedure_records_list = []
         if self.core:

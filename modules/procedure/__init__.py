@@ -13,6 +13,7 @@ from .procedure_helper import (
     F_LEADING_PROCEDURE_TYPES,
     translate_map_type,
 )
+from .procedure_options import LineOptions, SymbolOptions, TextOptions
 
 __all__ = [
     "DE_LEADING_PROCEDURE_TYPES",

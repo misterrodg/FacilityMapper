@@ -12,7 +12,7 @@ from modules.geo_json import (
     Point,
     Properties,
 )
-from modules.procedure import LineOptions
+from modules.procedure import LineOptions, TextOptions
 from modules.procedure_base import ProcedureBase
 
 from sqlite3 import Cursor
@@ -27,6 +27,7 @@ class ERAMProcedure(ProcedureBase):
     line_defaults: LineProperties
     symbol_defaults: SymbolProperties
     text_defaults: TextProperties
+    is_valid: bool
 
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
         super().__init__(db_cursor, definition_dict)
@@ -36,6 +37,7 @@ class ERAMProcedure(ProcedureBase):
         self.line_defaults = None
         self.symbol_defaults = None
         self.text_defaults = None
+        self.is_valid = False
 
         self._validate(definition_dict)
 
@@ -77,6 +79,7 @@ class ERAMProcedure(ProcedureBase):
         self.line_defaults = line_defaults
         self.symbol_defaults = symbol_defaults
         self.text_defaults = text_defaults
+        self.is_valid = True
         return
 
     def _process_defaults(self, defaults: vNASProperties) -> Feature:
@@ -109,7 +112,10 @@ class ERAMProcedure(ProcedureBase):
             feature_collection.add_feature(feature)
 
         if self.draw_names or self.draw_altitudes or self.draw_speeds:
-            features = self._draw_text()
+            text_options = TextOptions(
+                self.draw_names, self.draw_altitudes, self.draw_speeds
+            )
+            features = self._draw_text(text_options)
             feature_collection.add_features(features)
 
         if self.draw_symbols:
