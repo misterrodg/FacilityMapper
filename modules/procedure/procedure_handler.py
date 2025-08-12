@@ -6,6 +6,7 @@ from modules.draw.draw_handler import (
     draw_truncated_line,
     draw_vector_lines,
 )
+from modules.draw.draw_helper import haversine_great_circle_distance
 from modules.eram_draw import (
     get_symbol_feature as eram_symbol_feature,
     get_text_feature as eram_text_feature,
@@ -178,14 +179,18 @@ def _get_truncated_lines(
     result = []
     for segment in joined_procedure_records.get_segmented_from_to():
         for from_point, to_point in segment:
-            line_string = draw_truncated_line(
-                from_point.lat,
-                from_point.lon,
-                to_point.lat,
-                to_point.lon,
-                buffer_length,
+            distance = haversine_great_circle_distance(
+                from_point.lat, from_point.lon, to_point.lat, to_point.lon
             )
-            result.append(line_string)
+            if distance > (2 * buffer_length):
+                line_string = draw_truncated_line(
+                    from_point.lat,
+                    from_point.lon,
+                    to_point.lat,
+                    to_point.lon,
+                    buffer_length,
+                )
+                result.append(line_string)
     return result
 
 
@@ -208,14 +213,18 @@ def _get_truncated_unique_lines(
     result = []
     for segment in joined_procedure_records.get_unique_paths_from_to():
         for from_point, to_point in segment:
-            line_string = draw_truncated_line(
-                from_point.lat,
-                from_point.lon,
-                to_point.lat,
-                to_point.lon,
-                buffer_length,
+            distance = haversine_great_circle_distance(
+                from_point.lat, from_point.lon, to_point.lat, to_point.lon
             )
-            result.append(line_string)
+            if distance > (2 * buffer_length):
+                line_string = draw_truncated_line(
+                    from_point.lat,
+                    from_point.lon,
+                    to_point.lat,
+                    to_point.lon,
+                    buffer_length,
+                )
+                result.append(line_string)
     return result
 
 
