@@ -1,6 +1,7 @@
+from modules.db.joined_procedure_records import create_unified_points_table
 from modules.dir_paths import MANIFEST_DIR, NAVDATA_DIR, VIDMAP_DIR
 from modules.file_handler import check_path, delete_all_in_subdir
-from modules.query_handler import query_db_one
+from modules.query_handler import create_table_and_indexes, query_db_one
 from modules.manifest import Manifest
 from modules.map_list import MapList
 
@@ -29,6 +30,12 @@ def refresh_database() -> None:
     c = CIFP(CIFP_FILE_PATH)
     c.parse()
     c.to_db(DB_FILE_PATH)
+
+    connection = sqlite3.connect(DB_FILE_PATH)
+    cursor = connection.cursor()
+    create_table_and_indexes(cursor, create_unified_points_table())
+    connection.commit()
+    connection.close()
 
 
 def show_currency() -> None:
