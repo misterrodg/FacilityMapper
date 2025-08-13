@@ -17,7 +17,7 @@ def draw_simple_line(
     from_lon: float,
     to_lat: float,
     to_lon: float,
-) -> list[Coordinate]:
+) -> LineString:
     result = LineString()
     coordinate = Coordinate(from_lat, from_lon)
     result.add_coordinate(coordinate)
@@ -114,7 +114,7 @@ def draw_truncated_line(
     to_lat: float,
     to_lon: float,
     buffer_length: float,
-) -> list[Coordinate]:
+) -> LineString:
     bearing = haversine_great_circle_bearing(from_lat, from_lon, to_lat, to_lon)
     new_from = lat_lon_from_pbd(from_lat, from_lon, bearing, buffer_length)
     inverse = inverse_bearing(bearing)
@@ -127,6 +127,164 @@ def draw_truncated_line(
         new_to.get("lon"),
     )
 
+    return result
+
+
+def _get_intermediate_bearings(
+    num_segments: int,
+    start_bearing: float = None,
+    stop_bearing: float = None,
+    direction: str = None,
+) -> list:
+    interval = 360 / num_segments
+
+    if start_bearing is None or stop_bearing is None:
+        bearings = [round(i * interval, 6) for i in range(num_segments + 1)]
+        return bearings
+
+    bearings = [round(i * interval, 6) - 360 for i in range(num_segments * 3 + 1)]
+
+    if direction == "R":
+        if stop_bearing <= start_bearing:
+            stop_bearing += 360
+    else:
+        if stop_bearing >= start_bearing:
+            stop_bearing -= 360
+        bearings = bearings[::-1]
+
+    start_index = 0
+    stop_index = 0
+    for i, bearing in enumerate(bearings):
+        start_index = i
+        if start_bearing < bearing and direction == "R":
+            break
+        if start_bearing > bearing and direction == "L":
+            break
+    bearings = bearings[start_index:]
+
+    for i, bearing in enumerate(bearings):
+        stop_index = i
+        if stop_bearing < bearing and direction == "R":
+            break
+        if stop_bearing > bearing and direction == "L":
+            break
+    bearings = bearings[:stop_index]
+
+    bearings = [start_bearing] + bearings + [stop_bearing]
+    for i in range(len(bearings)):
+        bearings[i] = bearings[i] % 360
+
+    return bearings
+
+
+def draw_arc(
+    arc_lat: float,
+    arc_lon: float,
+    arc_radius_nm: float,
+    start_lat: float,
+    start_lon: float,
+    stop_lat: float,
+    stop_lon: float,
+    direction: str = "R",
+) -> LineString:
+    result = LineString()
+
+    start_bearing = haversine_great_circle_bearing(
+        arc_lat, arc_lon, start_lat, start_lon
+    )
+    stop_bearing = haversine_great_circle_bearing(arc_lat, arc_lon, stop_lat, stop_lon)
+
+    num_segments = max(36, int(arc_radius_nm * 4))
+
+    bearings = _get_intermediate_bearings(
+        num_segments, start_bearing, stop_bearing, direction
+    )
+
+    for bearing in bearings:
+        new_point = lat_lon_from_pbd(arc_lat, arc_lon, bearing, arc_radius_nm)
+        coordinate = Coordinate(new_point.get("lat"), new_point.get("lon"))
+        result.add_coordinate(coordinate)
+    return result
+
+
+def _trim_coordinate_list(
+    coordinate_list: list[Coordinate], buffer_length: float, backwards: bool = False
+) -> list:
+    start_index = 0
+    final_index = len(coordinate_list) - 1 if not backwards else 0
+    step = 1
+
+    if backwards:
+        start_index = len(coordinate_list) - 1
+        final_index = 0
+        step = -1
+
+    previous_point = coordinate_list[start_index]
+    remaining_distance = buffer_length
+
+    for i in range(start_index, final_index, step):
+        lat = coordinate_list[i].lat
+        lon = coordinate_list[i].lon
+        segment_distance = haversine_great_circle_distance(
+            previous_point.lat, previous_point.lon, lat, lon
+        )
+        if remaining_distance < segment_distance:
+            difference = segment_distance - remaining_distance
+            bearing = haversine_great_circle_bearing(
+                lat, lon, previous_point.lat, previous_point.lon
+            )
+            new_point = lat_lon_from_pbd(
+                lat,
+                lon,
+                bearing,
+                difference,
+            )
+            coordinate_list.insert(
+                start_index, Coordinate(new_point.get("lat"), new_point.get("lon"))
+            )
+            break
+        else:
+            remaining_distance -= segment_distance
+            previous_point = coordinate_list[i]
+            coordinate_list[i] = None
+
+    return coordinate_list
+
+
+def draw_truncated_arc(
+    arc_lat: float,
+    arc_lon: float,
+    arc_radius_nm: float,
+    start_lat: float,
+    start_lon: float,
+    stop_lat: float,
+    stop_lon: float,
+    direction: str = "R",
+    buffer_length: float = 0.0,
+) -> LineString:
+    result = draw_arc(
+        arc_lat,
+        arc_lon,
+        arc_radius_nm,
+        start_lat,
+        start_lon,
+        stop_lat,
+        stop_lon,
+        direction,
+    )
+
+    coordinates = result.coordinates
+    _trim_coordinate_list(coordinates, buffer_length)
+    _trim_coordinate_list(coordinates, buffer_length, True)
+
+    i = 0
+    while i < len(coordinates):
+        if coordinates[i] is None:
+            del coordinates[i]
+        else:
+            i += 1
+
+    result.coordinates = coordinates
     return result
 
 
