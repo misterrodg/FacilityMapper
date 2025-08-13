@@ -16,6 +16,24 @@ from modules.db.record_helper import (
 )
 
 
+def create_unified_points_table() -> list:
+    return [
+        """
+        CREATE TABLE unified_points AS
+        SELECT waypoint_id AS id,lat,lon,"ENR" AS source,type,mag_var,NULL AS env_id FROM waypoints
+        UNION
+        SELECT waypoint_id AS id,lat,lon,"TRM" AS source,type,mag_var,environment_id env_id FROM terminal_waypoints
+        UNION
+        SELECT vhf_id AS id,lat,lon,"VHF" AS source,nav_class AS type,mag_var,NULL AS env_id FROM vhf_navaids WHERE nav_class LIKE '_D___' OR nav_class LIKE '_T___'
+        UNION
+        SELECT ndb_id AS id,lat,lon,"NDB" AS source,nav_class AS type,mag_var,NULL AS env_id FROM ndb_navaids
+        UNION
+        SELECT runway_id AS id,lat,lon,"RWY" AS source,"RUNWAY" AS type,0.0 AS mag_var,airport_id AS env_id FROM runways;""",
+        """
+        CREATE INDEX idx_unified_id ON unified_points(id,env_id);""",
+    ]
+
+
 def select_joined_procedure_points(
     fac_id: str,
     fac_sub_code: str,

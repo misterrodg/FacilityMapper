@@ -3,6 +3,7 @@ from .controlled_records import ControlledRecords, select_controlled_points
 from .joined_procedure_record import JoinedProcedureRecord
 from .joined_procedure_records import (
     JoinedProcedureRecords,
+    create_unified_points_table,
     select_joined_procedure_points,
 )
 from .loc_gs_record import LOC_GS_Record, select_loc_gs_by_airport_id_and_loc_id
@@ -40,6 +41,7 @@ __all__ = [
     "filter_query",
     "JoinedProcedureRecord",
     "JoinedProcedureRecords",
+    "create_unified_points_table",
     "select_joined_procedure_points",
     "list_to_sql_string",
     "ProcedureRecord",
