@@ -184,14 +184,28 @@ def _get_truncated_lines(
                 from_point.lat, from_point.lon, to_point.lat, to_point.lon
             )
             if distance > (2 * buffer_length):
-                line_string = draw_truncated_line(
-                    from_point.lat,
-                    from_point.lon,
-                    to_point.lat,
-                    to_point.lon,
-                    buffer_length,
-                )
-                result.append(line_string)
+                if to_point.path_term == "RF" and to_point.center_fix is not None:
+                    line_string = draw_truncated_arc(
+                        to_point.center_lat,
+                        to_point.center_lon,
+                        to_point.arc_radius,
+                        from_point.lat,
+                        from_point.lon,
+                        to_point.lat,
+                        to_point.lon,
+                        to_point.turn_direction,
+                        buffer_length,
+                    )
+                    result.append(line_string)
+                else:
+                    line_string = draw_truncated_line(
+                        from_point.lat,
+                        from_point.lon,
+                        to_point.lat,
+                        to_point.lon,
+                        buffer_length,
+                    )
+                    result.append(line_string)
     return result
 
 
@@ -218,7 +232,7 @@ def _get_truncated_unique_lines(
                 from_point.lat, from_point.lon, to_point.lat, to_point.lon
             )
             if distance > (2 * buffer_length):
-                if to_point.center_fix is not None:
+                if to_point.path_term == "RF" and to_point.center_fix is not None:
                     line_string = draw_truncated_arc(
                         to_point.center_lat,
                         to_point.center_lon,
