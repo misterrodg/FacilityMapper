@@ -49,20 +49,10 @@ def select_joined_procedure_points(
     procedure_type_string = handle_procedure_type(procedure_types)
     path_term_string = handle_path_term(path_terms)
     result = f"""
-    WITH unified_table AS (
-        SELECT waypoint_id AS id,lat,lon,"ENR" AS source,type,mag_var FROM waypoints
-        UNION
-        SELECT waypoint_id AS id,lat,lon,"TRM" AS source,type,mag_var FROM terminal_waypoints WHERE environment_id = {fac_id_string}
-        UNION
-        SELECT vhf_id AS id,lat,lon,"VHF" AS source,nav_class AS type,mag_var FROM vhf_navaids WHERE nav_class LIKE '_D___' OR nav_class LIKE '_T___'
-        UNION
-        SELECT ndb_id AS id,lat,lon,"NDB" AS source,nav_class AS type,mag_var FROM ndb_navaids
-        UNION
-        SELECT runway_id AS id,lat,lon,"RWY" AS source,"RUNWAY" AS type,0.0 AS mag_var FROM runways WHERE airport_id = {fac_id_string}
-    )
-    SELECT p.*,id,lat,lon,source,type,mag_var
+    SELECT p.*,uf.id,uf.lat,uf.lon,uf.source,uf.type,uf.mag_var,uc.id AS center_id,uc.lat AS center_lat,uc.lon AS center_lon
     FROM procedure_points AS p
-    LEFT JOIN unified_table AS u ON p.fix_id = u.id
+    LEFT JOIN unified_points AS uf ON p.fix_id = uf.id AND (uf.env_id = {fac_id_string} OR uf.env_id IS NULL)
+    LEFT JOIN unified_points AS uc ON p.center_fix = uc.id AND (uf.env_id = {fac_id_string} OR uc.env_id IS NULL)
     WHERE fac_id = {fac_id_string} AND fac_sub_code = {fac_sub_code_string} AND {procedure_id_string} {procedure_type_string} {transition_string} {path_term_string}
     ORDER BY p.procedure_id,p.procedure_type,p.transition_id DESC,p.seq_no;
     """
