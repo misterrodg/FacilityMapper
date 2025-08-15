@@ -89,7 +89,7 @@ def get_text_features(
     fix_ids: list[str] = []
     for segment in joined_procedure_records_list:
         for record in segment.get_records():
-            if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
+            if record.fix_id not in fix_ids and record.fix_source not in ["RWY", "APT"]:
                 fix_ids.append(record.fix_id)
                 lat = record.fix_lat
                 lon = record.fix_lon
@@ -181,7 +181,9 @@ def _get_vector_lines(
 
 
 def _get_truncated_lines(
-    joined_procedure_records: JoinedProcedureRecords, buffer_length: float
+    joined_procedure_records: JoinedProcedureRecords,
+    vector_length: float,
+    buffer_length: float,
 ) -> list[LineString]:
     result = []
     for segment in joined_procedure_records.get_segmented_from_to():
@@ -193,6 +195,16 @@ def _get_truncated_lines(
                 to_point.fix_lon,
             )
             if distance > (2 * buffer_length):
+                if to_point.path_term == "VM":
+                    line_string = draw_vector_lines(
+                        from_point.fix_lat,
+                        from_point.fix_lon,
+                        to_point.course + from_point.fix_mag_var,
+                        vector_length,
+                        buffer_length,
+                    )
+                    result.append(line_string)
+                    continue
                 if to_point.path_term == "RF" and to_point.center_fix is not None:
                     line_string = draw_truncated_arc(
                         to_point.center_lat,
@@ -232,7 +244,9 @@ def _get_unique_lines(
 
 
 def _get_truncated_unique_lines(
-    joined_procedure_records: JoinedProcedureRecords, buffer_length: float
+    joined_procedure_records: JoinedProcedureRecords,
+    vector_length: float,
+    buffer_length: float,
 ) -> list[LineString]:
     result = []
     for segment in joined_procedure_records.get_unique_paths_from_to():
@@ -244,6 +258,16 @@ def _get_truncated_unique_lines(
                 to_point.fix_lon,
             )
             if distance > (2 * buffer_length):
+                if to_point.path_term == "VM":
+                    line_string = draw_vector_lines(
+                        from_point.fix_lat,
+                        from_point.fix_lon,
+                        to_point.course + from_point.fix_mag_var,
+                        vector_length,
+                        buffer_length,
+                    )
+                    result.append(line_string)
+                    continue
                 if to_point.path_term == "RF" and to_point.center_fix is not None:
                     line_string = draw_truncated_arc(
                         to_point.center_lat,
@@ -280,7 +304,7 @@ def get_line_feature(
         if segment[1] == True:
             if line_options and line_options.buffer_length > 0.0:
                 line_strings = _get_truncated_unique_lines(
-                    segment[0], line_options.buffer_length
+                    segment[0], line_options.vector_length, line_options.buffer_length
                 )
                 multi_line_string.add_line_strings(line_strings)
             else:
@@ -289,7 +313,7 @@ def get_line_feature(
         else:
             if line_options and line_options.buffer_length > 0.0:
                 line_strings = _get_truncated_lines(
-                    segment[0], line_options.buffer_length
+                    segment[0], line_options.vector_length, line_options.buffer_length
                 )
                 multi_line_string.add_line_strings(line_strings)
             else:

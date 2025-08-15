@@ -29,7 +29,7 @@ def handle_procedure_type(procedure_types: list) -> str:
 
 
 def handle_path_term(path_terms: list) -> str:
-    result = "AND p.path_term NOT IN ('HA','HF','HM','PI','VM')"
+    result = "AND p.path_term NOT IN ('HA','HF','HM','PI')"
     if path_terms:
         path_terms_as_string = list_to_sql_string(path_terms)
         result = f"AND p.path_term NOT IN {path_terms_as_string}"
