@@ -47,7 +47,9 @@ def get_symbol_features(
                     result.extend(features)
                 else:
                     symbol_style = SymbolStyle.from_type(record.source, record.type)
-                    feature = eram_symbol_feature(record.lat, record.lon, symbol_style)
+                    feature = eram_symbol_feature(
+                        record.fix_lat, record.fix_lon, symbol_style
+                    )
                     result.append(feature)
     return result
 
@@ -89,8 +91,8 @@ def get_text_features(
         for record in segment.get_records():
             if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
                 fix_ids.append(record.fix_id)
-                lat = record.lat
-                lon = record.lon
+                lat = record.fix_lat
+                lon = record.fix_lon
                 lines = _generate_text(
                     record,
                     text_options.draw_names,
@@ -115,7 +117,7 @@ def get_text_features(
 
 
 def _get_line_coordinate(joined_procedure_record: JoinedProcedureRecord) -> Coordinate:
-    return Coordinate(joined_procedure_record.lat, joined_procedure_record.lon)
+    return Coordinate(joined_procedure_record.fix_lat, joined_procedure_record.fix_lon)
 
 
 def _get_line(joined_procedure_records: JoinedProcedureRecords) -> LineString:
@@ -145,7 +147,11 @@ def _get_dashed_lines(
         from_point = line_string.coordinates[0]
         to_point = line_string.coordinates[1]
         line_string_list = draw_dashed_line(
-            from_point.lat, from_point.lon, to_point.lat, to_point.lon, pattern
+            from_point.fix_lat,
+            from_point.fix_lon,
+            to_point.fix_lat,
+            to_point.fix_lon,
+            pattern,
         )
         for item in line_string_list:
             line = LineString()
@@ -164,9 +170,9 @@ def _get_vector_lines(
     for record in joined_procedure_records.get_records():
         if record.path_term == "FM":
             vector_line = draw_vector_lines(
-                record.lat,
-                record.lon,
-                record.course + record.mag_var,
+                record.fix_lat,
+                record.fix_lon,
+                record.course + record.fix_mag_var,
                 vector_length,
                 buffer_length,
             )
@@ -181,7 +187,10 @@ def _get_truncated_lines(
     for segment in joined_procedure_records.get_segmented_from_to():
         for from_point, to_point in segment:
             distance = haversine_great_circle_distance(
-                from_point.lat, from_point.lon, to_point.lat, to_point.lon
+                from_point.fix_lat,
+                from_point.fix_lon,
+                to_point.fix_lat,
+                to_point.fix_lon,
             )
             if distance > (2 * buffer_length):
                 if to_point.path_term == "RF" and to_point.center_fix is not None:
@@ -189,20 +198,20 @@ def _get_truncated_lines(
                         to_point.center_lat,
                         to_point.center_lon,
                         to_point.arc_radius,
-                        from_point.lat,
-                        from_point.lon,
-                        to_point.lat,
-                        to_point.lon,
+                        from_point.fix_lat,
+                        from_point.fix_lon,
+                        to_point.fix_lat,
+                        to_point.fix_lon,
                         to_point.turn_direction,
                         buffer_length,
                     )
                     result.append(line_string)
                 else:
                     line_string = draw_truncated_line(
-                        from_point.lat,
-                        from_point.lon,
-                        to_point.lat,
-                        to_point.lon,
+                        from_point.fix_lat,
+                        from_point.fix_lon,
+                        to_point.fix_lat,
+                        to_point.fix_lon,
                         buffer_length,
                     )
                     result.append(line_string)
@@ -229,7 +238,10 @@ def _get_truncated_unique_lines(
     for segment in joined_procedure_records.get_unique_paths_from_to():
         for from_point, to_point in segment:
             distance = haversine_great_circle_distance(
-                from_point.lat, from_point.lon, to_point.lat, to_point.lon
+                from_point.fix_lat,
+                from_point.fix_lon,
+                to_point.fix_lat,
+                to_point.fix_lon,
             )
             if distance > (2 * buffer_length):
                 if to_point.path_term == "RF" and to_point.center_fix is not None:
@@ -237,20 +249,20 @@ def _get_truncated_unique_lines(
                         to_point.center_lat,
                         to_point.center_lon,
                         to_point.arc_radius,
-                        from_point.lat,
-                        from_point.lon,
-                        to_point.lat,
-                        to_point.lon,
+                        from_point.fix_lat,
+                        from_point.fix_lon,
+                        to_point.fix_lat,
+                        to_point.fix_lon,
                         to_point.turn_direction,
                         buffer_length,
                     )
                     result.append(line_string)
                 else:
                     line_string = draw_truncated_line(
-                        from_point.lat,
-                        from_point.lon,
-                        to_point.lat,
-                        to_point.lon,
+                        from_point.fix_lat,
+                        from_point.fix_lon,
+                        to_point.fix_lat,
+                        to_point.fix_lon,
                         buffer_length,
                     )
                     result.append(line_string)

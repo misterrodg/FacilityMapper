@@ -1,4 +1,7 @@
-from modules.db.joined_procedure_records import create_unified_points_table
+from modules.db.joined_procedure_records import (
+    create_unified_points_table,
+    create_unified_navaids_table,
+)
 from modules.dir_paths import MANIFEST_DIR, NAVDATA_DIR, VIDMAP_DIR
 from modules.file_handler import check_path, delete_all_in_subdir
 from modules.query_handler import create_table_and_indexes, query_db_one
@@ -34,6 +37,7 @@ def refresh_database() -> None:
     connection = sqlite3.connect(DB_FILE_PATH)
     cursor = connection.cursor()
     create_table_and_indexes(cursor, create_unified_points_table())
+    create_table_and_indexes(cursor, create_unified_navaids_table())
     connection.commit()
     connection.close()
 
