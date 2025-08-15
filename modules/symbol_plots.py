@@ -154,6 +154,14 @@ FAF = [
     {"lat_offset": 0, "lon_offset": 0},
 ]
 
+COMPUTED = [
+    {"lat_offset": 3, "lon_offset": 3},
+    {"lat_offset": -3, "lon_offset": -3},
+    {"lat_offset": 0, "lon_offset": 0},
+    {"lat_offset": -3, "lon_offset": 3},
+    {"lat_offset": 3, "lon_offset": -3},
+]
+
 
 def get_plot_from_string(textValue: str) -> list[dict]:
     upperValue = textValue.upper()
@@ -181,4 +189,6 @@ def get_plot_from_string(textValue: str) -> list[dict]:
         return RNAV
     if upperValue == "FAF":
         return FAF
+    if upperValue == "COMPUTED":
+        return COMPUTED
     return UNRECOGNIZED
