@@ -270,7 +270,9 @@ if os.path.exists(DB_FILE_PATH):
 
         for rest in restrictive_list:
             map = Map(MapType.RESTRICTIVE_TYPE)
-            definition = Restrictive(rest["restrictive_id"], rest["restrictive_type"])
+            definition = Restrictive(
+                rest["restrictive_id"], rest["region"], rest["restrictive_type"]
+            )
             file_name = definition.file_name
             file_names.append(file_name)
             map_name = file_name.replace("_", " ")

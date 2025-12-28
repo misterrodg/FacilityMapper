@@ -3,11 +3,14 @@ from modules.db.record_helper import segment_records
 from modules.db.restrictive_record import RestrictiveRecord
 
 
-def select_restrictive_points(restrictive_id: str) -> str:
+def select_restrictive_points(restrictive_id: str, region: str = None) -> str:
+    where_clause = f"WHERE restrictive_id = {restrictive_id}"
+    if region is not None:
+        where_clause = f"WHERE restrictive_id = {restrictive_id} AND region = {region}"
     result = f"""
     SELECT *
     FROM restrictive_points
-    WHERE restrictive_id = {restrictive_id}
+    {where_clause}
     ORDER BY restrictive_id, mult_code, seq_no;
     """
     return result

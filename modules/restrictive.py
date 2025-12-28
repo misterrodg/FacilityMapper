@@ -12,6 +12,7 @@ ERROR_HEADER = "RESTRICTIVE: "
 class Restrictive:
     map_type: str
     restrictive_id: str | None
+    region: str | None
     restrictive: RestrictiveRecords | None
     file_name: str | None
     db_cursor: Cursor
@@ -20,6 +21,7 @@ class Restrictive:
     def __init__(self, db_cursor: Cursor, definition_dict: dict):
         self.map_type = "RESTRICTIVE"
         self.restrictive_id = None
+        self.region = None
         self.restrictive = None
         self.file_name = None
         self.db_cursor = db_cursor
@@ -43,6 +45,7 @@ class Restrictive:
         if file_name is None:
             file_name = f"{self.map_type}_{restrictive_id}"
 
+        self.region = definition_dict.get("region")
         self.restrictive_id = restrictive_id
         self.file_name = file_name
         self.is_valid = True
@@ -57,7 +60,10 @@ class Restrictive:
 
     def _build_query_string(self) -> str:
         restrictive_id = f"'{self.restrictive_id}'"
-        result = select_restrictive_points(restrictive_id)
+        region = self.region
+        if region is not None:
+            region = f"'{self.region}'"
+        result = select_restrictive_points(restrictive_id, region)
         return result
 
     def _to_file(self) -> None:
