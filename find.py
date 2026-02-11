@@ -19,6 +19,7 @@ from modules.runway import split_runway_id
 import argparse
 import os
 import sqlite3
+import sys
 
 DB_FILE_PATH = f"{NAVDATA_DIR}/FAACIFP18.db"
 GENERATED_PREFIX = "generated"
@@ -94,6 +95,20 @@ if os.path.exists(DB_FILE_PATH):
 
     if airport_id:
         airport_id = airport_id.upper()
+        if not any([find_sid, find_star, find_iap, find_centerlines]):
+            print(
+                f"Warning: --airport {airport_id} was provided without any procedure flags."
+            )
+            print(
+                "No manifest content will be generated. Use one or more of the following:"
+            )
+            print("  --sid          Generate SIDs")
+            print("  --star         Generate STARs")
+            print("  --iap          Generate IAPs")
+            print("  --centerlines  Generate Centerlines")
+            print()
+            print(f"Example: python3 find.py --airport {airport_id} --sid --star")
+            sys.exit(1)
         manifest = Manifest()
         map_id = 1
 

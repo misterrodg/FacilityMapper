@@ -17,10 +17,16 @@ By default, the manifests are created in a STARS format. The `--eram` switch is 
 | `--iap`         | [IAP](./IAP.md)                 |
 | `--centerlines` | [CENTERLINES](./CENTERLINES.md) |
 
+> **Important:** `--airport` requires at least one of the switches above. Running `--airport` without any procedure flag will display a warning and exit without generating a manifest.
+
 An additional `--select` switch is available when using `--centerlines`, which tries to find an appropriate IAP for the runway, and adds it to the manifest if found.
 
 ```bash
-python3 find.py --airport {airport_id} {--optional switches}
+# Correct: specify at least one procedure flag
+python3 find.py --airport KIAH --sid --star
+
+# This will NOT work (no procedure flags):
+# python3 find.py --airport KIAH
 ```
 
 #### Other Commands
