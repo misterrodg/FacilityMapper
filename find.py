@@ -97,7 +97,15 @@ if os.path.exists(DB_FILE_PATH):
         manifest = Manifest()
         map_id = 1
 
-        if find_sid:
+        none_specified = (
+            True
+            if (
+                not find_sid and not find_star and not find_iap and not find_centerlines
+            )
+            else False
+        )
+
+        if find_sid or none_specified:
             print(f"Finding SIDs for {airport_id}")
             query = f"SELECT DISTINCT procedure_id FROM procedure_points WHERE fac_id = '{airport_id}' AND fac_sub_code = 'D';"
             procedure_list = query_db(cursor, query)
@@ -121,7 +129,7 @@ if os.path.exists(DB_FILE_PATH):
                 manifest.add_map(map)
                 map_id += 1
 
-        if find_star:
+        if find_star or none_specified:
             print(f"Finding STARs for {airport_id}")
             query = f"SELECT DISTINCT procedure_id FROM procedure_points WHERE fac_id = '{airport_id}' AND fac_sub_code = 'E';"
             procedure_list = query_db(cursor, query)
@@ -145,7 +153,7 @@ if os.path.exists(DB_FILE_PATH):
                 manifest.add_map(map)
                 map_id += 1
 
-        if find_iap:
+        if find_iap or none_specified:
             print(f"Finding IAPs for {airport_id}")
             query = f"SELECT DISTINCT procedure_id FROM procedure_points WHERE fac_id = '{airport_id}' AND fac_sub_code = 'F';"
             procedure_list = query_db(cursor, query)
@@ -169,7 +177,8 @@ if os.path.exists(DB_FILE_PATH):
                 manifest.add_map(map)
                 map_id += 1
 
-        if find_centerlines:
+        if find_centerlines or none_specified:
+            print(f"Finding Centerlines for {airport_id}")
             query = f"SELECT runway_id, ls_ident_1 FROM runways WHERE airport_id = '{airport_id}';"
             runway_list = query_db(cursor, query)
 
