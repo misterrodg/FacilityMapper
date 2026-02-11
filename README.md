@@ -47,9 +47,9 @@ Examples:
 
 ### Find Function
 
-A Find function is available to generate example manifests. For example, running the command `python3 find.py --airport KIAD --sid --star --iap --centerlines` will generate a manifest called `generated_kiad.json` in the `./manifests` directory containing all SIDs, STARs, IAPs, and Centerlines for `KIAD`. All defaults are included so that you can modify them if you desire, or delete lines if you are okay with the default.
+A Find function is available to generate example manifests. For example, running the command `python3 find.py --airport KIAD` will generate a manifest called `generated_kiad.json` in the `./manifests` directory containing all SIDs, STARs, IAPs, and Centerlines for `KIAD`. All defaults are included so that you can modify them if you desire, or delete lines if you are okay with the default.
 
-For more detail, see [FIND](./readme/FIND.md).
+Additional flags are available to narrow the result set for the given airport, along with flags for other map types. For more detail, see [FIND](./readme/FIND.md).
 
 ## Drawing the Facility
 

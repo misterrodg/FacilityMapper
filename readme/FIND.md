@@ -8,7 +8,7 @@ By default, the manifests are created in a STARS format. The `--eram` switch is 
 
 #### Airport Commands
 
-`--airport` is available to select an airport to generate a manifest for it, with the following manifest type options:
+`--airport` is available to select an airport to generate a manifest for it. By default, using `--airport` selects all of the following manifest type options:
 
 | Switch          | Map Type                        |
 | --------------- | ------------------------------- |
@@ -17,7 +17,9 @@ By default, the manifests are created in a STARS format. The `--eram` switch is 
 | `--iap`         | [IAP](./IAP.md)                 |
 | `--centerlines` | [CENTERLINES](./CENTERLINES.md) |
 
-An additional `--select` switch is available when using `--centerlines`, which tries to find an appropriate IAP for the runway, and adds it to the manifest if found.
+To select them individually, specify them individually: `--airport {airport_id} --sid --star --iap`
+
+An additional `--select` switch is available when using `--centerlines`, which uses the CIFP data to find an appropriate IAP for the runway (using the data found in the `ls_ident_1` field), and adds it to the manifest if found. Use this when centerlines with ILS fix crossbars are desired, or a runway uses an offset LOC.
 
 ```bash
 python3 find.py --airport {airport_id} {--optional switches}
