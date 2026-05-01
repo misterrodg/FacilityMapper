@@ -147,10 +147,10 @@ def _get_dashed_lines(
         from_point = line_string.coordinates[0]
         to_point = line_string.coordinates[1]
         line_string_list = draw_dashed_line(
-            from_point.fix_lat,
-            from_point.fix_lon,
-            to_point.fix_lat,
-            to_point.fix_lon,
+              from_point.lat,
+              from_point.lon,
+              to_point.lat,
+              to_point.lon,
             pattern,
         )
         for item in line_string_list:
