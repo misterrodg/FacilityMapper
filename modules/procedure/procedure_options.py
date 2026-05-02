@@ -20,10 +20,17 @@ class LineOptions:
 class SymbolOptions:
     as_lines: bool
     scale: float
+    use_faf_symbol: bool
 
-    def __init__(self, as_lines: bool = False, scale: float = 1.0):
+    def __init__(
+        self,
+        as_lines: bool = False,
+        scale: float = 1.0,
+        use_faf_symbol: bool = False,
+    ):
         self.as_lines = as_lines
         self.scale = scale
+        self.use_faf_symbol = use_faf_symbol
 
 
 class TextOptions:

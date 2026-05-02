@@ -29,11 +29,11 @@ class JoinedProcedureRecord(ProcedureRecord):
         self.center_lat = db_record.get("center_lat")
         self.center_lon = db_record.get("center_lon")
 
-    def fix_type_to_symbol_name(self) -> str | None:
+    def fix_type_to_symbol_name(self, use_faf_symbol: bool = False) -> str | None:
         if self.fix_type is None:
             return None
 
-        if self.desc_code is not None and self.desc_code.endswith("F"):
+        if use_faf_symbol and self.desc_code is not None and self.desc_code.endswith("F"):
             return "FAF"
 
         source = self.fix_source

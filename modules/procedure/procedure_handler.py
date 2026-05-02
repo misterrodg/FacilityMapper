@@ -49,7 +49,11 @@ def get_symbol_features(
             if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
                 fix_ids.append(record.fix_id)
                 if symbol_options and symbol_options.as_lines:
-                    features = stars_symbol_features(record, symbol_options.scale)
+                    features = stars_symbol_features(
+                        record,
+                        symbol_options.scale,
+                        symbol_options.use_faf_symbol,
+                    )
                     result.extend(features)
                 else:
                     symbol_style = SymbolStyle.from_type(

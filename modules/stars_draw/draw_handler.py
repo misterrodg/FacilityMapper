@@ -25,10 +25,12 @@ def draw_symbol_features(
     return result
 
 
-def resolve_symbol_type(record: JoinedProcedureRecord) -> list[str]:
+def resolve_symbol_type(
+    record: JoinedProcedureRecord, use_faf_symbol: bool = False
+) -> list[str]:
     result = []
 
-    symbol_name = record.fix_type_to_symbol_name()
+    symbol_name = record.fix_type_to_symbol_name(use_faf_symbol)
 
     if symbol_name is None:
         return result
@@ -55,11 +57,13 @@ def resolve_symbol_type(record: JoinedProcedureRecord) -> list[str]:
 
 
 def get_symbol_features(
-    record: JoinedProcedureRecord, symbol_scale: float
+    record: JoinedProcedureRecord,
+    symbol_scale: float,
+    use_faf_symbol: bool = False,
 ) -> list[Feature]:
     if record.fix_lat is None or record.fix_lon is None:
         return []
-    symbol_names = resolve_symbol_type(record)
+    symbol_names = resolve_symbol_type(record, use_faf_symbol)
     return draw_symbol_features(
         symbol_names, record.fix_lat, record.fix_lon, symbol_scale
     )

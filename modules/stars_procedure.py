@@ -21,6 +21,7 @@ class STARSProcedure(ProcedureBase):
     text_scale: float
     line_height: float
     draw_missed: bool
+    use_faf_symbol: bool
     vector_length: float
     is_valid: bool
 
@@ -33,6 +34,7 @@ class STARSProcedure(ProcedureBase):
         self.text_scale = 1.0
         self.line_height = 1.5 * self.text_scale
         self.draw_missed = False
+        self.use_faf_symbol = False
         self.vector_length = 2.5
         self.is_valid = False
 
@@ -43,7 +45,11 @@ class STARSProcedure(ProcedureBase):
             line_options = LineOptions(
                 self.symbol_scale, self.line_type, self.vector_length
             )
-            symbol_options = SymbolOptions(True, self.symbol_scale)
+            symbol_options = SymbolOptions(
+                True,
+                self.symbol_scale,
+                self.use_faf_symbol,
+            )
             text_options = TextOptions(
                 self.draw_names,
                 self.draw_altitudes,
@@ -107,6 +113,12 @@ class STARSProcedure(ProcedureBase):
         if not isinstance(draw_missed, bool):
             draw_missed = False
 
+        use_faf_symbol = definition_dict.get("use_faf_symbol", False)
+        if not isinstance(use_faf_symbol, bool):
+            use_faf_symbol = False
+        if self.procedure_type != "IAP":
+            use_faf_symbol = False
+
         vector_length = definition_dict.get("vector_length", 2.5)
         if not isinstance(vector_length, (int, float)):
             print(
@@ -121,6 +133,7 @@ class STARSProcedure(ProcedureBase):
         self.text_scale = float(text_scale)
         self.line_height = float(line_height)
         self.draw_missed = draw_missed
+        self.use_faf_symbol = use_faf_symbol
         self.vector_length = float(vector_length)
 
         self.is_valid = True
