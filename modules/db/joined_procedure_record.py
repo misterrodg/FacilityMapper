@@ -33,7 +33,11 @@ class JoinedProcedureRecord(ProcedureRecord):
         if self.fix_type is None:
             return None
 
-        if use_faf_symbol and self.desc_code is not None and self.desc_code.endswith("F"):
+        if (
+            use_faf_symbol
+            and self.desc_code is not None
+            and self.desc_code.endswith("F")
+        ):
             return "FAF"
 
         source = self.fix_source
@@ -42,7 +46,15 @@ class JoinedProcedureRecord(ProcedureRecord):
             return None
 
         if source and source in ["ENR", "TRM"]:
-            if self.fix_type.startswith("W"):
+            is_rnav_iap_core = self.fac_sub_code == "F" and self.procedure_type in [
+                "H",
+                "P",
+                "R",
+                "GPS",
+                "RNV",
+            ]
+
+            if self.fix_type.startswith("W") or is_rnav_iap_core:
                 return "RNAV_POINT"
             if self.fix_type.startswith("C") or self.fix_type.startswith("R"):
                 return "WAYPOINT"
