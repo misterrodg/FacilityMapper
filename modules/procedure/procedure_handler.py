@@ -40,13 +40,21 @@ def get_symbol_features(
     fix_ids: list[str] = []
     for segment in joined_procedure_records_list:
         for record in segment.get_records():
+            if (
+                record.fix_id is None
+                or record.fix_lat is None
+                or record.fix_lon is None
+            ):
+                continue
             if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
                 fix_ids.append(record.fix_id)
                 if symbol_options and symbol_options.as_lines:
                     features = stars_symbol_features(record, symbol_options.scale)
                     result.extend(features)
                 else:
-                    symbol_style = SymbolStyle.from_type(record.source, record.type)
+                    symbol_style = SymbolStyle.from_type(
+                        record.fix_source or "", record.fix_type or ""
+                    )
                     feature = eram_symbol_feature(
                         record.fix_lat, record.fix_lon, symbol_style
                     )
@@ -67,9 +75,9 @@ def _generate_text(
         altitude_data = AltitudeData(
             joined_procedure_record.alt_desc,
             joined_procedure_record.alt_1,
-            joined_procedure_record.fl_1,
+            bool(joined_procedure_record.fl_1),
             joined_procedure_record.alt_2,
-            joined_procedure_record.fl_2,
+            bool(joined_procedure_record.fl_2),
         )
         result.extend(altitude_data.to_list())
     if draw_speeds:
@@ -89,6 +97,12 @@ def get_text_features(
     fix_ids: list[str] = []
     for segment in joined_procedure_records_list:
         for record in segment.get_records():
+            if (
+                record.fix_id is None
+                or record.fix_lat is None
+                or record.fix_lon is None
+            ):
+                continue
             if record.fix_id not in fix_ids and record.fix_source not in ["RWY", "APT"]:
                 fix_ids.append(record.fix_id)
                 lat = record.fix_lat
@@ -116,19 +130,26 @@ def get_text_features(
     return result
 
 
-def _get_line_coordinate(joined_procedure_record: JoinedProcedureRecord) -> Coordinate:
-    return Coordinate(joined_procedure_record.fix_lat, joined_procedure_record.fix_lon)
+def _get_line_coordinate(
+    joined_procedure_record: JoinedProcedureRecord,
+) -> Coordinate | None:
+    lat = joined_procedure_record.fix_lat
+    lon = joined_procedure_record.fix_lon
+    if lat is None or lon is None:
+        return None
+    return Coordinate(lat, lon)
 
 
 def _get_line(joined_procedure_records: JoinedProcedureRecords) -> LineString:
     result = LineString()
     for record in joined_procedure_records.get_records():
         coordinate = _get_line_coordinate(record)
-        result.add_coordinate(coordinate)
+        if coordinate is not None:
+            result.add_coordinate(coordinate)
     return result
 
 
-def _translate_pattern(line_style: str) -> list:
+def _translate_pattern(line_style: str) -> list[float] | None:
     if line_style == LINE_STYLE_LONG_DASHED:
         return [1.0]
     if line_style == LINE_STYLE_LONG_SHORT_DASHED:
@@ -143,14 +164,23 @@ def _get_dashed_lines(
 ) -> MultiLineString:
     result = MultiLineString()
     pattern = _translate_pattern(line_style)
+    if pattern is None:
+        return result
     for line_string in multi_line_string.coordinates:
         from_point = line_string.coordinates[0]
         to_point = line_string.coordinates[1]
+        if (
+            from_point.lat is None
+            or from_point.lon is None
+            or to_point.lat is None
+            or to_point.lon is None
+        ):
+            continue
         line_string_list = draw_dashed_line(
-              from_point.lat,
-              from_point.lon,
-              to_point.lat,
-              to_point.lon,
+            from_point.lat,
+            from_point.lon,
+            to_point.lat,
+            to_point.lon,
             pattern,
         )
         for item in line_string_list:
@@ -169,6 +199,13 @@ def _get_vector_lines(
     result = []
     for record in joined_procedure_records.get_records():
         if record.path_term == "FM":
+            if (
+                record.fix_lat is None
+                or record.fix_lon is None
+                or record.course is None
+                or record.fix_mag_var is None
+            ):
+                continue
             vector_line = draw_vector_lines(
                 record.fix_lat,
                 record.fix_lon,
@@ -188,6 +225,13 @@ def _get_truncated_lines(
     result = []
     for segment in joined_procedure_records.get_segmented_from_to():
         for from_point, to_point in segment:
+            if (
+                from_point.fix_lat is None
+                or from_point.fix_lon is None
+                or to_point.fix_lat is None
+                or to_point.fix_lon is None
+            ):
+                continue
             distance = haversine_great_circle_distance(
                 from_point.fix_lat,
                 from_point.fix_lon,
@@ -196,6 +240,8 @@ def _get_truncated_lines(
             )
             if distance > (2 * buffer_length):
                 if to_point.path_term == "VM":
+                    if to_point.course is None or from_point.fix_mag_var is None:
+                        continue
                     line_string = draw_vector_lines(
                         from_point.fix_lat,
                         from_point.fix_lon,
@@ -206,6 +252,13 @@ def _get_truncated_lines(
                     result.append(line_string)
                     continue
                 if to_point.path_term == "RF" and to_point.center_fix is not None:
+                    if (
+                        to_point.center_lat is None
+                        or to_point.center_lon is None
+                        or to_point.arc_radius is None
+                        or to_point.turn_direction is None
+                    ):
+                        continue
                     line_string = draw_truncated_arc(
                         to_point.center_lat,
                         to_point.center_lon,
@@ -217,7 +270,6 @@ def _get_truncated_lines(
                         to_point.turn_direction,
                         buffer_length,
                     )
-                    result.append(line_string)
                 else:
                     line_string = draw_truncated_line(
                         from_point.fix_lat,
@@ -226,7 +278,7 @@ def _get_truncated_lines(
                         to_point.fix_lon,
                         buffer_length,
                     )
-                    result.append(line_string)
+                result.append(line_string)
     return result
 
 
@@ -238,7 +290,8 @@ def _get_unique_lines(
         line_string = LineString()
         for item in segment:
             coordinate = _get_line_coordinate(item)
-            line_string.add_coordinate(coordinate)
+            if coordinate is not None:
+                line_string.add_coordinate(coordinate)
         result.append(line_string)
     return result
 
@@ -251,6 +304,13 @@ def _get_truncated_unique_lines(
     result = []
     for segment in joined_procedure_records.get_unique_paths_from_to():
         for from_point, to_point in segment:
+            if (
+                from_point.fix_lat is None
+                or from_point.fix_lon is None
+                or to_point.fix_lat is None
+                or to_point.fix_lon is None
+            ):
+                continue
             distance = haversine_great_circle_distance(
                 from_point.fix_lat,
                 from_point.fix_lon,
@@ -259,6 +319,8 @@ def _get_truncated_unique_lines(
             )
             if distance > (2 * buffer_length):
                 if to_point.path_term == "VM":
+                    if to_point.course is None or from_point.fix_mag_var is None:
+                        continue
                     line_string = draw_vector_lines(
                         from_point.fix_lat,
                         from_point.fix_lon,
@@ -269,6 +331,13 @@ def _get_truncated_unique_lines(
                     result.append(line_string)
                     continue
                 if to_point.path_term == "RF" and to_point.center_fix is not None:
+                    if (
+                        to_point.center_lat is None
+                        or to_point.center_lon is None
+                        or to_point.arc_radius is None
+                        or to_point.turn_direction is None
+                    ):
+                        continue
                     line_string = draw_truncated_arc(
                         to_point.center_lat,
                         to_point.center_lon,
@@ -280,7 +349,6 @@ def _get_truncated_unique_lines(
                         to_point.turn_direction,
                         buffer_length,
                     )
-                    result.append(line_string)
                 else:
                     line_string = draw_truncated_line(
                         from_point.fix_lat,
@@ -289,13 +357,13 @@ def _get_truncated_unique_lines(
                         to_point.fix_lon,
                         buffer_length,
                     )
-                    result.append(line_string)
+                result.append(line_string)
     return result
 
 
 def get_line_feature(
     joined_procedure_records_list: list[tuple[JoinedProcedureRecords, bool]],
-    line_options: LineOptions = None,
+    line_options: LineOptions | None = None,
 ) -> Feature:
     result = Feature()
     multi_line_string = MultiLineString()

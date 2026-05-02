@@ -1,5 +1,5 @@
 from modules.geo_json import Feature
-from modules.text_draw import TextDraw
+from modules.stars_draw.text_draw import TextDraw
 
 
 class TextData:
@@ -18,7 +18,7 @@ class TextData:
         scaled_line_height: float,
         text_scale: float,
         start_line: int,
-    ):
+    ) -> None:
         self.text = text
         self.offset_lat = offset_lat
         self.offset_lon = offset_lon

@@ -4,7 +4,7 @@ from modules.definitions.airspace import Airspace
 class Restrictive(Airspace):
     restrictive_id: str
 
-    def __init__(self, restrictive_id: str, region: str, restrictive_type: str):
+    def __init__(self, restrictive_id: str, region: str, restrictive_type: str) -> None:
         self.restrictive_id = restrictive_id
         self.region = region
         file_name = f"{restrictive_type}_{restrictive_id}"

@@ -4,7 +4,7 @@ from modules.definitions.airspace import Airspace
 class Controlled(Airspace):
     airport_id: str
 
-    def __init__(self, airport_id: str, airspace_class: str):
+    def __init__(self, airport_id: str, airspace_class: str) -> None:
         self.airport_id = airport_id
         file_name = f"{airport_id}_CLASS_{airspace_class}"
         super().__init__(file_name)

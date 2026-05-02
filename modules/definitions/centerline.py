@@ -11,7 +11,7 @@ class Centerline(Serializable):
     selected_loc: Literal[1, 2] | None
     selected_distances: list
 
-    def __init__(self, runway_id: str):
+    def __init__(self, runway_id: str) -> None:
         self.runway_id = runway_id
         self.length = 10.0
         self.crossbar_scale = 0.5

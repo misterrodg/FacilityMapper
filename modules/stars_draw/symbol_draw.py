@@ -1,10 +1,10 @@
 from modules.draw import correct_offsets
 from modules.geo_json import Coordinate, Feature, LineString, MultiLineString
-from modules.symbol_plots import (
+from modules.stars_draw.symbol_plots import (
     PLOT_HEIGHT,
     PLOT_WIDTH,
     UNRECOGNIZED,
-    get_plot_from_string,
+    get_plot,
 )
 
 
@@ -23,7 +23,7 @@ class SymbolDraw:
         lon: float,
         rotation_deg: float = 0.0,
         symbol_scale: float = 1.0,
-    ):
+    ) -> None:
         self.symbol_type = symbol_type
         self.lat = lat
         self.lon = lon
@@ -35,7 +35,7 @@ class SymbolDraw:
 
     def _to_point_array(self) -> None:
         line_string = LineString()
-        symbol_plot = get_plot_from_string(self.symbol_type)
+        symbol_plot = get_plot(self.symbol_type)
         if symbol_plot != UNRECOGNIZED:
             corrected_plot = correct_offsets(
                 self.lat,

@@ -7,11 +7,11 @@ from modules.v_nas import (
 
 
 class LineProperties(vNASProperties):
-    style: str
-    thickness: int
+    style: str | None
+    thickness: int | None
     is_defaults: bool
 
-    def __init__(self, properties_dict: dict, is_defaults: bool = False):
+    def __init__(self, properties_dict: dict, is_defaults: bool = False) -> None:
         bcg = properties_dict.get("bcg")
         filters = properties_dict.get("filters")
         super().__init__(bcg, filters)
@@ -20,12 +20,12 @@ class LineProperties(vNASProperties):
         self.thickness = self._verify_thickness(properties_dict.get("thickness"))
         self.is_defaults = is_defaults
 
-    def _verify_style(self, line_style: str) -> None:
+    def _verify_style(self, line_style: str | None) -> str | None:
         if line_style is not None and line_style in LINE_STYLES:
             return line_style
         return None
 
-    def _verify_thickness(self, line_thickness: int) -> None:
+    def _verify_thickness(self, line_thickness: int | None) -> int | None:
         if line_thickness is not None and (
             line_thickness >= LINE_THICKNESS_MIN
             and line_thickness <= LINE_THICKNESS_MAX

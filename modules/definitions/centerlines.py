@@ -7,7 +7,7 @@ class Centerlines(Serializable):
     file_name: str
     centerlines: list[Centerline]
 
-    def __init__(self, airport_id: str):
+    def __init__(self, airport_id: str) -> None:
         self.airport_id = airport_id
         self.file_name = f"{airport_id}_CENTERLINES"
         self.centerlines = []

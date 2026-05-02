@@ -11,13 +11,13 @@ ERROR_HEADER = "MANIFEST: "
 
 
 class Manifest:
-    maps: list[dict]
+    maps: list[dict[str, object]]
     db_cursor: Cursor
-    map_list: MapList
+    map_list: MapList | None
     is_valid: bool
 
     def __init__(
-        self, db_cursor: Cursor, manifest_path: str, map_list: MapList = None
+        self, db_cursor: Cursor, manifest_path: str, map_list: MapList | None = None
     ) -> None:
         self.maps = []
         self.db_cursor = db_cursor
@@ -30,8 +30,8 @@ class Manifest:
         if self.is_valid:
             self._process()
 
-    def _get_manifest(self, manifest_path: str) -> dict:
-        result = {}
+    def _get_manifest(self, manifest_path: str) -> dict[str, object]:
+        result: dict[str, object] = {}
         try:
             if isfile(manifest_path) and getsize(manifest_path) > 0:
                 with open(manifest_path, "r") as json_file:
@@ -46,7 +46,7 @@ class Manifest:
             print("Failed to decode JSON from the file.")
         return result
 
-    def _validate(self, manifest_dict: dict) -> None:
+    def _validate(self, manifest_dict: dict[str, object]) -> None:
         if not manifest_dict:
             print(f"{ERROR_HEADER}Manifest contains no data.")
             return
@@ -62,12 +62,18 @@ class Manifest:
                 f"{ERROR_HEADER}Incorrect format for `maps`. Should be list, but received {type(maps)}.\n{print_top_level(manifest_dict)}"
             )
             return
+        for item in maps:
+            if not isinstance(item, dict):
+                print(
+                    f"{ERROR_HEADER}Invalid item in `maps` in:\n{print_top_level(manifest_dict)}."
+                )
+                return
 
         self.maps = maps
         self.is_valid = True
         return
 
     def _process(self) -> None:
-        for map in self.maps:
-            Map(self.db_cursor, map, self.map_list)
+        for map_definition in self.maps:
+            Map(self.db_cursor, map_definition, self.map_list)
         return

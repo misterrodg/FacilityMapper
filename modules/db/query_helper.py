@@ -1,10 +1,13 @@
+from collections.abc import Sequence
+
+
 def str_to_sql_string(string: str) -> str:
     result = f"'{string}'"
     return result
 
 
-def list_to_sql_string(list: list) -> str:
-    result = ",".join(f"'{str(x)}'" for x in list)
+def list_to_sql_string(items: Sequence[object]) -> str:
+    result = ",".join(f"'{str(x)}'" for x in items)
     result = f"({result})"
     return result
 
@@ -21,10 +24,12 @@ def translate_wildcard(wildcard_string: str) -> str:
     return wildcard_string.replace("#", "_")
 
 
-def segment_query(query_result: list, dict_id: str) -> list[list[dict]]:
-    last_id = ""
-    segment = []
-    result = []
+def segment_query(
+    query_result: list[dict[str, object]], dict_id: str
+) -> list[list[dict[str, object]]]:
+    last_id: object = ""
+    segment: list[dict[str, object]] = []
+    result: list[list[dict[str, object]]] = []
     for record in query_result:
         record_dict = dict(record)
         current_id = record_dict.get(dict_id)
@@ -38,9 +43,11 @@ def segment_query(query_result: list, dict_id: str) -> list[list[dict]]:
     return result
 
 
-def filter_query(query_result: list, dict_id: str) -> list[dict]:
-    result = []
-    seen_ids = set()
+def filter_query(
+    query_result: list[dict[str, object]], dict_id: str
+) -> list[dict[str, object]]:
+    result: list[dict[str, object]] = []
+    seen_ids: set[object] = set()
     for record in query_result:
         if record[dict_id] not in seen_ids:
             result.append(record)

@@ -14,9 +14,10 @@ from modules.db.record_helper import (
     segment_records,
     segment_from_to,
 )
+from typing import Any
 
 
-def create_unified_points_table() -> list:
+def create_unified_points_table() -> list[str]:
     return [
         """
         CREATE TABLE unified_points AS
@@ -38,7 +39,7 @@ def create_unified_points_table() -> list:
     ]
 
 
-def create_unified_navaids_table() -> list:
+def create_unified_navaids_table() -> list[str]:
     return [
         """
         CREATE TABLE unified_navaids AS
@@ -56,10 +57,14 @@ def select_joined_procedure_points(
     fac_id: str,
     fac_sub_code: str,
     procedure_id: str,
-    transitions: list = [],
-    procedure_types: list = [],
-    path_terms: list = [],
+    transitions: list[str] | None = None,
+    procedure_types: list[str] | None = None,
+    path_terms: list[str] | None = None,
 ) -> str:
+    transitions = transitions or []
+    procedure_types = procedure_types or []
+    path_terms = path_terms or []
+
     fac_id_string = str_to_sql_string(fac_id)
     fac_sub_code_string = str_to_sql_string(fac_sub_code)
     procedure_id_string = translate_condition("procedure_id", procedure_id)
@@ -81,7 +86,7 @@ def select_joined_procedure_points(
 class JoinedProcedureRecords:
     records: list[JoinedProcedureRecord]
 
-    def __init__(self, db_records: list[dict]):
+    def __init__(self, db_records: list[dict[str, Any]]):
         self.records = []
 
         for record in db_records:
@@ -106,16 +111,18 @@ class JoinedProcedureRecords:
         return result
 
     def get_unique_paths(self) -> list[list[JoinedProcedureRecord]]:
-        result: list = []
+        result: list[list[JoinedProcedureRecord]] = []
         segmented_records = segment_records(
             self.records, JoinedProcedureRecord.SEGMENT_FIELD
         )
 
-        seen: list = []
+        seen: list[str] = []
 
         for segment in segmented_records:
             from_to = cast_from_to(segment)
-            unique: list = []
+            unique: list[
+                tuple[JoinedProcedureRecord, JoinedProcedureRecord] | None
+            ] = []
             for record_from, record_to in from_to:
                 pair = f"{record_from.fix_id}-{record_to.fix_id}"
                 value = None
@@ -133,16 +140,18 @@ class JoinedProcedureRecords:
     def get_unique_paths_from_to(
         self,
     ) -> list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]]:
-        result: list = []
+        result: list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]] = []
         segmented_records = segment_records(
             self.records, JoinedProcedureRecord.SEGMENT_FIELD
         )
 
-        seen: list = []
+        seen: list[str] = []
 
         for segment in segmented_records:
             from_to = cast_from_to(segment)
-            unique: list = []
+            unique: list[
+                tuple[JoinedProcedureRecord, JoinedProcedureRecord] | None
+            ] = []
             for record_from, record_to in from_to:
                 pair = f"{record_from.fix_id}-{record_to.fix_id}"
                 value = None
@@ -158,35 +167,55 @@ class JoinedProcedureRecords:
         return result
 
     def trim_missed(self, keep_runway: bool = False) -> None:
-        result = []
+        result: list[JoinedProcedureRecord] = []
         missed_reached = False
         for record in self.records:
-            if missed_reached == False and (keep_runway or record.fix_id[0:2] != "RW"):
+            fix_id = record.fix_id
+            is_runway_fix = isinstance(fix_id, str) and fix_id.startswith("RW")
+            if not missed_reached and (keep_runway or not is_runway_fix):
                 result.append(record)
-            if record.desc_code[3] == "M":
+
+            desc_code = record.desc_code
+            if isinstance(desc_code, str) and len(desc_code) > 3 and desc_code[3] == "M":
                 missed_reached = True
 
         self.records = result
 
     def add_procedure_name_to_enroute_transitions(self) -> None:
         for record in self.records:
-            if record.fix_id == record.transition_id:
+            if (
+                record.fix_id is not None
+                and record.procedure_id is not None
+                and record.fix_id == record.transition_id
+            ):
                 record.fix_id = f"{record.procedure_id}.{record.fix_id}"
         return
 
     def add_procedure_name_to_core(self, last: bool = False) -> None:
+        if not self.records:
+            return
+
         record = self.records[-1] if last else self.records[0]
+        if record.procedure_id is None or record.fix_id is None:
+            return
+
         record.fix_id = f"{record.procedure_id}.{record.fix_id}"
 
     def add_procedure_name_to_runway_transitions(self) -> None:
         for record in self.records:
-            if record.fix_id == record.procedure_id[:-1]:
+            if (
+                record.fix_id is not None
+                and record.procedure_id is not None
+                and record.fix_id == record.procedure_id[:-1]
+            ):
                 record.fix_id = f"{record.procedure_id}.{record.fix_id}"
 
 
-def _check_for_split(list_to_verify: list) -> list[list]:
-    result: list = []
-    temporary: list = []
+def _check_for_split(
+    list_to_verify: list[tuple[JoinedProcedureRecord, JoinedProcedureRecord] | None],
+) -> list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]]:
+    result: list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]] = []
+    temporary: list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]] = []
 
     for item in list_to_verify:
         if item is not None:

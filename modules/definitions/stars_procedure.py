@@ -11,7 +11,7 @@ class STARSProcedure(Procedure):
     draw_missed: bool
     vector_length: float
 
-    def __init__(self, airport_id: str, procedure_type: str, procedure_id: str):
+    def __init__(self, airport_id: str, procedure_type: str, procedure_id: str) -> None:
         super().__init__(airport_id, procedure_type, procedure_id)
         self.line_type = "solid"
         self.x_offset = 0.0

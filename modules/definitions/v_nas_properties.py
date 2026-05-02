@@ -8,10 +8,10 @@ from modules.v_nas import (
 
 
 class vNASProperties(Serializable):
-    bcg: int
-    filters: list[int]
+    bcg: int | None
+    filters: list[int] | None
 
-    def __init__(self, bcg: int, filters: list[int]):
+    def __init__(self, bcg: int | None, filters: list[int] | None) -> None:
         self.bcg = bcg
         self.filters = filters
 
@@ -25,7 +25,7 @@ class vNASProperties(Serializable):
     def _verify_filters(self) -> None:
         if self.filters and (
             isinstance(self.filters, list)
-            or all(isinstance(item, int) for item in self.filters)
+            and all(isinstance(item, int) for item in self.filters)
         ):
             filters = []
             for item in self.filters:

@@ -1,4 +1,4 @@
-from modules.text_plots import (
+from modules.stars_draw.text_plots import (
     PLOT_HEIGHT,
     PLOT_WIDTH,
     SPACE,
@@ -18,7 +18,7 @@ class TextDraw:
 
     def __init__(
         self, display_text: str, lat: float, lon: float, text_scale: float = 1.0
-    ):
+    ) -> None:
         self.display_text = display_text
         self.lat = lat
         self.lon = lon
@@ -34,20 +34,21 @@ class TextDraw:
         for char in char_array:
             line_string = LineString()
             char_plot = get_plot_from_char(char)
-            if char_plot not in [UNRECOGNIZED, SPACE]:
-                correction = correction_factor(self.lat)
-                lon = self.lon + (
-                    char_count * ((self.text_scale * ARC_MIN) / correction)
-                )
-                corrected_plot = correct_offsets(
-                    self.lat,
-                    lon,
-                    char_plot,
-                    PLOT_HEIGHT,
-                    PLOT_WIDTH,
-                    0,
-                    self.text_scale,
-                )
+            if char_plot in (UNRECOGNIZED, SPACE):
+                char_count += 1
+                continue
+
+            correction = correction_factor(self.lat)
+            lon = self.lon + (char_count * ((self.text_scale * ARC_MIN) / correction))
+            corrected_plot = correct_offsets(
+                self.lat,
+                lon,
+                char_plot,
+                PLOT_HEIGHT,
+                PLOT_WIDTH,
+                0,
+                self.text_scale,
+            )
 
             for line in corrected_plot:
                 coordinate = Coordinate(line["lat"], line["lon"])

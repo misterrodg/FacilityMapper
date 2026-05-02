@@ -11,17 +11,17 @@ ERROR_HEADER = "CONTROLLED: "
 
 class Controlled:
     map_type: str
-    airport_id: str | None
-    controlled: ControlledRecords | None
-    file_name: str | None
+    airport_id: str
+    controlled: ControlledRecords
+    file_name: str
     db_cursor: Cursor
     is_valid: bool
 
-    def __init__(self, db_cursor: Cursor, definition_dict: dict):
+    def __init__(self, db_cursor: Cursor, definition_dict: dict[str, object]):
         self.map_type = "CONTROLLED"
-        self.airport_id = None
-        self.controlled = None
-        self.file_name = None
+        self.airport_id = ""
+        self.controlled = ControlledRecords()
+        self.file_name = ""
         self.db_cursor = db_cursor
         self.is_valid = False
 
@@ -31,16 +31,16 @@ class Controlled:
             self._process()
             self._to_file()
 
-    def _validate(self, definition_dict: dict) -> None:
+    def _validate(self, definition_dict: dict[str, object]) -> None:
         airport_id = definition_dict.get("airport_id")
-        if airport_id is None:
+        if not isinstance(airport_id, str):
             print(
-                f"{ERROR_HEADER}Missing `airport_id` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `airport_id` in:\n{print_top_level(definition_dict)}."
             )
             return
 
         file_name = definition_dict.get("file_name")
-        if file_name is None:
+        if not isinstance(file_name, str):
             file_name = f"{self.map_type}_{airport_id}"
 
         self.airport_id = airport_id

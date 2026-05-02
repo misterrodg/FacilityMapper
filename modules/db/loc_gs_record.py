@@ -1,8 +1,11 @@
+from typing import Any
+
+
 def select_loc_gs_by_airport_id_and_loc_id(airport_id: str, loc_id: str) -> str:
     result = f"""
     SELECT *
     FROM loc_gss
-    WHERE airport_id = {airport_id} AND loc_id = {loc_id};
+    WHERE airport_id = '{airport_id}' AND loc_id = '{loc_id}';
     """
     return result
 
@@ -40,7 +43,7 @@ class LOC_GS_Record:
     record_number: int | None
     cycle_data: str | None
 
-    def __init__(self, db_record: dict):
+    def __init__(self, db_record: dict[str, Any]) -> None:
         self.st = db_record.get("st")
         self.area = db_record.get("area")
         self.sec_code = db_record.get("sec_code")

@@ -6,7 +6,7 @@ class Composite(Serializable):
     file_name: str
     delete_originals: bool
 
-    def __init__(self, file_names: list[str], file_name: str):
+    def __init__(self, file_names: list[str], file_name: str) -> None:
         self.file_names = file_names
         self.file_name = file_name
         self.delete_originals = False

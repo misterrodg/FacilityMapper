@@ -9,19 +9,17 @@ ERROR_HEADER = "CENTERLINES: "
 
 class Centerlines:
     map_type: str
-    airport_id: str | None
-    centerline_list: list[str]
-    multi_line_strings: list[MultiLineString]
-    file_name: str | None
+    airport_id: str
+    centerline_list: list[dict[str, object]]
+    file_name: str
     db_cursor: Cursor
     is_valid: bool
 
-    def __init__(self, db_cursor: Cursor, definition_dict: dict):
+    def __init__(self, db_cursor: Cursor, definition_dict: dict[str, object]):
         self.map_type = "CENTERLINES"
-        self.airport_id = None
+        self.airport_id = ""
         self.centerline_list = []
-        self.multi_line_strings = []
-        self.file_name = None
+        self.file_name = ""
         self.db_cursor = db_cursor
         self.is_valid = False
 
@@ -30,25 +28,31 @@ class Centerlines:
         if self.is_valid:
             self._to_file()
 
-    def _validate(self, definition_dict: dict) -> None:
+    def _validate(self, definition_dict: dict[str, object]) -> None:
         airport_id = definition_dict.get("airport_id")
-        if airport_id is None:
+        if not isinstance(airport_id, str):
             print(
-                f"{ERROR_HEADER}Missing `airport_id` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `airport_id` in:\n{print_top_level(definition_dict)}."
             )
             return
 
         centerline_list = definition_dict.get("centerlines")
-        if centerline_list is None:
+        if not isinstance(centerline_list, list):
             print(
-                f"{ERROR_HEADER}Missing `centerlines` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `centerlines` in:\n{print_top_level(definition_dict)}."
             )
             return
+        for item in centerline_list:
+            if not isinstance(item, dict):
+                print(
+                    f"{ERROR_HEADER}Invalid item in `centerlines` in:\n{print_top_level(definition_dict)}."
+                )
+                return
 
         file_name = definition_dict.get("file_name")
-        if file_name is None:
+        if not isinstance(file_name, str):
             print(
-                f"{ERROR_HEADER}Missing `file_name` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `file_name` in:\n{print_top_level(definition_dict)}."
             )
             return
 

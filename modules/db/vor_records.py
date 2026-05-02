@@ -1,3 +1,5 @@
+from typing import Any
+
 from modules.db.vor_record import VORRecord
 from modules.db.query_helper import str_to_sql_string, list_to_sql_string
 
@@ -19,15 +21,17 @@ def select_vors_by_ids(vor_ids: list[str]) -> str:
 
 
 class VORRecords:
-    def __init__(self, db_records: list[dict]):
-        self.records: list[VORRecord] = []
+    records: list[VORRecord]
+
+    def __init__(self, db_records: list[dict[str, Any]]) -> None:
+        self.records = []
 
         for record in db_records:
             vor_record = VORRecord(record)
             self.records.append(vor_record)
 
-    def find_vor(self, vor_id: str) -> VORRecord:
-        result = next((r for r in self.records if r.vor_id == vor_id), None)
+    def find_vor(self, vor_id: str) -> VORRecord | None:
+        result = next((r for r in self.records if r.vhf_id == vor_id), None)
         return result
 
     def get_records(self) -> list[VORRecord]:

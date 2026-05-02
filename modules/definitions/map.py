@@ -8,7 +8,6 @@ class MapType(Enum):
     COMPOSITE_TYPE = "COMPOSITE"
     CONTROLLED_TYPE = "CONTROLLED"
     ERAM_PROCEDURE_TYPE = "ERAM PROCEDURE"
-    LABEL_TYPE = "LABEL"
     LABELS_TYPE = "LABELS"
     RESTRICTIVE_TYPE = "RESTRICTIVE"
     RUNWAYS_TYPE = "RUNWAYS"
@@ -21,7 +20,7 @@ class Map(Serializable):
     definition: Serializable | None
     stars_definition: Serializable | None
 
-    def __init__(self, map_type: MapType):
+    def __init__(self, map_type: MapType) -> None:
         self.map_type = map_type
         self.definition = None
         self.stars_definition = None

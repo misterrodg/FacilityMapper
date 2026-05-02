@@ -56,7 +56,7 @@ def correct_offsets(
     return result
 
 
-def lat_lon_from_pbd(lat: float, lon: float, bearing: float, distance: float) -> dict:
+def lat_lon_from_pbd(lat: float, lon: float, bearing: float, distance: float) -> dict[str, float]:
     lat_rad = math.radians(lat)
     lon_rad = math.radians(lon)
     bearing_rad = math.radians(bearing)

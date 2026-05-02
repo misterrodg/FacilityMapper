@@ -5,7 +5,7 @@ class Runways(Serializable):
     airport_ids: list[str]
     file_name: str
 
-    def __init__(self, airport_ids: list[str], file_name: str):
+    def __init__(self, airport_ids: list[str], file_name: str) -> None:
         self.airport_ids = airport_ids
         self.file_name = file_name
 

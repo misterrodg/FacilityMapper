@@ -1,8 +1,8 @@
 class SpeedData:
-    speed_desc: str
-    speed_limit: int
+    speed_desc: str | None
+    speed_limit: int | None
 
-    def __init__(self, speed_desc: str, speed_limit: int):
+    def __init__(self, speed_desc: str | None, speed_limit: int | None) -> None:
         self.speed_desc = speed_desc
         self.speed_limit = speed_limit
 

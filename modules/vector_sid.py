@@ -13,6 +13,7 @@ from modules.procedure import (
     get_symbol_features,
     get_text_features,
 )
+from modules.procedure.procedure_options import SymbolOptions, TextOptions
 from modules.query_handler import query_db
 
 from sqlite3 import Cursor
@@ -22,36 +23,37 @@ ERROR_HEADER = "VECTORSID: "
 
 class VectorSID:
     map_type: str
-    airport_id: str | None
-    procedure_id: str | None
+    airport_id: str
+    procedure_id: str
     draw_names: bool
     draw_symbols: bool
-    x_offset: float | None
-    y_offset: float | None
-    symbol_scale: float | None
-    text_scale: float | None
-    line_height: float | None
-    file_name: str | None
+    x_offset: float
+    y_offset: float
+    symbol_scale: float
+    text_scale: float
+    line_height: float
+    leading: JoinedProcedureRecords
+    trailing: JoinedProcedureRecords
+    file_name: str
     db_cursor: Cursor
     is_valid: bool
 
-    def __init__(self, db_cursor: Cursor, definition_dict: dict):
+    def __init__(self, db_cursor: Cursor, definition_dict: dict[str, object]):
         self.map_type = "VECTORSID"
-        self.airport_id = None
-        self.procedure_id = None
+        self.airport_id = ""
+        self.procedure_id = ""
         self.draw_names = False
         self.draw_symbols = False
-        self.x_offset = None
-        self.y_offset = None
-        self.symbol_scale = None
-        self.text_scale = None
-        self.line_height = None
-        self.file_name = None
+        self.x_offset = 0.0
+        self.y_offset = 0.0
+        self.symbol_scale = 1.0
+        self.text_scale = 1.0
+        self.line_height = 1.5 * self.text_scale
+        self.leading = JoinedProcedureRecords([])
+        self.trailing = JoinedProcedureRecords([])
+        self.file_name = ""
         self.db_cursor = db_cursor
         self.is_valid = False
-
-        self.leading: JoinedProcedureRecords = None
-        self.trailing: JoinedProcedureRecords = None
 
         self._validate(definition_dict)
 
@@ -59,42 +61,62 @@ class VectorSID:
             self._process()
             self._to_file()
 
-    def _validate(self, definition_dict: dict) -> None:
+    def _validate(self, definition_dict: dict[str, object]) -> None:
         airport_id = definition_dict.get("airport_id")
-        if airport_id is None:
+        if not isinstance(airport_id, str):
             print(
-                f"{ERROR_HEADER}Missing `airport_id` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `airport_id` in:\n{print_top_level(definition_dict)}."
             )
             return
 
         procedure_id = definition_dict.get("procedure_id")
-        if procedure_id is None:
+        if not isinstance(procedure_id, str):
             print(
-                f"{ERROR_HEADER}Missing `procedure_id` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `procedure_id` in:\n{print_top_level(definition_dict)}."
             )
             return
 
         draw_names = definition_dict.get("draw_names", True)
+        if not isinstance(draw_names, bool):
+            draw_names = True
+
         draw_symbols = definition_dict.get("draw_symbols", True)
-        x_offset = definition_dict.get("x_offset", 0) * ARC_MIN
-        y_offset = definition_dict.get("y_offset", 0) * ARC_MIN
+        if not isinstance(draw_symbols, bool):
+            draw_symbols = True
+
+        x_offset = definition_dict.get("x_offset", 0)
+        if not isinstance(x_offset, (int, float)):
+            x_offset = 0.0
+
+        y_offset = definition_dict.get("y_offset", 0)
+        if not isinstance(y_offset, (int, float)):
+            y_offset = 0.0
+
         symbol_scale = definition_dict.get("symbol_scale", 1.0)
+        if not isinstance(symbol_scale, (int, float)):
+            symbol_scale = 1.0
+
         text_scale = definition_dict.get("text_scale", 1.0)
+        if not isinstance(text_scale, (int, float)):
+            text_scale = 1.0
+
         line_height = definition_dict.get("line_height", 1.5 * text_scale)
+        if not isinstance(line_height, (int, float)):
+            line_height = 1.5 * text_scale
 
         file_name = definition_dict.get("file_name")
-        if file_name is None:
+        if not isinstance(file_name, str):
             file_name = f"{airport_id}_{self.map_type}_{procedure_id}"
 
         self.airport_id = airport_id
         self.procedure_id = procedure_id
         self.draw_symbols = draw_symbols
         self.draw_names = draw_names
-        self.x_offset = x_offset
-        self.y_offset = y_offset
-        self.symbol_scale = symbol_scale
-        self.text_scale = text_scale
-        self.line_height = line_height
+        self.x_offset = float(x_offset) * ARC_MIN
+        self.y_offset = float(y_offset) * ARC_MIN
+        self.symbol_scale = float(symbol_scale)
+        self.text_scale = float(text_scale)
+        self.line_height = float(line_height)
         self.file_name = file_name
         self.is_valid = True
         return
@@ -144,7 +166,7 @@ class VectorSID:
 
         if joined_procedure_records_list:
             features = get_symbol_features(
-                joined_procedure_records_list, True, self.symbol_scale
+                joined_procedure_records_list, SymbolOptions(True, self.symbol_scale)
             )
             result.extend(features)
 
@@ -163,14 +185,16 @@ class VectorSID:
         if joined_procedure_records_list:
             features = get_text_features(
                 joined_procedure_records_list,
-                self.draw_names,
-                False,
-                False,
-                True,
-                self.x_offset,
-                self.y_offset,
-                self.text_scale,
-                self.line_height,
+                TextOptions(
+                    self.draw_names,
+                    False,
+                    False,
+                    True,
+                    self.x_offset,
+                    self.y_offset,
+                    self.text_scale,
+                    self.line_height,
+                ),
             )
             result.extend(features)
 

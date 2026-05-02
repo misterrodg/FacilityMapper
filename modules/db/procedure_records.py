@@ -4,9 +4,10 @@ from modules.db.query_helper import (
     str_to_sql_string,
     translate_condition,
 )
+from typing import Any
 
 
-def handle_transitions(transition_ids: list) -> str:
+def handle_transitions(transition_ids: list[str]) -> str:
     if "ALL" in transition_ids:
         return ""
     if transition_ids:
@@ -15,7 +16,7 @@ def handle_transitions(transition_ids: list) -> str:
     return "AND (transition_id IS NULL OR transition_id = 'ALL')"
 
 
-def handle_procedure_type(procedure_types: list) -> str:
+def handle_procedure_type(procedure_types: list[str]) -> str:
     result = ""
     if procedure_types:
         if procedure_types[0] == "NOT":
@@ -28,7 +29,7 @@ def handle_procedure_type(procedure_types: list) -> str:
     return result
 
 
-def handle_path_term(path_terms: list) -> str:
+def handle_path_term(path_terms: list[str]) -> str:
     result = "AND p.path_term NOT IN ('HA','HF','HM','PI')"
     if path_terms:
         path_terms_as_string = list_to_sql_string(path_terms)
@@ -40,10 +41,14 @@ def select_procedure_points(
     fac_id: str,
     fac_sub_code: str,
     procedure_id: str,
-    transitions: list = [],
-    procedure_types: list = [],
-    path_terms: list = [],
+    transitions: list[str] | None = None,
+    procedure_types: list[str] | None = None,
+    path_terms: list[str] | None = None,
 ) -> str:
+    transitions = transitions or []
+    procedure_types = procedure_types or []
+    path_terms = path_terms or []
+
     fac_id_string = str_to_sql_string(fac_id)
     fac_sub_code_string = str_to_sql_string(fac_sub_code)
     procedure_id_string = translate_condition("procedure_id", procedure_id)
@@ -62,7 +67,7 @@ def select_procedure_points(
 class ProcedureRecords:
     records: list[ProcedureRecord]
 
-    def __init__(self, db_records: list[dict]):
+    def __init__(self, db_records: list[dict[str, Any]]):
         self.records = []
 
         for record in db_records:

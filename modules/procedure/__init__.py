@@ -1,7 +1,4 @@
 from .procedure_handler import (
-    LineOptions,
-    SymbolOptions,
-    TextOptions,
     get_line_feature,
     get_symbol_features,
     get_text_features,

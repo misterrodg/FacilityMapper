@@ -162,33 +162,51 @@ COMPUTED = [
     {"lat_offset": 3, "lon_offset": -3},
 ]
 
+ARROW_HEAD_SYMBOL = "ARROW_HEAD"
+ARROW_HEAD_HOLLOW_SYMBOL = "ARROW_HEAD_HOLLOW"
+ARROW_TAIL_SYMBOL = "ARROW_TAIL"
+TRIANGLE_SYMBOL = "TRIANGLE"
+SQUARE_SYMBOL = "SQUARE"
+HEXAGON_SYMBOL = "HEXAGON"
+CIRCLE_L_SYMBOL = "CIRCLE_L"
+CIRCLE_S_SYMBOL = "CIRCLE_S"
+CROSSBAR_SYMBOL = "CROSSBAR"
+DME_BOX_SYMBOL = "DME_BOX"
+RNAV_SYMBOL = "RNAV"
+FAF_SYMBOL = "FAF"
+COMPUTED_SYMBOL = "COMPUTED"
+AVAILABLE_SYMBOLS = [
+    ARROW_HEAD_SYMBOL,
+    ARROW_HEAD_HOLLOW_SYMBOL,
+    ARROW_TAIL_SYMBOL,
+    TRIANGLE_SYMBOL,
+    SQUARE_SYMBOL,
+    HEXAGON_SYMBOL,
+    CIRCLE_L_SYMBOL,
+    CIRCLE_S_SYMBOL,
+    CROSSBAR_SYMBOL,
+    DME_BOX_SYMBOL,
+    RNAV_SYMBOL,
+    FAF_SYMBOL,
+    COMPUTED_SYMBOL,
+]
 
-def get_plot_from_string(textValue: str) -> list[dict]:
-    upperValue = textValue.upper()
-    if upperValue == "ARROW_HEAD":
-        return ARROW_HEAD
-    if upperValue == "ARROW_HEAD_HOLLOW":
-        return ARROW_HEAD_HOLLOW
-    if upperValue == "ARROW_TAIL":
-        return ARROW_TAIL
-    if upperValue == "TRIANGLE":
-        return TRIANGLE
-    if upperValue == "SQUARE":
-        return SQUARE
-    if upperValue == "HEXAGON":
-        return HEXAGON
-    if upperValue == "CIRCLE_L":
-        return CIRCLE_L
-    if upperValue == "CIRCLE_S":
-        return CIRCLE_S
-    if upperValue == "CROSSBAR":
-        return CROSSBAR
-    if upperValue == "DME_BOX":
-        return DME_BOX
-    if upperValue == "RNAV":
-        return RNAV
-    if upperValue == "FAF":
-        return FAF
-    if upperValue == "COMPUTED":
-        return COMPUTED
-    return UNRECOGNIZED
+SYMBOL_PLOT_MAP: dict[str, list[dict]] = {
+    ARROW_HEAD_SYMBOL: ARROW_HEAD,
+    ARROW_HEAD_HOLLOW_SYMBOL: ARROW_HEAD_HOLLOW,
+    ARROW_TAIL_SYMBOL: ARROW_TAIL,
+    TRIANGLE_SYMBOL: TRIANGLE,
+    SQUARE_SYMBOL: SQUARE,
+    HEXAGON_SYMBOL: HEXAGON,
+    CIRCLE_L_SYMBOL: CIRCLE_L,
+    CIRCLE_S_SYMBOL: CIRCLE_S,
+    CROSSBAR_SYMBOL: CROSSBAR,
+    DME_BOX_SYMBOL: DME_BOX,
+    RNAV_SYMBOL: RNAV,
+    FAF_SYMBOL: FAF,
+    COMPUTED_SYMBOL: COMPUTED,
+}
+
+
+def get_plot(symbol: str) -> list[dict]:
+    return SYMBOL_PLOT_MAP.get(symbol, UNRECOGNIZED)

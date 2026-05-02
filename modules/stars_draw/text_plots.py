@@ -529,7 +529,7 @@ ZZ = [
 ]
 
 
-def get_plot_from_char(text_value: str) -> list[list]:
+def get_plot_from_char(text_value: str) -> list[dict[str, int]]:
     upper_value = text_value.capitalize()
     if upper_value == " ":
         return SPACE

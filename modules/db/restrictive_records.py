@@ -3,7 +3,7 @@ from modules.db.record_helper import segment_records
 from modules.db.restrictive_record import RestrictiveRecord
 
 
-def select_restrictive_points(restrictive_id: str, region: str = None) -> str:
+def select_restrictive_points(restrictive_id: str, region: str | None = None) -> str:
     where_clause = f"WHERE restrictive_id = {restrictive_id}"
     if region is not None:
         where_clause = f"WHERE restrictive_id = {restrictive_id} AND region = {region}"
@@ -19,12 +19,18 @@ def select_restrictive_points(restrictive_id: str, region: str = None) -> str:
 class RestrictiveRecords:
     records: list[RestrictiveRecord]
 
-    def __init__(self, db_records: list[dict]):
+    def __init__(self) -> None:
         self.records = []
 
+    def from_list(self, restrictive_record_list: list[RestrictiveRecord]) -> None:
+        self.records.extend(restrictive_record_list)
+        return
+
+    def from_db_records(self, db_records: list[dict[str, object]]) -> None:
         for record in db_records:
             restrictive_record = RestrictiveRecord(record)
             self.records.append(restrictive_record)
+        return
 
     def get_records(self) -> list[RestrictiveRecord]:
         return self.records

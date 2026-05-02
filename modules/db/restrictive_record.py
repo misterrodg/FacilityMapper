@@ -1,4 +1,5 @@
 from modules.db.airspace_record import AirspaceRecord
+from typing import Any
 
 
 class RestrictiveRecord(AirspaceRecord):
@@ -32,7 +33,7 @@ class RestrictiveRecord(AirspaceRecord):
     record_number: int | None
     cycle_data: str | None
 
-    def __init__(self, db_record: dict):
+    def __init__(self, db_record: dict[str, Any]):
         self.st = db_record.get("st")
         self.area = db_record.get("area")
         self.sec_code = db_record.get("sec_code")

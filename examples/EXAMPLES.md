@@ -61,21 +61,21 @@ This example calls for a map of three labels, showing its usefulness in creating
 
 ```json
 {
-  "map_type": "LABEL",
+  "map_type": "LABELS",
   "definition": {
-    "lines": [
+    "labels": [
       {
-        "line": "JYO 127.5",
+        "lines": ["JYO 127.5"],
         "lat": 39.0779722,
         "lon": -77.5575
       },
       {
-        "line": "IAD 120.1",
+        "lines": ["IAD 120.1"],
         "lat": 38.9474564,
         "lon": -77.4599286
       },
       {
-        "line": "HEF 133.1",
+        "lines": ["HEF 133.1"],
         "lat": 38.7210247,
         "lon": -77.5151047
       }
@@ -93,21 +93,21 @@ This example calls for a map of three labels, showing the supported characters.
 
 ```json
 {
-  "map_type": "LABEL",
+  "map_type": "LABELS",
   "definition": {
-    "lines": [
+    "labels": [
       {
-        "line": "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z",
+        "lines": ["A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"],
         "lat": 40,
         "lon": -44
       },
       {
-        "line": "0 1 2 3 4 5 6 7 8 9",
+        "lines": ["0 1 2 3 4 5 6 7 8 9"],
         "lat": 39.98,
         "lon": -44
       },
       {
-        "line": "+ - .",
+        "lines": ["+ - ."],
         "lat": 39.96,
         "lon": -44
       }

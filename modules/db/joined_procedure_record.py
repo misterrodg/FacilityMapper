@@ -1,4 +1,5 @@
 from modules.db.procedure_record import ProcedureRecord
+from typing import Any
 
 
 class JoinedProcedureRecord(ProcedureRecord):
@@ -14,7 +15,7 @@ class JoinedProcedureRecord(ProcedureRecord):
     center_lat: float | None
     center_lon: float | None
 
-    def __init__(self, db_record: dict):
+    def __init__(self, db_record: dict[str, Any]):
         super().__init__(db_record)
         self.fix_lat = db_record.get("fix_lat")
         self.fix_lon = db_record.get("fix_lon")
@@ -27,3 +28,37 @@ class JoinedProcedureRecord(ProcedureRecord):
         self.center_id = db_record.get("center_id")
         self.center_lat = db_record.get("center_lat")
         self.center_lon = db_record.get("center_lon")
+
+    def fix_type_to_symbol_name(self) -> str | None:
+        if self.fix_type is None:
+            return None
+
+        if self.desc_code is not None and self.desc_code.endswith("F"):
+            return "FAF"
+
+        source = self.fix_source
+        row_type = self.fix_type
+        if row_type is None:
+            return None
+
+        if source and source in ["ENR", "TRM"]:
+            if self.fix_type.startswith("W"):
+                return "RNAV_POINT"
+            if self.fix_type.startswith("C") or self.fix_type.startswith("R"):
+                return "WAYPOINT"
+
+        if source and source == "VHF":
+            if self.fix_type.startswith("VD"):
+                return "VORDME"
+            if self.fix_type.startswith("VT"):
+                return "VORTAC"
+            if self.fix_type.startswith("V "):
+                return "VOR"
+            if self.fix_type.startswith(" D"):
+                return "DME"
+
+        if source and source == "NDB":
+            if self.fix_type.startswith("H"):
+                return "NDB"
+
+        return None

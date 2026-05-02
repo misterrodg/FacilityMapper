@@ -6,15 +6,15 @@ ERROR_HEADER = "COMPOSITE: "
 
 class Composite:
     map_type: str
-    file_names: list[dict]
-    file_name: str | None
+    file_names: list[str]
+    file_name: str
     delete_originals: bool
     is_valid: bool
 
-    def __init__(self, definition_dict: dict):
+    def __init__(self, definition_dict: dict[str, object]):
         self.map_type = "COMPOSITE"
         self.file_names = []
-        self.file_name = None
+        self.file_name = ""
         self.delete_originals = False
         self.is_valid = False
 
@@ -23,22 +23,33 @@ class Composite:
         if self.is_valid:
             self._to_file()
 
-    def _validate(self, definition_dict: dict) -> None:
+    def _validate(self, definition_dict: dict[str, object]) -> None:
         file_names = definition_dict.get("file_names")
-        if file_names is None:
+        if not isinstance(file_names, list):
             print(
-                f"{ERROR_HEADER}Missing `file_names` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `file_names` in:\n{print_top_level(definition_dict)}."
             )
             return
+        for item in file_names:
+            if not isinstance(item, str):
+                print(
+                    f"{ERROR_HEADER}Invalid item in `file_names` in:\n{print_top_level(definition_dict)}."
+                )
+                return
 
         file_name = definition_dict.get("file_name")
-        if file_name is None:
+        if not isinstance(file_name, str):
             print(
-                f"{ERROR_HEADER}Missing `file_name` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `file_name` in:\n{print_top_level(definition_dict)}."
             )
             return
 
         delete_originals = definition_dict.get("delete_originals", False)
+        if not isinstance(delete_originals, bool):
+            print(
+                f"{ERROR_HEADER}Invalid `delete_originals` in:\n{print_top_level(definition_dict)}."
+            )
+            return
 
         self.file_names = file_names
         self.file_name = file_name
@@ -53,9 +64,8 @@ class Composite:
         for file_name in self.file_names:
             geo_json = GeoJSON(file_name)
             geo_json.from_file(True)
-            features = geo_json.pluck_features()
-            for feature in features:
-                composite_feature_collection.add_feature(feature)
+            raw_features = geo_json.pluck_raw_features()
+            composite_feature_collection.add_raw_features(raw_features)
             if self.delete_originals:
                 geo_json.delete_file()
 

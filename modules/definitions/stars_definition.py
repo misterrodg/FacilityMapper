@@ -11,7 +11,7 @@ class STARSDefinition(Serializable):
     always_visible: bool
     note: str | None
 
-    def __init__(self, map_name: str, map_id: int):
+    def __init__(self, map_name: str, map_id: int) -> None:
         self.name = map_name
         self.map_id = map_id
         self.short_name = map_name.split(" ")[-1]

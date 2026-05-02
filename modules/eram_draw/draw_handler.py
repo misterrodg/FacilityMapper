@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from modules.definitions import SymbolProperties, TextProperties
 from modules.geo_json import (
     Coordinate,
@@ -10,7 +12,7 @@ from modules.v_nas import SymbolStyle
 
 
 def get_symbol_feature(
-    lat: float, lon: float, symbol_style: SymbolStyle = None
+    lat: float, lon: float, symbol_style: SymbolStyle | None = None
 ) -> Feature:
     result = Feature()
     point = Point()
@@ -28,7 +30,7 @@ def get_symbol_feature(
     return result
 
 
-def get_text_feature(lat: float, lon: float, lines: list[str]) -> Feature:
+def get_text_feature(lat: float, lon: float, lines: Sequence[str]) -> Feature:
     result = Feature()
     point = Point()
     coordinate = Coordinate(lat, lon)

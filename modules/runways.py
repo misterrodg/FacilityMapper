@@ -11,17 +11,17 @@ ERROR_HEADER = "RUNWAYS: "
 
 class Runways:
     map_type: str
-    airport_ids: list
+    airport_ids: list[str]
     airport_runways: list[list[RunwayPair]]
-    file_name: str | None
+    file_name: str
     db_cursor: Cursor
     is_valid: bool
 
-    def __init__(self, db_cursor: Cursor, definition_dict: dict):
+    def __init__(self, db_cursor: Cursor, definition_dict: dict[str, object]):
         self.map_type = "RUNWAYS"
         self.airport_ids = []
         self.airport_runways = []
-        self.file_name = None
+        self.file_name = ""
         self.db_cursor = db_cursor
         self.is_valid = False
 
@@ -31,18 +31,24 @@ class Runways:
             self._process()
             self._to_file()
 
-    def _validate(self, definition_dict: dict) -> None:
+    def _validate(self, definition_dict: dict[str, object]) -> None:
         airport_ids = definition_dict.get("airport_ids")
-        if airport_ids is None:
+        if not isinstance(airport_ids, list):
             print(
-                f"{ERROR_HEADER}Missing `airport_ids` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `airport_ids` in:\n{print_top_level(definition_dict)}."
             )
             return
+        for item in airport_ids:
+            if not isinstance(item, str):
+                print(
+                    f"{ERROR_HEADER}Invalid item in `airport_ids` in:\n{print_top_level(definition_dict)}."
+                )
+                return
 
         file_name = definition_dict.get("file_name")
-        if file_name is None:
+        if not isinstance(file_name, str):
             print(
-                f"{ERROR_HEADER}Missing `file_name` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `file_name` in:\n{print_top_level(definition_dict)}."
             )
             return
 
@@ -61,7 +67,6 @@ class Runways:
         return
 
     def _build_query_string(self, airport_id: str) -> str:
-        airport_id = f"'{airport_id}'"
         result = select_runways_by_airport_id(airport_id)
         return result
 

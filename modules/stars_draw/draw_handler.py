@@ -1,77 +1,74 @@
+from collections.abc import Sequence
+
 from modules.db import JoinedProcedureRecord
 from modules.draw import ARC_MIN
 from modules.geo_json import Feature
-from modules.symbol_draw import SymbolDraw
-from modules.text_data import TextData
+from modules.stars_draw.symbol_draw import SymbolDraw
+from modules.stars_draw.symbol_plots import (
+    CIRCLE_L_SYMBOL,
+    DME_BOX_SYMBOL,
+    FAF_SYMBOL,
+    HEXAGON_SYMBOL,
+    RNAV_SYMBOL,
+    TRIANGLE_SYMBOL,
+)
+from modules.stars_draw.text_data import TextData
+
+
+def draw_symbol_features(
+    symbol_names: Sequence[str], lat: float, lon: float, symbol_scale: float
+) -> list[Feature]:
+    result = []
+    for symbol_name in symbol_names:
+        symbol_draw = SymbolDraw(symbol_name, lat, lon, symbol_scale=symbol_scale)
+        result.append(symbol_draw.get_feature())
+    return result
+
+
+def resolve_symbol_type(record: JoinedProcedureRecord) -> list[str]:
+    result = []
+
+    symbol_name = record.fix_type_to_symbol_name()
+
+    if symbol_name is None:
+        return result
+
+    if symbol_name == "FAF":
+        return [FAF_SYMBOL]
+
+    if symbol_name == "RNAV_POINT":
+        return [RNAV_SYMBOL]
+    if symbol_name == "WAYPOINT":
+        return [TRIANGLE_SYMBOL]
+
+    if symbol_name in ["VORDME", "VORTAC"]:
+        return [DME_BOX_SYMBOL, HEXAGON_SYMBOL]
+    if symbol_name == "VOR":
+        return [HEXAGON_SYMBOL]
+    if symbol_name == "DME":
+        return [DME_BOX_SYMBOL]
+
+    if symbol_name == "NDB":
+        return [CIRCLE_L_SYMBOL]
+
+    return result
 
 
 def get_symbol_features(
     record: JoinedProcedureRecord, symbol_scale: float
 ) -> list[Feature]:
-    result = []
-
-    if record.desc_code[-1] == "F":
-        symbol_draw = SymbolDraw(
-            "FAF", record.fix_lat, record.fix_lon, symbol_scale=symbol_scale
-        )
-        result.append(symbol_draw.get_feature())
-        return result
-
-    source = record.fix_source
-    row_type = record.fix_type
-
-    if source and source in ["ENR", "TRM"]:
-        row_type = row_type[0:1]
-
-        if row_type == "W":
-            symbol_draw = SymbolDraw(
-                "RNAV", record.fix_lat, record.fix_lon, symbol_scale=symbol_scale
-            )
-            result.append(symbol_draw.get_feature())
-        if row_type in ["C", "R"]:
-            symbol_draw = SymbolDraw(
-                "TRIANGLE", record.fix_lat, record.fix_lon, symbol_scale=symbol_scale
-            )
-            result.append(symbol_draw.get_feature())
-
-    if source and source == "VHF":
-        row_type = row_type[0:2]
-
-        if row_type in ["VD", "VT"]:
-            symbol_draw = SymbolDraw(
-                "DME_BOX", record.fix_lat, record.fix_lon, symbol_scale=symbol_scale
-            )
-            result.append(symbol_draw.get_feature())
-            symbol_draw = SymbolDraw(
-                "HEXAGON", record.fix_lat, record.fix_lon, symbol_scale=symbol_scale
-            )
-            result.append(symbol_draw.get_feature())
-        if row_type == "V ":
-            symbol_draw = SymbolDraw(
-                "HEXAGON", record.fix_lat, record.fix_lon, symbol_scale=symbol_scale
-            )
-            result.append(symbol_draw.get_feature())
-        if row_type == " D":
-            symbol_draw = SymbolDraw(
-                "DME_BOX", record.fix_lat, record.fix_lon, symbol_scale=symbol_scale
-            )
-            result.append(symbol_draw.get_feature())
-
-    if source and source == "NDB":
-        row_type = row_type[0:1]
-
-        if row_type == "H":
-            symbol_draw = SymbolDraw(
-                "CIRCLE_L", record.fix_lat, record.fix_lon, symbol_scale=symbol_scale
-            )
-            result.append(symbol_draw.get_feature())
-    return result
+    if record.fix_lat is None or record.fix_lon is None:
+        return []
+    symbol_names = resolve_symbol_type(record)
+    return draw_symbol_features(
+        symbol_names, record.fix_lat, record.fix_lon, symbol_scale
+    )
 
 
 def get_text_features(
     lat: float,
     lon: float,
-    lines: list[str],
+    lines: Sequence[str],
     x_offset: float,
     y_offset: float,
     text_scale: float,

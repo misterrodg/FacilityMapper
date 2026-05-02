@@ -1,10 +1,17 @@
-def segment_records(records: list[any], segment_field: str) -> list[list[any]]:
-    last_id = ""
-    segment = []
-    result = []
+from typing import Any, TypeVar
+
+
+T = TypeVar("T")
+
+
+def segment_records(records: list[T], segment_field: str) -> list[list[T]]:
+    sentinel = object()
+    last_id: Any = sentinel
+    segment: list[T] = []
+    result: list[list[T]] = []
     for record in records:
         current_id = getattr(record, segment_field, None)
-        if current_id != last_id and last_id != "":
+        if current_id != last_id and last_id is not sentinel:
             result.append(segment)
             segment = []
         segment.append(record)
@@ -15,15 +22,16 @@ def segment_records(records: list[any], segment_field: str) -> list[list[any]]:
 
 
 def segment_from_to(
-    records: list[any], segment_field: str
-) -> list[list[tuple[any, any]]]:
-    last_id = ""
-    segment = []
-    result = []
+    records: list[T], segment_field: str
+) -> list[list[tuple[T, T]]]:
+    sentinel = object()
+    last_id: Any = sentinel
+    segment: list[T] = []
+    result: list[list[tuple[T, T]]] = []
     for record in records:
         current_id = getattr(record, segment_field, None)
-        if current_id != last_id and last_id != "":
-            result.append(segment)
+        if current_id != last_id and last_id is not sentinel:
+            result.append(cast_from_to(segment))
             segment = []
         segment.append(record)
         last_id = current_id
@@ -32,9 +40,9 @@ def segment_from_to(
     return result
 
 
-def filter_records(records: list[any], segment_field: str) -> list[any]:
-    result = []
-    seen_ids = set()
+def filter_records(records: list[T], segment_field: str) -> list[T]:
+    result: list[T] = []
+    seen_ids: set[Any] = set()
     for record in records:
         field_value = getattr(record, segment_field, None)
         if field_value not in seen_ids:
@@ -43,11 +51,11 @@ def filter_records(records: list[any], segment_field: str) -> list[any]:
     return result
 
 
-def cast_from_to(records: list[any]) -> list[tuple[any, any]]:
-    return zip(records, records[1:])
+def cast_from_to(records: list[T]) -> list[tuple[T, T]]:
+    return list(zip(records, records[1:]))
 
 
-def revert_from_to(records: list[tuple[any, any]]) -> list[any]:
+def revert_from_to(records: list[tuple[T, T]]) -> list[T]:
     if not records:
         return []
 

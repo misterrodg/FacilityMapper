@@ -12,7 +12,7 @@ class ERAMProcedure(Procedure):
     symbol_defaults: SymbolProperties | object
     text_defaults: TextProperties | object
 
-    def __init__(self, airport_id: str, procedure_type: str, procedure_id: str):
+    def __init__(self, airport_id: str, procedure_type: str, procedure_id: str) -> None:
         super().__init__(airport_id, procedure_type, procedure_id)
         self.draw_lines = True
         self.suppress_core = False

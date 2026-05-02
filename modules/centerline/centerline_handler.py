@@ -11,11 +11,16 @@ def get_line_strings(
 ) -> list[LineString]:
     end_coordinate = lat_lon_from_pbd(initial_lat, initial_lon, bearing, length)
 
+    end_lat = end_coordinate.get("lat")
+    end_lon = end_coordinate.get("lon")
+    if end_lat is None or end_lon is None:
+        return []
+
     list_list_coord = draw_dashed_line(
         initial_lat,
         initial_lon,
-        end_coordinate.get("lat"),
-        end_coordinate.get("lon"),
+        end_lat,
+        end_lon,
         shift=True,
     )
 

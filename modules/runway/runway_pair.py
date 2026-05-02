@@ -35,7 +35,7 @@ class RunwayPair:
         reciprocal_lat: float,
         reciprocal_lon: float,
         reciprocal_displaced: int,
-    ):
+    ) -> None:
         self.airport_id = airport_id
         self.base_id = base_id
         self.base_lat = None
@@ -60,12 +60,12 @@ class RunwayPair:
 
     def _validate(self) -> None:
         if (
-            self.base_id
-            and self.base_displaced_lat
-            and self.base_displaced_lon
-            and self.reciprocal_id
-            and self.reciprocal_displaced_lat
-            and self.reciprocal_displaced_lon
+            self.base_id != ""
+            and self.base_displaced_lat is not None
+            and self.base_displaced_lon is not None
+            and self.reciprocal_id != ""
+            and self.reciprocal_displaced_lat is not None
+            and self.reciprocal_displaced_lon is not None
         ):
             self.is_valid = True
 

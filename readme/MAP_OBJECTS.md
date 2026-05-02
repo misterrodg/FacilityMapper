@@ -20,7 +20,6 @@ The types are relatively straightforward. To view the Definition for the Map Typ
 | [CONTROLLED](./CONTROLLED.md)           | Creates a map of controlled airspace for a specific airport.                    |
 | [ERAM PROCEDURE](./ERAM_PROCEDURE.md)   | Creates a map of a specific Procedure (SID, STAR, or IAP) as an ERAM map.       |
 | [STARS PROCEDURE](./STARS_PROCEDURE.md) | Creates a map of a specific Procedure (SID, STAR, or IAP) as a STARS map.       |
-| [LABEL](./LABEL.md)                     | Creates a map with labels at specific locations. (DEPRECATED)                   |
 | [LABELS](./LABELS.md)                   | Creates a map with multiline labels at specific locations.                      |
 | [ERAM VOR](./ERAM_VOR.md)               | Creates a map with the specified VORs.                                          |
 | [PLACEHOLDER](./PLACEHOLDER.md)         | A placeholder "map" for use with STARS Definitions.                             |

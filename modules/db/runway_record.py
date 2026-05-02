@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class RunwayRecord:
     st: str | None
     area: str | None
@@ -28,7 +31,7 @@ class RunwayRecord:
     record_number: int | None
     cycle_data: str | None
 
-    def __init__(self, db_record: dict):
+    def __init__(self, db_record: dict[str, Any]) -> None:
         self.st = db_record.get("st")
         self.area = db_record.get("area")
         self.sec_code = db_record.get("sec_code")

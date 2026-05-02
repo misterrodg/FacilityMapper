@@ -7,10 +7,10 @@ import json
 class Manifest:
     maps: list[Map]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.maps = []
 
-    def add_map(self, map) -> None:
+    def add_map(self, map: Map) -> None:
         self.maps.append(map)
 
     def to_file(self, file_name: str, is_eram_mode: bool = False) -> None:

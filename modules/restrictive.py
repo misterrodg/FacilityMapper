@@ -11,19 +11,19 @@ ERROR_HEADER = "RESTRICTIVE: "
 
 class Restrictive:
     map_type: str
-    restrictive_id: str | None
+    restrictive_id: str
     region: str | None
-    restrictive: RestrictiveRecords | None
-    file_name: str | None
+    restrictive: RestrictiveRecords
+    file_name: str
     db_cursor: Cursor
     is_valid: bool
 
-    def __init__(self, db_cursor: Cursor, definition_dict: dict):
+    def __init__(self, db_cursor: Cursor, definition_dict: dict[str, object]):
         self.map_type = "RESTRICTIVE"
-        self.restrictive_id = None
-        self.region = None
-        self.restrictive = None
-        self.file_name = None
+        self.restrictive_id = ""
+        self.region = ""
+        self.restrictive = RestrictiveRecords()
+        self.file_name = ""
         self.db_cursor = db_cursor
         self.is_valid = False
 
@@ -33,19 +33,23 @@ class Restrictive:
             self._process()
             self._to_file()
 
-    def _validate(self, definition_dict: dict) -> None:
+    def _validate(self, definition_dict: dict[str, object]) -> None:
         restrictive_id = definition_dict.get("restrictive_id")
-        if restrictive_id is None:
+        if not isinstance(restrictive_id, str):
             print(
-                f"{ERROR_HEADER}Missing `restrictive_id` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `restrictive_id` in:\n{print_top_level(definition_dict)}."
             )
             return
 
         file_name = definition_dict.get("file_name")
-        if file_name is None:
+        if not isinstance(file_name, str):
             file_name = f"{self.map_type}_{restrictive_id}"
 
-        self.region = definition_dict.get("region")
+        region = definition_dict.get("region")
+        if not isinstance(region, str):
+            region = None
+
+        self.region = region
         self.restrictive_id = restrictive_id
         self.file_name = file_name
         self.is_valid = True
@@ -54,14 +58,15 @@ class Restrictive:
     def _process(self) -> None:
         restrictive_query = self._build_query_string()
         query_result = query_db(self.db_cursor, restrictive_query)
-        restrictive_records = RestrictiveRecords(query_result)
+        restrictive_records = RestrictiveRecords()
+        restrictive_records.from_db_records(query_result)
         self.restrictive = restrictive_records
         return
 
     def _build_query_string(self) -> str:
         restrictive_id = f"'{self.restrictive_id}'"
-        region = self.region
-        if region is not None:
+        region = None
+        if self.region is not None:
             region = f"'{self.region}'"
         result = select_restrictive_points(restrictive_id, region)
         return result

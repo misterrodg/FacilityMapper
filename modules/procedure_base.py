@@ -52,40 +52,40 @@ class ProcedureBase:
     db_cursor: Cursor
     base_valid: bool
 
-    def __init__(self, db_cursor: Cursor, definition_dict: dict):
-        self.airport_id = None
-        self.sub_code = None
-        self.procedure_type = None
-        self.procedure_id = None
+    def __init__(self, db_cursor: Cursor, definition_dict: dict[str, object]):
+        self.airport_id = ""
+        self.sub_code = ""
+        self.procedure_type = ""
+        self.procedure_id = ""
         self.draw_names = False
         self.draw_altitudes = False
         self.draw_speeds = False
         self.draw_symbols = False
-        self.append_name = None
+        self.append_name = ""
         self.leading_transitions = []
         self.suppress_core = False
         self.trailing_transitions = []
-        self.core = None
-        self.leading = None
-        self.trailing = None
-        self.file_name = None
+        self.core = JoinedProcedureRecords([])
+        self.leading = JoinedProcedureRecords([])
+        self.trailing = JoinedProcedureRecords([])
+        self.file_name = ""
         self.db_cursor = db_cursor
         self.base_valid = False
 
         self._base_validate(definition_dict)
 
-    def _base_validate(self, definition_dict: dict) -> None:
+    def _base_validate(self, definition_dict: dict[str, object]) -> None:
         airport_id = definition_dict.get("airport_id")
-        if airport_id is None:
+        if not isinstance(airport_id, str):
             print(
-                f"{ERROR_HEADER}Missing `airport_id` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `airport_id` in:\n{print_top_level(definition_dict)}."
             )
             return
 
         procedure_type = definition_dict.get("procedure_type")
-        if procedure_type is None:
+        if not isinstance(procedure_type, str):
             print(
-                f"{ERROR_HEADER}Missing `procedure_type` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `procedure_type` in:\n{print_top_level(definition_dict)}."
             )
             return
         if procedure_type not in PROCEDURE_TYPES:
@@ -94,26 +94,57 @@ class ProcedureBase:
             return
 
         procedure_id = definition_dict.get("procedure_id")
-        if procedure_id is None:
+        if not isinstance(procedure_id, str):
             print(
-                f"{ERROR_HEADER}Missing `procedure_id` in:\n{print_top_level(definition_dict)}."
+                f"{ERROR_HEADER}Invalid `procedure_id` in:\n{print_top_level(definition_dict)}."
             )
             return
 
         draw_names = definition_dict.get("draw_names", False)
+        if not isinstance(draw_names, bool):
+            draw_names = False
+
         draw_altitudes = definition_dict.get("draw_altitudes", False)
+        if not isinstance(draw_altitudes, bool):
+            draw_altitudes = False
+
         draw_speeds = definition_dict.get("draw_speeds", False)
+        if not isinstance(draw_speeds, bool):
+            draw_speeds = False
+
         draw_symbols = definition_dict.get("draw_symbols", False)
+        if not isinstance(draw_symbols, bool):
+            draw_symbols = False
+
         append_name = definition_dict.get("append_name")
-        if append_name and append_name not in PROCEDURE_SEGMENTS:
-            append_name = None
+        if not isinstance(append_name, str) or append_name not in PROCEDURE_SEGMENTS:
+            append_name = ""
+
         leading_transitions = definition_dict.get("leading_transitions", [])
+        if not isinstance(leading_transitions, list):
+            leading_transitions = []
+        if not all(isinstance(item, str) for item in leading_transitions):
+            print(
+                f"{ERROR_HEADER}Invalid `leading_transitions` in:\n{print_top_level(definition_dict)}."
+            )
+            return
+
         suppress_core = definition_dict.get("suppress_core", False)
+        if not isinstance(suppress_core, bool):
+            suppress_core = False
+
         trailing_transitions = definition_dict.get("trailing_transitions", [])
+        if not isinstance(trailing_transitions, list):
+            trailing_transitions = []
+        if not all(isinstance(item, str) for item in trailing_transitions):
+            print(
+                f"{ERROR_HEADER}Invalid `trailing_transitions` in:\n{print_top_level(definition_dict)}."
+            )
+            return
 
         file_name = definition_dict.get("file_name")
-        if file_name is None:
-            file_name = f"{airport_id}_{self.procedure_type}_{procedure_id}"
+        if not isinstance(file_name, str):
+            file_name = f"{airport_id}_{procedure_type}_{procedure_id}"
 
         self.airport_id = airport_id
         self.sub_code = translate_map_type(procedure_type)
@@ -177,8 +208,15 @@ class ProcedureBase:
         return
 
     def _retrieve_records(
-        self, transition_list: list[str] = [], procedure_types_list: list[str] = []
+        self,
+        transition_list: list[str] | None = None,
+        procedure_types_list: list[str] | None = None,
     ) -> JoinedProcedureRecords:
+        if transition_list is None:
+            transition_list = []
+        if procedure_types_list is None:
+            procedure_types_list = []
+
         query_string = select_joined_procedure_points(
             self.airport_id,
             self.sub_code,
@@ -190,7 +228,10 @@ class ProcedureBase:
         result = JoinedProcedureRecords(query_result)
         return result
 
-    def _draw_lines(self, line_options: LineOptions = LineOptions()) -> Feature:
+    def _draw_lines(self, line_options: LineOptions | None = None) -> Feature:
+        if line_options is None:
+            line_options = LineOptions()
+
         if not self.draw_symbols:
             line_options.buffer_length = 0.0
 
@@ -213,8 +254,11 @@ class ProcedureBase:
         return result
 
     def _draw_symbols(
-        self, symbol_options: SymbolOptions = SymbolOptions()
+        self, symbol_options: SymbolOptions | None = None
     ) -> list[Feature]:
+        if symbol_options is None:
+            symbol_options = SymbolOptions()
+
         result = []
         joined_procedure_records_list = []
         if self.core:
@@ -234,7 +278,10 @@ class ProcedureBase:
 
         return result
 
-    def _draw_text(self, text_options: TextOptions = TextOptions()) -> list[Feature]:
+    def _draw_text(self, text_options: TextOptions | None = None) -> list[Feature]:
+        if text_options is None:
+            text_options = TextOptions()
+
         result = []
         joined_procedure_records_list = []
         if self.core:

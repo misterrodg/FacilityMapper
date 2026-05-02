@@ -9,6 +9,13 @@ def get_line_strings(airport_list: list[list[RunwayPair]]) -> Feature:
         for runway_pair in airport:
             line_string = LineString()
             if runway_pair.is_valid:
+                if (
+                    runway_pair.base_lat is None
+                    or runway_pair.base_displaced_lon is None
+                    or runway_pair.reciprocal_lat is None
+                    or runway_pair.reciprocal_lon is None
+                ):
+                    continue
                 base_coordinate = Coordinate(
                     runway_pair.base_lat, runway_pair.base_displaced_lon
                 )

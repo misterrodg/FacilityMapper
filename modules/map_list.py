@@ -16,7 +16,7 @@ class MapList:
 
     def write_line(self, stars_definition: STARSDefinition) -> None:
         map_id = self.map_id
-        if stars_definition.map_id is None:
+        if stars_definition.map_id == -1:
             stars_definition.map_id = map_id
         else:
             self.map_id = stars_definition.map_id

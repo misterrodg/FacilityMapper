@@ -33,7 +33,7 @@ def draw_arc(
 
     for bearing in bearings:
         new_point = lat_lon_from_pbd(arc_lat, arc_lon, bearing, arc_radius_nm)
-        coordinate = Coordinate(new_point.get("lat"), new_point.get("lon"))
+        coordinate = Coordinate(new_point["lat"], new_point["lon"])
         result.append(coordinate)
     return result
 
@@ -47,17 +47,17 @@ def draw_circle(center_lat: float, center_lon: float, radius_nm: float) -> LineS
 
     for bearing in bearings:
         new_point = lat_lon_from_pbd(center_lat, center_lon, bearing, radius_nm)
-        coordinate = Coordinate(new_point.get("lat"), new_point.get("lon"))
+        coordinate = Coordinate(new_point["lat"], new_point["lon"])
         line_string.add_coordinate(coordinate)
     return line_string
 
 
 def _get_intermediate_bearings(
     num_segments: int,
-    start_bearing: float = None,
-    stop_bearing: float = None,
-    direction: str = None,
-) -> list:
+    start_bearing: float | None = None,
+    stop_bearing: float | None = None,
+    direction: str | None = None,
+) -> list[float]:
     interval = 360 / num_segments
 
     if start_bearing is None or stop_bearing is None:

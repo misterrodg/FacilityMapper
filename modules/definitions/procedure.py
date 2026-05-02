@@ -16,7 +16,7 @@ class Procedure(Serializable):
     suppress_core: bool
     trailing_transitions: list[str]
 
-    def __init__(self, airport_id: str, procedure_type: str, procedure_id: str):
+    def __init__(self, airport_id: str, procedure_type: str, procedure_id: str) -> None:
         self.airport_id = airport_id
         self.procedure_type = procedure_type
         self.procedure_id = procedure_id
@@ -35,10 +35,9 @@ class Procedure(Serializable):
             f"{procedure_type}_{airport_id}_{self.procedure_id.replace("#","")}"
         )
 
-    def _replace_trailing_number(self) -> str:
+    def _replace_trailing_number(self) -> None:
         if self.procedure_type != "IAP":
-            return re.sub(r"\d+$", "#", self.procedure_id)
-        return self.procedure_id
+            self.procedure_id = re.sub(r"\d+$", "#", self.procedure_id)
 
     def to_dict(self) -> dict:
         return {
