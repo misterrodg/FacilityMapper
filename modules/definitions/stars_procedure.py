@@ -9,6 +9,7 @@ class STARSProcedure(Procedure):
     text_scale: float
     line_height: float
     draw_missed: bool
+    use_faf_symbol: bool
     vector_length: float
 
     def __init__(self, airport_id: str, procedure_type: str, procedure_id: str) -> None:
@@ -20,6 +21,7 @@ class STARSProcedure(Procedure):
         self.text_scale = 1.0
         self.line_height = 1.5
         self.draw_missed = False
+        self.use_faf_symbol = False
         self.vector_length = 2.5
 
     def to_dict(self) -> dict:
@@ -32,6 +34,7 @@ class STARSProcedure(Procedure):
             "text_scale": self.text_scale,
             "line_height": self.line_height,
             "draw_missed": self.draw_missed,
+            "use_faf_symbol": self.use_faf_symbol,
             "vector_length": self.vector_length,
         }
         return {**base_dict, **this_dict}
