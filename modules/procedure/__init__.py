@@ -3,6 +3,8 @@ from .procedure_handler import (
     get_symbol_features,
     get_text_features,
 )
+from .procedure_point import ProcedurePoint
+from .procedure_points import ProcedurePoints
 from .procedure_helper import (
     DE_LEADING_PROCEDURE_TYPES,
     DE_CORE_PROCEDURE_TYPES,
@@ -23,5 +25,7 @@ __all__ = [
     "get_line_feature",
     "get_symbol_features",
     "get_text_features",
+    "ProcedurePoint",
+    "ProcedurePoints",
     "translate_map_type",
 ]

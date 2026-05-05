@@ -1,6 +1,7 @@
 from .procedure_options import LineOptions, SymbolOptions, TextOptions
+from .procedure_point import ProcedurePoint
+from .procedure_points import ProcedurePoints
 from modules.altitude import AltitudeData
-from modules.db import JoinedProcedureRecord, JoinedProcedureRecords
 from modules.draw.draw_handler import (
     draw_dashed_line,
     draw_truncated_arc,
@@ -15,6 +16,7 @@ from modules.eram_draw import (
 from modules.stars_draw import (
     get_symbol_features as stars_symbol_features,
     get_text_features as stars_text_features,
+    SymbolPoint,
 )
 from modules.geo_json import (
     Coordinate,
@@ -33,7 +35,7 @@ from modules.v_nas import (
 
 
 def get_symbol_features(
-    joined_procedure_records_list: list[JoinedProcedureRecords],
+    joined_procedure_records_list: list[ProcedurePoints],
     symbol_options: SymbolOptions,
 ) -> list[Feature]:
     result: list[Feature] = []
@@ -48,9 +50,22 @@ def get_symbol_features(
                 continue
             if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
                 fix_ids.append(record.fix_id)
-                if symbol_options and symbol_options.as_lines:
+                if (
+                    symbol_options
+                    and symbol_options.as_lines
+                ):
+                    symbol_name = record.fix_type_to_symbol_name(
+                        symbol_options.use_faf_symbol,
+                    )
+                    if symbol_name is None:
+                        continue
+                    symbol_point = SymbolPoint(
+                        record.fix_lat,
+                        record.fix_lon,
+                        symbol_name,
+                    )
                     features = stars_symbol_features(
-                        record,
+                        symbol_point,
                         symbol_options.scale,
                         symbol_options.use_faf_symbol,
                     )
@@ -67,7 +82,7 @@ def get_symbol_features(
 
 
 def _generate_text(
-    joined_procedure_record: JoinedProcedureRecord,
+    joined_procedure_record: ProcedurePoint,
     draw_names: bool = False,
     draw_altitudes: bool = False,
     draw_speeds: bool = False,
@@ -94,7 +109,7 @@ def _generate_text(
 
 
 def get_text_features(
-    joined_procedure_records_list: list[JoinedProcedureRecords],
+    joined_procedure_records_list: list[ProcedurePoints],
     text_options: TextOptions,
 ) -> list[Feature]:
     result: list[Feature] = []
@@ -135,7 +150,7 @@ def get_text_features(
 
 
 def _get_line_coordinate(
-    joined_procedure_record: JoinedProcedureRecord,
+    joined_procedure_record: ProcedurePoint,
 ) -> Coordinate | None:
     lat = joined_procedure_record.fix_lat
     lon = joined_procedure_record.fix_lon
@@ -144,7 +159,7 @@ def _get_line_coordinate(
     return Coordinate(lat, lon)
 
 
-def _get_line(joined_procedure_records: JoinedProcedureRecords) -> LineString:
+def _get_line(joined_procedure_records: ProcedurePoints) -> LineString:
     result = LineString()
     for record in joined_procedure_records.get_records():
         coordinate = _get_line_coordinate(record)
@@ -196,7 +211,7 @@ def _get_dashed_lines(
 
 
 def _get_vector_lines(
-    joined_procedure_records: JoinedProcedureRecords,
+    joined_procedure_records: ProcedurePoints,
     vector_length: float,
     buffer_length: float,
 ) -> list[LineString]:
@@ -222,7 +237,7 @@ def _get_vector_lines(
 
 
 def _get_truncated_lines(
-    joined_procedure_records: JoinedProcedureRecords,
+    joined_procedure_records: ProcedurePoints,
     vector_length: float,
     buffer_length: float,
 ) -> list[LineString]:
@@ -287,7 +302,7 @@ def _get_truncated_lines(
 
 
 def _get_unique_lines(
-    joined_procedure_records: JoinedProcedureRecords,
+    joined_procedure_records: ProcedurePoints,
 ) -> list[LineString]:
     result = []
     for segment in joined_procedure_records.get_unique_paths():
@@ -301,7 +316,7 @@ def _get_unique_lines(
 
 
 def _get_truncated_unique_lines(
-    joined_procedure_records: JoinedProcedureRecords,
+    joined_procedure_records: ProcedurePoints,
     vector_length: float,
     buffer_length: float,
 ) -> list[LineString]:
@@ -366,7 +381,7 @@ def _get_truncated_unique_lines(
 
 
 def get_line_feature(
-    joined_procedure_records_list: list[tuple[JoinedProcedureRecords, bool]],
+    joined_procedure_records_list: list[tuple[ProcedurePoints, bool]],
     line_options: LineOptions | None = None,
 ) -> Feature:
     result = Feature()
