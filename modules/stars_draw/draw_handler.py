@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 
-from modules.db import JoinedProcedureRecord
 from modules.draw import ARC_MIN
 from modules.geo_json import Feature
 from modules.stars_draw.symbol_draw import SymbolDraw
@@ -12,6 +11,7 @@ from modules.stars_draw.symbol_plots import (
     RNAV_SYMBOL,
     TRIANGLE_SYMBOL,
 )
+from modules.stars_draw.symbol_point import SymbolPoint
 from modules.stars_draw.text_data import TextData
 
 
@@ -25,47 +25,43 @@ def draw_symbol_features(
     return result
 
 
-def resolve_symbol_type(
-    record: JoinedProcedureRecord, use_faf_symbol: bool = False
-) -> list[str]:
+def resolve_symbol_type(record: SymbolPoint, use_faf_symbol: bool = False) -> list[str]:
     result = []
 
-    symbol_name = record.fix_type_to_symbol_name(use_faf_symbol)
-
-    if symbol_name is None:
+    if record.symbol_name is None:
         return result
 
-    if symbol_name == "FAF":
+    if record.symbol_name == "FAF":
         return [FAF_SYMBOL]
 
-    if symbol_name == "RNAV_POINT":
+    if record.symbol_name == "RNAV_POINT":
         return [RNAV_SYMBOL]
-    if symbol_name == "WAYPOINT":
+    if record.symbol_name == "WAYPOINT":
         return [TRIANGLE_SYMBOL]
 
-    if symbol_name in ["VORDME", "VORTAC"]:
+    if record.symbol_name in ["VORDME", "VORTAC"]:
         return [DME_BOX_SYMBOL, HEXAGON_SYMBOL]
-    if symbol_name == "VOR":
+    if record.symbol_name == "VOR":
         return [HEXAGON_SYMBOL]
-    if symbol_name == "DME":
+    if record.symbol_name == "DME":
         return [DME_BOX_SYMBOL]
 
-    if symbol_name == "NDB":
+    if record.symbol_name == "NDB":
         return [CIRCLE_L_SYMBOL]
 
     return result
 
 
 def get_symbol_features(
-    record: JoinedProcedureRecord,
+    record: SymbolPoint,
     symbol_scale: float,
     use_faf_symbol: bool = False,
 ) -> list[Feature]:
-    if record.fix_lat is None or record.fix_lon is None:
+    if record.symbol_lat is None or record.symbol_lon is None:
         return []
     symbol_names = resolve_symbol_type(record, use_faf_symbol)
     return draw_symbol_features(
-        symbol_names, record.fix_lat, record.fix_lon, symbol_scale
+        symbol_names, record.symbol_lat, record.symbol_lon, symbol_scale
     )
 
 
