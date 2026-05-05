@@ -8,12 +8,6 @@ from modules.db.query_helper import (
     str_to_sql_string,
     translate_condition,
 )
-from modules.db.record_helper import (
-    cast_from_to,
-    revert_from_to,
-    segment_records,
-    segment_from_to,
-)
 from typing import Any
 
 
@@ -100,72 +94,6 @@ class JoinedProcedureRecords:
     def get_records(self) -> list[JoinedProcedureRecord]:
         return self.records
 
-    def get_segmented_records(self) -> list[list[JoinedProcedureRecord]]:
-        result = segment_records(self.records, JoinedProcedureRecord.SEGMENT_FIELD)
-        return result
-
-    def get_segmented_from_to(
-        self,
-    ) -> list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]]:
-        result = segment_from_to(self.records, JoinedProcedureRecord.SEGMENT_FIELD)
-        return result
-
-    def get_unique_paths(self) -> list[list[JoinedProcedureRecord]]:
-        result: list[list[JoinedProcedureRecord]] = []
-        segmented_records = segment_records(
-            self.records, JoinedProcedureRecord.SEGMENT_FIELD
-        )
-
-        seen: list[str] = []
-
-        for segment in segmented_records:
-            from_to = cast_from_to(segment)
-            unique: list[
-                tuple[JoinedProcedureRecord, JoinedProcedureRecord] | None
-            ] = []
-            for record_from, record_to in from_to:
-                pair = f"{record_from.fix_id}-{record_to.fix_id}"
-                value = None
-                if pair not in seen:
-                    seen.append(pair)
-                    value = (record_from, record_to)
-                unique.append(value)
-            if unique:
-                split = _check_for_split(unique)
-                for item in split:
-                    result.append(revert_from_to(item))
-
-        return result
-
-    def get_unique_paths_from_to(
-        self,
-    ) -> list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]]:
-        result: list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]] = []
-        segmented_records = segment_records(
-            self.records, JoinedProcedureRecord.SEGMENT_FIELD
-        )
-
-        seen: list[str] = []
-
-        for segment in segmented_records:
-            from_to = cast_from_to(segment)
-            unique: list[
-                tuple[JoinedProcedureRecord, JoinedProcedureRecord] | None
-            ] = []
-            for record_from, record_to in from_to:
-                pair = f"{record_from.fix_id}-{record_to.fix_id}"
-                value = None
-                if pair not in seen and record_from.fix_id != record_to.fix_id:
-                    seen.append(pair)
-                    value = (record_from, record_to)
-                unique.append(value)
-            if unique:
-                split = _check_for_split(unique)
-                for item in split:
-                    result.append(item)
-
-        return result
-
     def trim_missed(self, keep_runway: bool = False) -> None:
         result: list[JoinedProcedureRecord] = []
         missed_reached = False
@@ -180,52 +108,3 @@ class JoinedProcedureRecords:
                 missed_reached = True
 
         self.records = result
-
-    def add_procedure_name_to_enroute_transitions(self) -> None:
-        for record in self.records:
-            if (
-                record.fix_id is not None
-                and record.procedure_id is not None
-                and record.fix_id == record.transition_id
-            ):
-                record.fix_id = f"{record.procedure_id}.{record.fix_id}"
-        return
-
-    def add_procedure_name_to_core(self, last: bool = False) -> None:
-        if not self.records:
-            return
-
-        record = self.records[-1] if last else self.records[0]
-        if record.procedure_id is None or record.fix_id is None:
-            return
-
-        record.fix_id = f"{record.procedure_id}.{record.fix_id}"
-
-    def add_procedure_name_to_runway_transitions(self) -> None:
-        for record in self.records:
-            if (
-                record.fix_id is not None
-                and record.procedure_id is not None
-                and record.fix_id == record.procedure_id[:-1]
-            ):
-                record.fix_id = f"{record.procedure_id}.{record.fix_id}"
-
-
-def _check_for_split(
-    list_to_verify: list[tuple[JoinedProcedureRecord, JoinedProcedureRecord] | None],
-) -> list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]]:
-    result: list[list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]]] = []
-    temporary: list[tuple[JoinedProcedureRecord, JoinedProcedureRecord]] = []
-
-    for item in list_to_verify:
-        if item is not None:
-            temporary.append(item)
-        else:
-            if temporary:
-                result.append(temporary)
-                temporary = []
-
-    if temporary:
-        result.append(temporary)
-
-    return result
