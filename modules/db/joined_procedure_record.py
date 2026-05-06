@@ -1,4 +1,14 @@
 from modules.db.procedure_record import ProcedureRecord
+from modules.stars_draw.draw_handler import (
+    FAF_TYPE,
+    RNAV_TYPE,
+    WAYPOINT_TYPE,
+    VORDME_TYPE,
+    VORTAC_TYPE,
+    VOR_TYPE,
+    DME_TYPE,
+    NDB_TYPE,
+)
 from typing import Any
 
 
@@ -38,7 +48,7 @@ class JoinedProcedureRecord(ProcedureRecord):
             and self.desc_code is not None
             and self.desc_code.endswith("F")
         ):
-            return "FAF"
+            return FAF_TYPE
 
         source = self.fix_source
         row_type = self.fix_type
@@ -55,22 +65,22 @@ class JoinedProcedureRecord(ProcedureRecord):
             ]
 
             if self.fix_type.startswith("W") or is_rnav_iap_core:
-                return "RNAV_POINT"
+                return RNAV_TYPE
             if self.fix_type.startswith("C") or self.fix_type.startswith("R"):
-                return "WAYPOINT"
+                return WAYPOINT_TYPE
 
         if source and source == "VHF":
             if self.fix_type.startswith("VD"):
-                return "VORDME"
+                return VORDME_TYPE
             if self.fix_type.startswith("VT"):
-                return "VORTAC"
+                return VORTAC_TYPE
             if self.fix_type.startswith("V "):
-                return "VOR"
+                return VOR_TYPE
             if self.fix_type.startswith(" D"):
-                return "DME"
+                return DME_TYPE
 
         if source and source == "NDB":
             if self.fix_type.startswith("H"):
-                return "NDB"
+                return NDB_TYPE
 
         return None

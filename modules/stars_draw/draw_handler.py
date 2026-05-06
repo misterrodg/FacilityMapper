@@ -40,22 +40,22 @@ def resolve_symbol_type(record: SymbolPoint, use_faf_symbol: bool = False) -> li
     if record.symbol_name is None:
         return result
 
-    if record.symbol_name == "FAF":
+    if record.symbol_name == FAF_TYPE:
         return [FAF_SYMBOL]
 
-    if record.symbol_name == "RNAV_POINT":
+    if record.symbol_name == RNAV_TYPE:
         return [RNAV_SYMBOL]
-    if record.symbol_name == "WAYPOINT":
+    if record.symbol_name == WAYPOINT_TYPE:
         return [TRIANGLE_SYMBOL]
 
-    if record.symbol_name in ["VORDME", "VORTAC"]:
+    if record.symbol_name in [VORDME_TYPE, VORTAC_TYPE]:
         return [DME_BOX_SYMBOL, HEXAGON_SYMBOL]
-    if record.symbol_name == "VOR":
+    if record.symbol_name == VOR_TYPE:
         return [HEXAGON_SYMBOL]
-    if record.symbol_name == "DME":
+    if record.symbol_name == DME_TYPE:
         return [DME_BOX_SYMBOL]
 
-    if record.symbol_name == "NDB":
+    if record.symbol_name == NDB_TYPE:
         return [CIRCLE_L_SYMBOL]
 
     return result
