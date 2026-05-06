@@ -11,8 +11,9 @@
         "draw_names": true,
         "x_offset": 1,
         "y_offset": -1,
-        "draw_enroute_transitions": true,
-        "draw_runway_transitions": true,
+        "leading_transitions": ["ALL"],
+        "trailing_transitions": ["ALL"],
+        "append_name": "trailing",
         "file_name": "003_BUNZZ"
       }
     },
@@ -27,8 +28,9 @@
         "draw_names": true,
         "x_offset": 1,
         "y_offset": -1,
-        "draw_enroute_transitions": true,
-        "draw_runway_transitions": true,
+        "leading_transitions": ["ALL"],
+        "trailing_transitions": ["ALL"],
+        "append_name": "trailing",
         "file_name": "003_RNLDI"
       }
     },
@@ -55,7 +57,7 @@
         "draw_altitudes": true,
         "y_offset": -0.5,
         "text_scale": 0.25,
-        "transition_ids": ["REMMY"],
+        "leading_transitions": ["REMMY"],
         "file_name": "001_KBWI_I10"
       }
     },
