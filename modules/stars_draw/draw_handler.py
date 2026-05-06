@@ -14,6 +14,15 @@ from modules.stars_draw.symbol_plots import (
 from modules.stars_draw.symbol_point import SymbolPoint
 from modules.stars_draw.text_data import TextData
 
+FAF_TYPE = "FAF"
+RNAV_TYPE = "RNAV_POINT"
+WAYPOINT_TYPE = "WAYPOINT"
+VORDME_TYPE = "VORDME"
+VORTAC_TYPE = "VORTAC"
+VOR_TYPE = "VOR"
+DME_TYPE = "DME"
+NDB_TYPE = "NDB"
+
 
 def draw_symbol_features(
     symbol_names: Sequence[str], lat: float, lon: float, symbol_scale: float
