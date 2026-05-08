@@ -87,7 +87,7 @@ def _generate_text(
     draw_speeds: bool = False,
 ) -> list[str]:
     result = []
-    if draw_names:
+    if draw_names and joined_procedure_record.fix_id is not None:
         result.append(joined_procedure_record.fix_id)
     if draw_altitudes:
         altitude_data = AltitudeData(
