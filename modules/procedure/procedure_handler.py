@@ -48,12 +48,9 @@ def get_symbol_features(
                 or record.fix_lon is None
             ):
                 continue
-            if record.fix_id not in fix_ids and record.fix_id[0:2] != "RW":
+            if record.fix_id not in fix_ids and record.fix_source not in ["RWY", "APT"]:
                 fix_ids.append(record.fix_id)
-                if (
-                    symbol_options
-                    and symbol_options.as_lines
-                ):
+                if symbol_options and symbol_options.as_lines:
                     symbol_name = record.fix_type_to_symbol_name(
                         symbol_options.use_faf_symbol,
                     )
