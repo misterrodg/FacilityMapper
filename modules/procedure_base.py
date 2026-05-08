@@ -2,7 +2,12 @@ from modules.db.joined_procedure_records import (
     JoinedProcedureRecords,
     select_joined_procedure_points,
 )
-from modules.error_helper import print_top_level
+from modules.definitions.procedure import (
+    Procedure as ProcedureDefinition,
+    LEADING,
+    CORE,
+    TRAILING,
+)
 from modules.geo_json import Feature
 from modules.procedure import (
     DE_LEADING_PROCEDURE_TYPES,
@@ -10,6 +15,7 @@ from modules.procedure import (
     DE_TRAILING_PROCEDURE_TYPES,
     F_LEADING_PROCEDURE_TYPES,
     LineOptions,
+    ProcedurePoints,
     SymbolOptions,
     TextOptions,
     get_line_feature,
@@ -22,12 +28,6 @@ from modules.query_handler import query_db
 from sqlite3 import Cursor
 
 ERROR_HEADER = "Procedure: "
-
-PROCEDURE_TYPES = ["SID", "STAR", "IAP"]
-LEADING = "leading"
-CORE = "core"
-TRAILING = "trailing"
-PROCEDURE_SEGMENTS = [LEADING, CORE, TRAILING]
 
 
 class ProcedureBase:
@@ -44,9 +44,9 @@ class ProcedureBase:
     suppress_core: bool
     trailing_transitions: list[str]
 
-    core: JoinedProcedureRecords
-    leading: JoinedProcedureRecords
-    trailing: JoinedProcedureRecords
+    core: ProcedurePoints
+    leading: ProcedurePoints
+    trailing: ProcedurePoints
 
     file_name: str
     db_cursor: Cursor
@@ -65,9 +65,9 @@ class ProcedureBase:
         self.leading_transitions = []
         self.suppress_core = False
         self.trailing_transitions = []
-        self.core = JoinedProcedureRecords([])
-        self.leading = JoinedProcedureRecords([])
-        self.trailing = JoinedProcedureRecords([])
+        self.core = ProcedurePoints([])
+        self.leading = ProcedurePoints([])
+        self.trailing = ProcedurePoints([])
         self.file_name = ""
         self.db_cursor = db_cursor
         self.base_valid = False
@@ -75,91 +75,30 @@ class ProcedureBase:
         self._base_validate(definition_dict)
 
     def _base_validate(self, definition_dict: dict[str, object]) -> None:
-        airport_id = definition_dict.get("airport_id")
-        if not isinstance(airport_id, str):
-            print(
-                f"{ERROR_HEADER}Invalid `airport_id` in:\n{print_top_level(definition_dict)}."
-            )
+        normalized, errors = ProcedureDefinition.validate(definition_dict)
+        if errors:
+            for error in errors:
+                print(f"{ERROR_HEADER}{error}")
+            return
+        if normalized is None:
             return
 
-        procedure_type = definition_dict.get("procedure_type")
-        if not isinstance(procedure_type, str):
-            print(
-                f"{ERROR_HEADER}Invalid `procedure_type` in:\n{print_top_level(definition_dict)}."
-            )
-            return
-        if procedure_type not in PROCEDURE_TYPES:
-            print(f"{ERROR_HEADER}procedure_type '{procedure_type}' not recognized.")
-            print(f"{ERROR_HEADER}Supported types are {", ".join(PROCEDURE_TYPES)}.")
-            return
-
-        procedure_id = definition_dict.get("procedure_id")
-        if not isinstance(procedure_id, str):
-            print(
-                f"{ERROR_HEADER}Invalid `procedure_id` in:\n{print_top_level(definition_dict)}."
-            )
-            return
-
-        draw_names = definition_dict.get("draw_names", False)
-        if not isinstance(draw_names, bool):
-            draw_names = False
-
-        draw_altitudes = definition_dict.get("draw_altitudes", False)
-        if not isinstance(draw_altitudes, bool):
-            draw_altitudes = False
-
-        draw_speeds = definition_dict.get("draw_speeds", False)
-        if not isinstance(draw_speeds, bool):
-            draw_speeds = False
-
-        draw_symbols = definition_dict.get("draw_symbols", False)
-        if not isinstance(draw_symbols, bool):
-            draw_symbols = False
-
-        append_name = definition_dict.get("append_name")
-        if not isinstance(append_name, str) or append_name not in PROCEDURE_SEGMENTS:
-            append_name = ""
-
-        leading_transitions = definition_dict.get("leading_transitions", [])
-        if not isinstance(leading_transitions, list):
-            leading_transitions = []
-        if not all(isinstance(item, str) for item in leading_transitions):
-            print(
-                f"{ERROR_HEADER}Invalid `leading_transitions` in:\n{print_top_level(definition_dict)}."
-            )
-            return
-
-        suppress_core = definition_dict.get("suppress_core", False)
-        if not isinstance(suppress_core, bool):
-            suppress_core = False
-
-        trailing_transitions = definition_dict.get("trailing_transitions", [])
-        if not isinstance(trailing_transitions, list):
-            trailing_transitions = []
-        if not all(isinstance(item, str) for item in trailing_transitions):
-            print(
-                f"{ERROR_HEADER}Invalid `trailing_transitions` in:\n{print_top_level(definition_dict)}."
-            )
-            return
-
-        file_name = definition_dict.get("file_name")
-        if not isinstance(file_name, str):
-            file_name = f"{airport_id}_{procedure_type}_{procedure_id}"
-
-        self.airport_id = airport_id
-        self.sub_code = translate_map_type(procedure_type)
-        self.procedure_type = procedure_type
-        self.procedure_id = procedure_id
-        self.draw_names = draw_names
-        self.draw_altitudes = draw_altitudes
-        self.draw_speeds = draw_speeds
-        self.draw_symbols = draw_symbols
-        self.append_name = append_name
-        self.leading_transitions = leading_transitions
-        self.suppress_core = suppress_core
-        self.trailing_transitions = trailing_transitions
-
-        self.file_name = file_name
+        self.airport_id = normalized["airport_id"]
+        self.sub_code = translate_map_type(normalized["procedure_type"])
+        self.procedure_type = normalized["procedure_type"]
+        self.procedure_id = normalized["procedure_id"]
+        self.draw_names = normalized["draw_names"]
+        self.draw_altitudes = normalized["draw_altitudes"]
+        self.draw_speeds = normalized["draw_speeds"]
+        self.draw_symbols = normalized["draw_symbols"]
+        self.append_name = normalized["append_name"]
+        self.leading_transitions = normalized["leading_transitions"]
+        self.suppress_core = normalized["suppress_core"]
+        self.trailing_transitions = normalized["trailing_transitions"]
+        self.file_name = (
+            normalized["file_name"]
+            or f"{normalized['airport_id']}_{normalized['procedure_type']}_{normalized['procedure_id']}"
+        )
         self.base_valid = True
         return
 
@@ -211,7 +150,7 @@ class ProcedureBase:
         self,
         transition_list: list[str] | None = None,
         procedure_types_list: list[str] | None = None,
-    ) -> JoinedProcedureRecords:
+    ) -> ProcedurePoints:
         if transition_list is None:
             transition_list = []
         if procedure_types_list is None:
@@ -225,7 +164,7 @@ class ProcedureBase:
             procedure_types=procedure_types_list,
         )
         query_result = query_db(self.db_cursor, query_string)
-        result = JoinedProcedureRecords(query_result)
+        result = ProcedurePoints.from_joined_records(JoinedProcedureRecords(query_result))
         return result
 
     def _draw_lines(self, line_options: LineOptions | None = None) -> Feature:

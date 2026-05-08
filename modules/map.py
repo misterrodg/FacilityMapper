@@ -8,6 +8,7 @@ from modules.labels import Labels
 from modules.map_list import MapList
 from modules.restrictive import Restrictive
 from modules.runways import Runways
+from modules.stars_custom_procedure import STARSCustomProcedure
 from modules.stars_definition import STARSDefinition
 from modules.stars_procedure import STARSProcedure
 from modules.vector_sid import VectorSID
@@ -25,6 +26,7 @@ PLACEHOLDER_TYPE = "PLACEHOLDER"
 RESTRICTIVE_TYPE = "RESTRICTIVE"
 RUNWAYS_TYPE = "RUNWAYS"
 STARS_PROCEDURE_TYPE = "STARS PROCEDURE"
+STARS_CUSTOM_PROCEDURE_TYPE = "STARS CUSTOM PROCEDURE"
 VECTOR_SID_TYPE = "VECTORSID"
 SUPPORTED_TYPES = [
     CENTERLINES,
@@ -37,6 +39,7 @@ SUPPORTED_TYPES = [
     RESTRICTIVE_TYPE,
     RUNWAYS_TYPE,
     STARS_PROCEDURE_TYPE,
+    STARS_CUSTOM_PROCEDURE_TYPE,
     VECTOR_SID_TYPE,
 ]
 
@@ -102,6 +105,8 @@ class Map:
             ERAMVOR(self.db_cursor, self.definition)
         if self.map_type == STARS_PROCEDURE_TYPE:
             STARSProcedure(self.db_cursor, self.definition)
+        if self.map_type == STARS_CUSTOM_PROCEDURE_TYPE:
+            STARSCustomProcedure(self.definition)
         if self.map_type == VECTOR_SID_TYPE:
             VectorSID(self.db_cursor, self.definition)
         if self.map_type == RUNWAYS_TYPE:
