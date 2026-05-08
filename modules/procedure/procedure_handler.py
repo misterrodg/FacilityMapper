@@ -67,7 +67,6 @@ def get_symbol_features(
                     features = stars_symbol_features(
                         symbol_point,
                         symbol_options.scale,
-                        symbol_options.use_faf_symbol,
                     )
                     result.extend(features)
                 else:

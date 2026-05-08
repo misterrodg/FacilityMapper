@@ -34,7 +34,7 @@ def draw_symbol_features(
     return result
 
 
-def resolve_symbol_type(record: SymbolPoint, use_faf_symbol: bool = False) -> list[str]:
+def resolve_symbol_type(record: SymbolPoint) -> list[str]:
     result = []
 
     if record.symbol_name is None:
@@ -64,11 +64,10 @@ def resolve_symbol_type(record: SymbolPoint, use_faf_symbol: bool = False) -> li
 def get_symbol_features(
     record: SymbolPoint,
     symbol_scale: float,
-    use_faf_symbol: bool = False,
 ) -> list[Feature]:
     if record.symbol_lat is None or record.symbol_lon is None:
         return []
-    symbol_names = resolve_symbol_type(record, use_faf_symbol)
+    symbol_names = resolve_symbol_type(record)
     return draw_symbol_features(
         symbol_names, record.symbol_lat, record.symbol_lon, symbol_scale
     )
