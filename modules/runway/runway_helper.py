@@ -1,6 +1,18 @@
 RUNWAY_PREFIX = "RW"
 
 
+def check_for_combined(runway_id: str) -> list[str]:
+    side_component = runway_id[4:]
+    if side_component and side_component == "B":
+        bearing_component = runway_id[2:4]
+        return [
+            f"{RUNWAY_PREFIX}{bearing_component}L",
+            f"{RUNWAY_PREFIX}{bearing_component}C",
+            f"{RUNWAY_PREFIX}{bearing_component}R",
+        ]
+    return [runway_id]
+
+
 def inverse_runway(runway_id: str) -> str:
     bearing_component = int(runway_id[2:4])
     inverse_bearing = _handle_bearing_component(bearing_component)
