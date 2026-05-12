@@ -37,9 +37,9 @@ def create_unified_navaids_table() -> list[str]:
     return [
         """
         CREATE TABLE unified_navaids AS
-        SELECT vhf_id AS id,lat,lon,sub_code,mag_var,vhf_region AS region FROM vhf_navaids
+        SELECT vhf_id AS id,lat,lon,dme_lat,dme_lon,sub_code,mag_var,vhf_region AS region FROM vhf_navaids
         UNION
-        SELECT ndb_id AS id,lat,lon,sub_code,mag_var,ndb_region AS region FROM ndb_navaids;
+        SELECT ndb_id AS id,lat,lon,NULL AS dme_lat,NULL AS dme_lon,sub_code,mag_var,ndb_region AS region FROM ndb_navaids;
         """,
         """
         CREATE INDEX idx_unified_navaid_id ON unified_navaids(id,sub_code,region);
@@ -66,8 +66,9 @@ def select_joined_procedure_points(
     procedure_type_string = handle_procedure_type(procedure_types)
     path_term_string = handle_path_term(path_terms)
     result = f"""
-    SELECT p.*,up.lat AS fix_lat,up.lon AS fix_lon,up.source AS fix_source,up.type AS fix_type,up.mag_var AS fix_mag_var,un.lat AS rec_vhf_lat,un.lon AS rec_vhf_lon,t.lat AS center_lat,t.lon AS center_lon
+    SELECT p.*,a.mag_var AS airport_mag_var,up.lat AS fix_lat,up.lon AS fix_lon,up.source AS fix_source,up.type AS fix_type,up.mag_var AS fix_mag_var,un.lat AS rec_vhf_lat,un.lon AS rec_vhf_lon,un.dme_lat AS rec_vhf_dme_lat,un.dme_lon AS rec_vhf_dme_lon,un.mag_var AS rec_vhf_mag_var,t.lat AS center_lat,t.lon AS center_lon
     FROM procedure_points AS p
+    JOIN airports AS a on p.fac_id = a.airport_id
     LEFT JOIN unified_points AS up ON p.fix_id = up.id AND (up.env_id = {fac_id_string} OR up.env_id IS NULL)
     LEFT JOIN unified_navaids AS un ON p.rec_vhf = un.id AND p.rec_vhf_sub_code = un.sub_code AND p.rec_vhf_region = un.region
     LEFT JOIN terminal_waypoints AS t ON p.center_fix = t.waypoint_id AND t.environment_id = {fac_id_string}

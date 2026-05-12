@@ -13,6 +13,7 @@ from typing import Any
 
 
 class JoinedProcedureRecord(ProcedureRecord):
+    airport_mag_var: float | None
     fix_lat: float | None
     fix_lon: float | None
     fix_source: str | None
@@ -21,12 +22,16 @@ class JoinedProcedureRecord(ProcedureRecord):
     rec_vhf_id: str | None
     rec_vhf_lat: float | None
     rec_vhf_lon: float | None
+    rec_vhf_dme_lat: float | None
+    rec_vhf_dme_lon: float | None
+    rec_vhf_mag_var: float | None
     center_id: str | None
     center_lat: float | None
     center_lon: float | None
 
     def __init__(self, db_record: dict[str, Any]):
         super().__init__(db_record)
+        self.airport_mag_var = db_record.get("airport_mag_var")
         self.fix_lat = db_record.get("fix_lat")
         self.fix_lon = db_record.get("fix_lon")
         self.fix_source = db_record.get("fix_source")
@@ -35,6 +40,9 @@ class JoinedProcedureRecord(ProcedureRecord):
         self.rec_vhf_id = db_record.get("rec_vhf_id")
         self.rec_vhf_lat = db_record.get("rec_vhf_lat")
         self.rec_vhf_lon = db_record.get("rec_vhf_lon")
+        self.rec_vhf_dme_lat = db_record.get("rec_vhf_dme_lat")
+        self.rec_vhf_dme_lon = db_record.get("rec_vhf_dme_lon")
+        self.rec_vhf_mag_var = db_record.get("rec_vhf_mag_var")
         self.center_id = db_record.get("center_id")
         self.center_lat = db_record.get("center_lat")
         self.center_lon = db_record.get("center_lon")
