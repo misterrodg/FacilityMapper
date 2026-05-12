@@ -86,11 +86,7 @@ class JoinedProcedureRecords:
 
         for record in db_records:
             joined_procedure_record = JoinedProcedureRecord(record)
-            if (
-                joined_procedure_record.fix_lat is not None
-                and joined_procedure_record.fix_lon is not None
-            ):
-                self.records.append(joined_procedure_record)
+            self.records.append(joined_procedure_record)
 
     def get_records(self) -> list[JoinedProcedureRecord]:
         return self.records
@@ -105,7 +101,11 @@ class JoinedProcedureRecords:
                 result.append(record)
 
             desc_code = record.desc_code
-            if isinstance(desc_code, str) and len(desc_code) > 3 and desc_code[3] == "M":
+            if (
+                isinstance(desc_code, str)
+                and len(desc_code) > 3
+                and desc_code[3] == "M"
+            ):
                 missed_reached = True
 
         self.records = result
