@@ -1,4 +1,5 @@
 from .draw_handler import (
+    draw_arc,
     draw_simple_line,
     draw_dashed_line,
     draw_truncated_line,
@@ -23,6 +24,7 @@ __all__ = [
     "DEG_TO_MIN",
     "EARTH_RADIUS_NM",
     "FEET_IN_NM",
+    "draw_arc",
     "draw_simple_line",
     "draw_dashed_line",
     "draw_truncated_line",

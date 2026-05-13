@@ -27,7 +27,7 @@ def draw_simple_line(
     return result
 
 
-def _normalize_pattern(pattern: list = None) -> list:
+def _normalize_pattern(pattern: list[float] | None = None) -> list[float]:
     if pattern is None:
         return [DEFAULT_DASH_LENGTH, DEFAULT_DASH_LENGTH]
 
@@ -50,7 +50,7 @@ def draw_dashed_line(
     from_lon: float,
     to_lat: float,
     to_lon: float,
-    pattern: list = None,
+    pattern: list[float] | None = None,
     shift: bool = False,
 ) -> list[list[Coordinate]]:
     pattern = _normalize_pattern(pattern)
@@ -99,11 +99,11 @@ def _handle_dash_segment(
 ) -> list[Coordinate]:
     result = []
     start_point = lat_lon_from_pbd(from_lat, from_lon, bearing, current_distance)
-    coordinate = Coordinate(start_point.get("lat"), start_point.get("lon"))
+    coordinate = Coordinate(start_point["lat"], start_point["lon"])
     result.append(coordinate)
 
     end_point = lat_lon_from_pbd(from_lat, from_lon, bearing, next_distance)
-    coordinate = Coordinate(end_point.get("lat"), end_point.get("lon"))
+    coordinate = Coordinate(end_point["lat"], end_point["lon"])
     result.append(coordinate)
     return result
 
@@ -121,10 +121,10 @@ def draw_truncated_line(
     new_to = lat_lon_from_pbd(to_lat, to_lon, inverse, buffer_length)
 
     result = draw_simple_line(
-        new_from.get("lat"),
-        new_from.get("lon"),
-        new_to.get("lat"),
-        new_to.get("lon"),
+        new_from["lat"],
+        new_from["lon"],
+        new_to["lat"],
+        new_to["lon"],
     )
 
     return result
@@ -132,10 +132,10 @@ def draw_truncated_line(
 
 def _get_intermediate_bearings(
     num_segments: int,
-    start_bearing: float = None,
-    stop_bearing: float = None,
-    direction: str = None,
-) -> list:
+    start_bearing: float | None = None,
+    stop_bearing: float | None = None,
+    direction: str | None = None,
+) -> list[float]:
     interval = 360 / num_segments
 
     if start_bearing is None or stop_bearing is None:
@@ -202,14 +202,22 @@ def draw_arc(
 
     for bearing in bearings:
         new_point = lat_lon_from_pbd(arc_lat, arc_lon, bearing, arc_radius_nm)
-        coordinate = Coordinate(new_point.get("lat"), new_point.get("lon"))
+        coordinate = Coordinate(new_point["lat"], new_point["lon"])
         result.add_coordinate(coordinate)
     return result
 
 
+def _coordinate_values(coordinate: Coordinate) -> tuple[float, float] | None:
+    if coordinate.lat is None or coordinate.lon is None:
+        return None
+    return coordinate.lat, coordinate.lon
+
+
 def _trim_coordinate_list(
-    coordinate_list: list[Coordinate], buffer_length: float, backwards: bool = False
-) -> list:
+    coordinate_list: list[Coordinate | None],
+    buffer_length: float,
+    backwards: bool = False,
+) -> list[Coordinate | None]:
     start_index = 0
     final_index = len(coordinate_list) - 1 if not backwards else 0
     step = 1
@@ -220,18 +228,30 @@ def _trim_coordinate_list(
         step = -1
 
     previous_point = coordinate_list[start_index]
+    if previous_point is None:
+        return coordinate_list
     remaining_distance = buffer_length
 
     for i in range(start_index, final_index, step):
-        lat = coordinate_list[i].lat
-        lon = coordinate_list[i].lon
+        current_point = coordinate_list[i]
+        if current_point is None:
+            continue
+
+        previous_values = _coordinate_values(previous_point)
+        current_values = _coordinate_values(current_point)
+        if previous_values is None or current_values is None:
+            previous_point = current_point
+            continue
+
+        previous_lat, previous_lon = previous_values
+        lat, lon = current_values
         segment_distance = haversine_great_circle_distance(
-            previous_point.lat, previous_point.lon, lat, lon
+            previous_lat, previous_lon, lat, lon
         )
         if remaining_distance < segment_distance:
             difference = segment_distance - remaining_distance
             bearing = haversine_great_circle_bearing(
-                lat, lon, previous_point.lat, previous_point.lon
+                lat, lon, previous_lat, previous_lon
             )
             new_point = lat_lon_from_pbd(
                 lat,
@@ -240,12 +260,12 @@ def _trim_coordinate_list(
                 difference,
             )
             coordinate_list.insert(
-                start_index, Coordinate(new_point.get("lat"), new_point.get("lon"))
+                start_index, Coordinate(new_point["lat"], new_point["lon"])
             )
             break
         else:
             remaining_distance -= segment_distance
-            previous_point = coordinate_list[i]
+            previous_point = current_point
             coordinate_list[i] = None
 
     return coordinate_list
@@ -273,18 +293,15 @@ def draw_truncated_arc(
         direction,
     )
 
-    coordinates = result.coordinates
+    coordinates: list[Coordinate | None] = [
+        coordinate for coordinate in result.coordinates
+    ]
     _trim_coordinate_list(coordinates, buffer_length)
     _trim_coordinate_list(coordinates, buffer_length, True)
 
-    i = 0
-    while i < len(coordinates):
-        if coordinates[i] is None:
-            del coordinates[i]
-        else:
-            i += 1
-
-    result.coordinates = coordinates
+    result.coordinates = [
+        coordinate for coordinate in coordinates if coordinate is not None
+    ]
     return result
 
 
@@ -300,35 +317,31 @@ def draw_vector_lines(
 
     if buffer_length > 0.0:
         shifted_coordinate = lat_lon_from_pbd(from_lat, from_lon, course, buffer_length)
-        from_lat = shifted_coordinate.get("lat")
-        from_lon = shifted_coordinate.get("lon")
+        from_lat = shifted_coordinate["lat"]
+        from_lon = shifted_coordinate["lon"]
         vector_length = vector_length - buffer_length
         coordinate = Coordinate(from_lat, from_lon)
 
     result.add_coordinate(coordinate)
 
     end_point = lat_lon_from_pbd(from_lat, from_lon, course, vector_length)
-    center_coordinate = Coordinate(end_point.get("lat"), end_point.get("lon"))
+    center_coordinate = Coordinate(end_point["lat"], end_point["lon"])
     result.add_coordinate(center_coordinate)
 
     left_angle = normalize_bearing(course - ARROW_ANGLE)
     vector_arrow_point = lat_lon_from_pbd(
-        end_point.get("lat"), end_point.get("lon"), left_angle, ARROW_LENGTH
+        end_point["lat"], end_point["lon"], left_angle, ARROW_LENGTH
     )
-    coordinate = Coordinate(
-        vector_arrow_point.get("lat"), vector_arrow_point.get("lon")
-    )
+    coordinate = Coordinate(vector_arrow_point["lat"], vector_arrow_point["lon"])
     result.add_coordinate(coordinate)
 
     result.add_coordinate(center_coordinate)
 
     right_angle = normalize_bearing(course + ARROW_ANGLE)
     vector_arrow_point = lat_lon_from_pbd(
-        end_point.get("lat"), end_point.get("lon"), right_angle, ARROW_LENGTH
+        end_point["lat"], end_point["lon"], right_angle, ARROW_LENGTH
     )
-    coordinate = Coordinate(
-        vector_arrow_point.get("lat"), vector_arrow_point.get("lon")
-    )
+    coordinate = Coordinate(vector_arrow_point["lat"], vector_arrow_point["lon"])
     result.add_coordinate(coordinate)
 
     return result
